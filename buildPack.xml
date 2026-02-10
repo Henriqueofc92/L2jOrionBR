@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="l2jserver" default="dist-local" basedir=".">
+
+    <property name="dist.dir" location="dist"/>
+    <property name="build.dir" location="build"/>
+
+    <target name="dist-local">
+        <echo message="=== Starting the compilation process ==="/>
+
+        <!-- Delete 'build' directory if it exists -->
+        <delete dir="${build.dir}" />
+        <echo message="Deleting 'build' directory..."/>
+
+        <!-- Create the 'build' directory -->
+        <mkdir dir="${build.dir}" />
+        <echo message="Creating 'build' directory..."/>
+
+        <!-- Copy files from 'dist' to 'build' -->
+        <copy todir="${build.dir}" preserveLastModified="false">
+            <fileset dir="${dist.dir}"/>
+        </copy>
+
+        <!-- Display progress messages -->
+    	<echo message="Checking the entire Progress."/>
+        <echo message="Progress: [==          ] 20%"/>
+        <sleep seconds="1"/>
+        <echo message="Progress: [====        ] 40%"/>
+        <sleep seconds="1"/>
+        <echo message="Progress: [======      ] 60%"/>
+        <sleep seconds="1"/>
+        <echo message="Progress: [========    ] 80%"/>
+        <sleep seconds="1"/>
+        <echo message="Progress: [==========  ] 100%"/>
+    	<echo message="Build saved with success..."/>
+    	
+        <echo message="=== Compilation process completed ==="/>
+    </target>
+
+</project>

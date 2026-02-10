@@ -1,0 +1,42 @@
+<html><body>
+<table width=270><tr>
+<td width=45><button value="Main" action="bypass admin_admin" width=65 height=19 back="L2UI_ch3.smallbutton2_over" fore="L2UI_ch3.smallbutton2"></td>
+<td width=180><center>Siege Time Set Menu</center></td>
+<td width=45><button value="Back" action="bypass admin_siege %castleName%" width=65 height=19 back="L2UI_ch3.smallbutton2_over" fore="L2UI_ch3.smallbutton2"></td>
+</tr></table>
+<center>
+<font color="LEVEL"><br>Castle: %castleName%</font><br>Siege time: %time%
+<br>Month of Siege:<br>
+<table width=270>
+<tr>
+<td width=135 align="center"><button value="-1" action="bypass admin_setsiegetime %castleName% month -1" width=30 height=21 back="sek.cbui94" fore="sek.cbui92"></td>
+<td width=135 align="center"><button value="+1" action="bypass admin_setsiegetime %castleName% month 1" width=30 height=21 back="sek.cbui94" fore="sek.cbui92"></td>
+</tr>
+</table>
+<br>Day of Siege:<br>
+<table width=200>
+<tr>
+<td>Day (1-31):</td>
+<td><edit var="day" width="40" height="12" type="number" length="2"></td>
+<td><button value="Set" action="bypass admin_setsiegetime %castleName% day $day" width=65 height=20 back="L2UI_ch3.smallbutton2_over" fore="L2UI_ch3.smallbutton2"></td>
+</tr>
+</table>
+<br>Hour of Siege:<br>
+<table width=200>
+<tr>
+<td>Hour (0-23):</td>
+<td><edit var="hour" width="40" height="12" type="number" length="2"></td>
+<td><button value="Set" action="bypass admin_setsiegetime %castleName% hour $hour" width=65 height=20 back="L2UI_ch3.smallbutton2_over" fore="L2UI_ch3.smallbutton2"></td>
+</tr>
+</table>
+<br>Minutes of Siege:<br>
+<table width=200>
+<tr>
+<td>Min (0-59):</td>
+<td><edit var="min" width="40" height="12" type="number" length="2"></td>
+<td><button value="Set" action="bypass admin_setsiegetime %castleName% min $min" width=65 height=20 back="L2UI_ch3.smallbutton2_over" fore="L2UI_ch3.smallbutton2"></td>
+</tr>
+</table>
+</center>
+</body>
+</html>

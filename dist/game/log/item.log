@@ -1,0 +1,45 @@
+[10 fev. 4:19:47] CREATE:AutoLoot, item 268474546:High Grade Suede(1), player Henrique, Grazing Elder Buffalo
+[10 fev. 4:24:23] CREATE:AutoLoot, item 268474504:Blue Primeval Crystal(1), player Henrique, Deinonychus
+[10 fev. 5:23:37] CREATE:AutoLoot, item 268474159:Sealed Majestic Ring Gemstone(1), player Henrique, Ketra Orc Seer
+[10 fev. 5:24:01] CREATE:AutoLoot, item 268474160:Stone of Purity(1), player Henrique, Prophet's Aide
+[10 fev. 5:24:10] CREATE:AutoLoot, item 268474161:Animal Skin(4), player Henrique, Ketra Prophet
+[10 fev. 5:24:43] CREATE:AutoLoot, item 268474164:Sealed Majestic Leather Armor Fabric(1), player Henrique, Ketra Orc White Captain
+[10 fev. 5:24:50] CREATE:AutoLoot, item 268474165:Mold Glue(1), player Henrique, Ketra Orc Lieutenant
+[10 fev. 5:25:15] CREATE:AutoLoot, item 268474166:Deluxe Chest Key - Grade 8(1), player Henrique, Ketra Orc Medium
+[10 fev. 5:31:50] CREATE:Multisell[40005], item 268474212:Shining Bow - Focus(1), player Henrique, Prophet's Guard
+[10 fev. 5:32:14] CREATE:Multisell[40015], item 268474215:Shining Arrow(5000), player Henrique, Ketra Orc General
+[10 fev. 5:32:24] CREATE:AutoLoot, item 268474216:Leather(1), player Henrique, Ketra Orc General
+[10 fev. 5:36:05] CREATE:AutoLoot, item 268474225:Coarse Bone Powder(1), player Henrique, Prophet's Aide
+[10 fev. 5:36:07] CREATE:AutoLoot, item 268474227:Enria(1), player Henrique, Grazing Elder Kookaburra
+[10 fev. 6:02:48] CREATE:AutoLoot, item 268474293:Adamantite Nugget(1), player Henrique, Ketra Orc Grand Seer
+[10 fev. 6:06:55] CREATE:AutoLoot, item 268474307:Flaming Dragon Skull Piece(1), player Henrique, Ketra Orc Grand Seer
+[10 fev. 6:15:26] CREATE:AutoLoot, item 268474328:Steel(1), player Henrique, Ketra Orc Seer
+[10 fev. 6:19:13] DELETE:Destroy, item 268475265:+25 Tallum Blade*Dark Legion's Edge(0), PrevCount(1), player Henrique
+[10 fev. 6:19:13] DELETE:Destroy, item 268475263:Imperial Crusader Helmet(0), PrevCount(1), player Henrique
+[10 fev. 6:19:13] DELETE:Destroy, item 268475262:Imperial Crusader Boots(0), PrevCount(1), player Henrique
+[10 fev. 6:19:13] DELETE:Destroy, item 268475261:Imperial Crusader Gauntlets(0), PrevCount(1), player Henrique
+[10 fev. 6:19:13] DELETE:Destroy, item 268475260:Imperial Crusader Gaiters(0), PrevCount(1), player Henrique
+[10 fev. 6:19:13] DELETE:Destroy, item 268475259:Imperial Crusader Breastplate(0), PrevCount(1), player Henrique
+[10 fev. 6:19:13] DELETE:Destroy, item 268474595:Adena(0), PrevCount(85959025), player Henrique
+[10 fev. 6:19:13] DELETE:Destroy, item 268474212:Shining Bow - Focus(0), PrevCount(1), player Henrique
+[10 fev. 6:19:37] CREATE:Buy, item 268474350:Adena(2000000000), player Henrique
+[10 fev. 6:19:37] CREATE:Buy, item 268474351:Orion Adena(500), player Henrique
+[10 fev. 6:19:37] CREATE:Buy, item 268474352:Coin of Luck(500), player Henrique
+[10 fev. 6:19:51] CREATE:Multisell[40009], item 268474353:Dark Crystal Robe(1), player Henrique, player Henrique
+[10 fev. 6:19:51] CREATE:Multisell[40009], item 268474354:Dark Crystal Boots - Robe(1), player Henrique, player Henrique
+[10 fev. 6:19:51] CREATE:Multisell[40009], item 268474355:Dark Crystal Gloves - Robe(1), player Henrique, player Henrique
+[10 fev. 6:19:51] CREATE:Multisell[40009], item 268474356:Dark Crystal Helmet(1), player Henrique, player Henrique
+[10 fev. 6:19:57] CREATE:Multisell[40005], item 268474357:Arcana Mace - Acumen(1), player Henrique, player Henrique
+[10 fev. 6:20:05] CREATE:Multisell[40015], item 268474359:Blessed Spiritshot: S Grade(10000), player Henrique, player Henrique
+[10 fev. 6:20:12] CREATE:Multisell[40014], item 268474366:Spirit Ore(1500), player Henrique, player Henrique
+[10 fev. 6:20:17] CREATE:Multisell[40014], item 268474367:Soul Ore(1500), player Henrique, player Henrique
+[10 fev. 6:20:23] CREATE:Multisell[40013], item 268474368:Greater Healing Potion(2000), player Henrique, player Henrique
+[10 fev. 6:20:27] CREATE:Multisell[40013], item 268474373:Mana Potion(2000), player Henrique, player Henrique
+[10 fev. 6:20:30] CREATE:Multisell[40013], item 268474377:Greater CP Potion(1000), player Henrique, player Henrique
+[10 fev. 6:22:39] CREATE:AutoLoot, item 268474380:Thread(27), player Henrique, Grazing Windsus
+[10 fev. 6:22:43] CREATE:AutoLoot, item 268474381:Thons(1), player Henrique, Ketra Orc Lieutenant
+[10 fev. 6:22:53] CREATE:AutoLoot, item 268474382:Mold Glue(1), player Henrique, Ketra Orc Lieutenant
+[10 fev. 6:23:00] CREATE:AutoLoot, item 268474383:Spellbook - Mass Block Wind Walk(1), player Henrique, Ketra Orc Shaman
+[10 fev. 6:23:15] CREATE:AutoLoot, item 268474384:Spellbook - Mass Block Shield(1), player Henrique, Ketra Orc Shaman
+[10 fev. 6:23:20] CREATE:AutoLoot, item 268474385:Mithril Arrow(30), player Henrique, Ketra Orc Scout
+[10 fev. 6:23:24] CREATE:AutoLoot, item 268474386:Suede(1), player Henrique, Grazing Buffalo

@@ -1,0 +1,131 @@
+<html>
+<body>
+    <center>
+    <table>
+        <tr>
+            <td></td>
+            <td width=70>
+                <font color=LEVEL>AUTO FARM</font>
+            </td>
+            <td width=30>
+                <font color=%status_color%><a action="bypass -h custom_enableAutoFarm">%autofarm%</a></font>
+            </td>
+            <td>
+                <img src="L2UI_CH3.radar_target" width=8 height=8>
+                <img src="L2UI_CH3.radar_party" width=8 height=8>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+<img src="L2UI.SquareGray" width=310 height=1>
+<table width=300 border=0 cellspacing=3 cellpadding=1>
+    <tr>
+        <td width=5></td>
+        <td width=20 align=left>
+            <img src="L2UI_CH3.fishing_clockicon" width=16 height=16>
+        </td>
+        <td width=120 align=left>
+            Server Time: <font color="CC9933">%server_time%</font>
+        </td>
+        <td width=20 align=center>
+            <img src="L2UI_CH3.fishing_clockicon" width=16 height=16>
+        </td>
+        <td width=135 align=left>
+            AutoFarm Use: <font color="CC9933">%useautofarm_time%</font>
+        </td>
+    </tr>
+</table>
+<img src="L2UI.SquareGray" width=310 height=1>
+<table width=300 cellspacing="0" cellpadding="0" bgcolor="000000">
+<tr>
+<td width=5></td>
+<td width=100 valign="top" align="center"><font color="e6dcbe">Target Range:</font> </td>
+<td width=20 align=center><button action="bypass -h custom_radiusAutoFarm dec_radius" width=16 height=16 back=L2UI_CH3.prev1_down fore=L2UI_CH3.prev1></td>
+<td width=40 align=center><font color=CC9933>%radius%</font></td>
+<td width=20 align=center><button action="bypass -h custom_radiusAutoFarm inc_radius" width=16 height=16 back=L2UI_CH3.next1_down fore=L2UI_CH3.next1></td>
+</tr> 
+<tr>
+<td width=5></td>
+<td width=100 valign="top" align="center"><font color="e6dcbe">Heal Percent: </font></td>
+<td width=20 align=center><button action="bypass -h custom_healAutoFarm dec_heal" width=16 height=16 back=L2UI_CH3.prev1_down fore=L2UI_CH3.prev1></td>
+<td width=40 align=center><font color=CC9933>%heal%</font></td>
+<td width=20 align=center><button action="bypass -h custom_healAutoFarm inc_heal" width=16 height=16 back=L2UI_CH3.next1_down fore=L2UI_CH3.next1></td>
+</tr> 
+<tr>
+<td width=5></td>
+<td width=100 valign="top" align="center"><font color="e6dcbe">Shortcut Page: </font></td>
+<td width=20 align=center><button action="bypass -h custom_pageAutoFarm dec_page" width=16 height=16 back=L2UI_CH3.prev1_down fore=L2UI_CH3.prev1></td>
+<td width=40 align=center><font color=CC9933>%page%</font></td>
+<td width=20 align=center><button action="bypass -h custom_pageAutoFarm inc_page" width=16 height=16 back=L2UI_CH3.next1_down fore=L2UI_CH3.next1></td>
+</tr> 
+<tr>
+<td width=5></td>
+<td width=100 valign="top" align="center"><font color="e6dcbe">Mana Potion Percent: </font></td>
+<td width=20 align=center><button action="bypass -h custom_mpAutoFarm dec_mp_pot" width=16 height=16 back=L2UI_CH3.prev1_down fore=L2UI_CH3.prev1></td>
+<td width=40 align=center><font color=CC9933>%mpPotion%</font></td>
+<td width=20 align=center><button action="bypass -h custom_mpAutoFarm inc_mp_pot" width=16 height=16 back=L2UI_CH3.next1_down fore=L2UI_CH3.next1></td>
+</tr> 
+<tr>
+<td width=5></td>
+<td width=100 valign="top" align="center"><font color="e6dcbe">Healing Potion Percent: </font></td>
+<td width=20 align=center><button action="bypass -h custom_hpAutoFarm dec_hp_pot" width=16 height=16 back=L2UI_CH3.prev1_down fore=L2UI_CH3.prev1></td>
+<td width=40 align=center><font color=CC9933>%hpPotion%</font></td>
+<td width=20 align=center><button action="bypass -h custom_hpAutoFarm inc_hp_pot" width=16 height=16 back=L2UI_CH3.next1_down fore=L2UI_CH3.next1></td>
+</tr>    
+<tr>
+<td width=5></td>
+<td width=100 valign="top" align="center"><font color="e6dcbe">Summon Skill Chance: </font></td>
+<td width=20 align=center><button action="bypass -h custom_summonSkillAutoFarm dec_summonSkill" width=16 height=16 back=L2UI_CH3.prev1_down fore=L2UI_CH3.prev1></td>
+<td width=40 align=center><font color=CC9933>%summonSkill%</font></td>
+<td width=20 align=center><button action="bypass -h custom_summonSkillAutoFarm inc_summonSkill" width=16 height=16 back=L2UI_CH3.next1_down fore=L2UI_CH3.next1></td>
+</tr> 
+</table>
+
+<img src="L2UI.SquareGray" width=310 height=1>
+
+<table width=300 cellspacing="0" cellpadding="0" bgcolor="000000">
+<tr>
+<td width=20 align=left><font color="e6dcbe">Enable Summon attack support</font></td>
+<td width=30></td>
+<td width=5 align=left><button action="bypass -h custom_enableSummonAttack" %summonAtk% width="16" height="16"></td>
+</tr>
+<tr>
+<td width=50 align=left><font color="e6dcbe">Manner Mode, Anti-KS protection</font></td>
+<td width=20></td>
+<td width=10 align=left><button action="bypass -h custom_enableAntiKs" %antiKs% width="16" height="16"></td>
+</tr>
+<tr>
+<td width=50 align=left><font color="e6dcbe">Disable Auto Farm after losing all buffs</font></td>
+<td width=20></td>
+<td width=10 align=left><button action="bypass -h custom_enableBuffProtect" %noBuff% width="16" height="16"></td>
+</tr>
+<tr>
+    <td width=50 align=left><font color="e6dcbe">Pick-up Loot</font></td>
+    <td width=20></td>
+    <td width=10 align=left><button action="bypass -h custom_enableLoot" %loot% width="16" height="16"></td>
+</tr>
+<tr>
+    <td width=50 align=left><font color="e6dcbe">Auto Resting (Sit/Stand)</font></td>
+    <td width=20></td>
+    <td width=10 align=left><button action="bypass -h custom_enableRest" %rest% width="16" height="16"></td>
+</tr>
+</table>
+<img src="L2UI.SquareGray" width=300 height=1>
+<table bgcolor=000000 width="300" height="1">
+    <tr>
+    <td><center><font color="F42B00">Avoid specific monsters adding them to the blacklist</font></center></td>
+    </tr>
+</table>
+<img src="L2UI.SquareGray" width=300 height=1>
+<table width="100%" cellspacing="0" cellpadding="0" bgcolor="000000">
+        <tr>
+            <td><button value="Blacklist Target" action="bypass -h custom_ignoreMonster" width=134 height=21 back="L2UI_ch3.BigButton3_over" fore="L2UI_ch3.BigButton3"></td>
+            <td><button value="Unblacklist Target" action="bypass -h custom_activeMonster" width=134 height=21 back="L2UI_ch3.BigButton3_over" fore="L2UI_ch3.BigButton3"></td>
+        </tr>
+</table>
+<img src="L2UI.SquareGray" width=230 height=1>    
+<br>
+<button action="bypass -h custom_autofarm" value="Back" width=48 height=21 back="L2UI_ch3.smallbutton1_over" fore="L2UI_ch3.smallbutton1">
+</center>
+</body>
+</html>

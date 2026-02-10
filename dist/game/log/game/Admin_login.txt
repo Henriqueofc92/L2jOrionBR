@@ -1,0 +1,5 @@
+[2026.02.10 04:18:24]    >    Admi Login: Henrique AccessLevel: 1
+[2026.02.10 04:22:30]    >    Admi Login: Henrique AccessLevel: 1
+[2026.02.10 04:36:56]    >    Admi Login: Henrique AccessLevel: 1
+[2026.02.10 05:19:59]    >    Admi Login: Henrique AccessLevel: 1
+[2026.02.10 06:21:04]    >    Admi Login: Henrique AccessLevel: 1

@@ -1,0 +1,14 @@
+2026.02.10 04:36:16,697	INFO	3	l2jorion.login.LoginController	Cached 10 KeyPairs for RSA communication
+2026.02.10 04:36:16,828	INFO	3	l2jorion.login.LoginController	Stored 20 keys for Blowfish communication.
+2026.02.10 04:36:16,917	INFO	3	l2jorion.game.datatables.GameServerTable	Loaded 127 server names
+2026.02.10 04:36:17,245	INFO	3	l2jorion.game.datatables.GameServerTable	Loaded 1 registered Game Servers
+2026.02.10 04:36:17,324	INFO	3	l2jorion.game.datatables.GameServerTable	Cached 10 RSA keys for Game Server communication.
+2026.02.10 04:36:17,362	INFO	3	l2jorion.login.L2LoginServer	Listening for GameServers on 127.0.0.1:9014
+2026.02.10 04:36:17,364	INFO	3	l2jorion.login.L2LoginServer	Login Server ready on 127.0.0.1:2106
+2026.02.10 04:36:17,365	INFO	3	l2jorion.Config	Loaded 0 IP Bans
+2026.02.10 04:36:52,127	INFO	36	l2jorion.login.GameServerThread	Connected to gameserver: 1 Bartz
+2026.02.10 04:36:52,130	INFO	36	l2jorion.login.GameServerThread	InternalIP: 127.0.0.1
+2026.02.10 04:36:52,130	INFO	36	l2jorion.login.GameServerThread	ExternalIP: 127.0.0.1
+2026.02.10 04:38:37,669	INFO	36	l2jorion.login.GameServerThread	GameServerThread: Login terminated the connection
+2026.02.10 04:38:37,671	INFO	36	l2jorion.login.GameServerThread	Server: 1 Bartz is now set as disconnected
+2026.02.10 05:19:53,878	INFO	48	l2jorion.login.GameServerThread	Connected to gameserver: 1 Bartz

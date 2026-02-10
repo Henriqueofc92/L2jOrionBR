@@ -1,0 +1,473 @@
+﻿===================================================================
+#CHANGESET 1
+===================================================================
+[CORE & CONFIG]
+UPDATED - Imports corrections based on L2OFF information.
+ADDED - New test server system 1.05 (Closer to L2OFF, without newer client mods).
+
+===================================================================
+#CHANGESET 2
+===================================================================
+[CORE & GEO-ENGINE]
+RE-WORKED - Character movement in water (Fixed falling damage and hard dipping issues).
+UPDATED - Synchronization system between Client <-> Server.
+UPDATED - Character position update system.
+UPDATED - Geo-engine system.
+
+===================================================================
+#CHANGESET 3
+===================================================================
+[SYSTEMS]
+UPDATED - Class Master: Added level checking and heal config.
+
+[CORE & GEO-ENGINE]
+UPDATED - Geo-engine corrections for better performance.
+
+[FIXES]
+FIXED - Toggle Skill bug: Unable to shut down Lvl 1 toggle skill after learning Lvl 2 without restart.
+
+===================================================================
+#CHANGESET 4
+===================================================================
+[SYSTEMS & MECHANICS]
+RE-WORKED - Boats System: Fixed movement in/out, added L2OFF messages/routes.
+UPDATED - L2BoatAI, L2Vehicle stats, and client/server packets.
+
+===================================================================
+#CHANGESET 5
+===================================================================
+[SECURITY]
+RE-WORKED - File protection system: Users must be registered on forum and update `config/user.in`.
+
+===================================================================
+#CHANGESET 6
+===================================================================
+[AI & NPCS]
+RE-WORKED - Castle Siege Guards AI: Fixed issues causing lag in some castles.
+
+===================================================================
+#CHANGESET 7
+===================================================================
+[EVENTS]
+RE-WORKED - Faenor System: Added `medals.xml` and `valentines.xml`.
+
+[CORE & ENGINE]
+CLEANED - Python/Java engines reworked.
+REMOVED - Unnecessary libs: `bsh-2.0b6.jar`, `bsh-engine.jar`, `java-engine-1.8.jar`, `jython-engine-2.2.1.jar`.
+
+===================================================================
+#CHANGESET 8
+===================================================================
+[SYSTEMS]
+ADDED - Premium Account Teleport System (using `premium_goto` bypass).
+
+[FIXES]
+CORRECTED - Character movement issues while in attack mode.
+
+===================================================================
+#CHANGESET 9
+===================================================================
+[SYSTEMS & COMMANDS]
+RE-WORKED - `.boss` command: Added list by levels, death time, aggro, and map location.
+ADDED - Donate functions: Custom colors for name/title (Configurable in `L2jOrion.ini`).
+
+[AI & NPCS]
+FIXED - Queen Ant AI issues.
+
+===================================================================
+#CHANGESET 10
+===================================================================
+[SPAWNS & ZONES]
+FIXED - FOG mobs spawning in wrong locations.
+UPDATED - Seven Signs teleport locations to hunting zones.
+
+[CORE & PERFORMANCE]
+UPDATED - Knownlist system: Improved performance and decreased CPU usage.
+
+===================================================================
+#CHANGESET 11
+===================================================================
+[SYSTEMS]
+RE-WORKED - `.votereward` command: Reward per vote added.
+ADDED - New Top L2jbrasil support.
+UPDATED - Vote reward configs (Item ID, Min/Max amount).
+
+===================================================================
+#CHANGESET 12
+===================================================================
+[AI & NPCS]
+UPDATED - Mobs AI Knownlist: Faster reaction for faction-based mobs.
+
+[SYSTEMS]
+UPDATED - Powerpack system (Global GK, GM Shop, Buffer).
+ADDED - New Global GK: Towns, Noble, Catacombs, Necropolis, Special Zones.
+UPDATED - HTMLs unified for NPC and Community Board usage.
+
+===================================================================
+#CHANGESET 13
+===================================================================
+[CORE & ENGINE]
+UPDATED - Client <-> Server synchronization (Added `CoordSynchronize = 3` option).
+CLEANED - Code cleanup for performance.
+
+[SKILLS]
+FIXED - Skill "Lucky": Fixed Death Penalty logic for levels 1-9 (L2OFF).
+
+===================================================================
+#CHANGESET 14
+===================================================================
+[CORE & GEO-ENGINE]
+UPDATED - `MaxDriftRange` and `MaxRespawnRange`: Added geodata checking to prevent wall glitches.
+ADDED - New MMO Core system.
+RE-WORKED - Flood protection system (Better performance).
+
+[SECURITY]
+ADDED - Multisell protection for `.shop` (Anti-PHX).
+
+[FIXES]
+FIXED - 1000+ bugged creatures (Underground/Wrong Z-loc fixes).
+CLEANED - Non-default multisells.
+
+===================================================================
+#CHANGESET 15
+===================================================================
+[CORE & ENGINE]
+ADDED - New Geo-Engine (Improved performance).
+ADDED - New Logging system.
+ADDED - New Game Time Controller.
+ADDED - DeadLock system with auto-restart.
+UPDATED - Auto Save Manager.
+CLEANED - Unnecessary imports and configs.
+
+[SYSTEMS]
+ADDED - `.sellbuffs` and `.cancelsellbuffs` commands (Beta).
+UPDATED - Global Teleport: Option to turn off animation.
+RE-WORKED - Grand Bosses system: Added separate Fix Time configs.
+
+[FIXES]
+FIXED - Character heading/direction on spawn.
+FIXED - Missing town pets.
+
+===================================================================
+#CHANGESET 16
+===================================================================
+[SYSTEMS & EVENTS]
+RE-WORKED - Buffer System: Schemes support and improvements.
+RE-WORKED - Market System: `.market` command, offline support, search, mail notifications.
+UPDATED - Community Board: Fixed search, paging, clan management, region menu.
+UPDATED - Siege System.
+
+[BOSSES]
+UPDATED - Boss Benom: Drops and AI fixes.
+
+[FIXES]
+FIXED - Target bug for doors (Geo-engine related).
+CLEANED - Unused imports and configs.
+
+===================================================================
+#CHANGESET 17
+===================================================================
+[SYSTEMS]
+ADDED - Market Config: Custom currency support.
+ADDED - Premium buff time multiplier.
+ADDED - Random enchanted items drop system.
+ADDED - Custom Special Teleport config.
+ADDED - Seal Stones rates config for Premium.
+
+[GAMEPLAY & MECHANICS]
+CORRECTED - Creature walking speeds (L2OFF).
+CORRECTED - Pet skills aggro generation.
+CORRECTED - SP and EXP values for various creatures.
+RE-WORKED - Resurrection System (Siege flags/Crystals logic).
+
+[SKILLS]
+CORRECTED - Skills: Break Duress, Noblesse/Salvation stacking, Corpse Burst, Frost Bolt.
+FIXED - Earthquake (Olympiad fix).
+
+[QUESTS & BOSSES]
+RE-WORKED - Grand Bosses instances.
+RE-WORKED - Raid Boss Ice Fairy Sirra.
+FIXED - Alliance Ketra/Varka quest abortion logic.
+FIXED - Soul Crystals leveling (L2OFF).
+
+[FIXES]
+FIXED - Devastated Castle issues.
+FIXED - Castle Doors attackable logic.
+FIXED - Pet Stun return bug & Herb usage.
+
+===================================================================
+#CHANGESET 18
+===================================================================
+[CORE & ENGINE]
+ADDED - New Zones engine.
+ADDED - New Doors engine.
+ADDED - New Map Regions engine.
+UPDATED - Client Flood Protection.
+
+[DATA & SPAWNS]
+ADDED - Teleports: Oracle to Dimensional Rift.
+ADDED - NPCs: Fortress of the Dead & Wild Beast Reserve.
+CORRECTED - 7Signs Teleports (Closest town logic).
+CORRECTED - Catacomb/Necropolis spawn (Surface swim logic).
+
+[GAMEPLAY]
+CORRECTED - Casting and Attacking system (Closer to L2OFF).
+UPDATED - Skill chance formulas.
+UPDATED - Shift+Click function.
+
+[ADMIN]
+RE-WORKED - `//list_spawns` (Support for any ID/Name).
+UPDATED - Admin Menu HTMLs.
+
+===================================================================
+#CHANGESET 19
+===================================================================
+[SYSTEMS]
+ADDED - New Olympiad Engine.
+
+[CORE & ENGINE]
+RE-WORKED - AI Types structure.
+UPDATED - Geo-engine performance.
+UPDATED - Doors engine.
+CLEANED - Code re-formatting and cleanup.
+
+[SKILLS]
+CORRECTED - "Spoil" type skills (L2OFF).
+
+===================================================================
+#CHANGESET 20
+===================================================================
+[FIXES]
+FIXED - Skill: Backstab heading bug.
+FIXED - Skill Enchanter bug (Max level issue).
+FIXED - Olympiad Dual Box config.
+CORRECTED - Heroes Clan Rep points.
+
+[OPTIMIZATION]
+RE-WORKED - Movement engines.
+RE-WORKED - Skills enchanting system.
+CLEANED - Unnecessary code and imports.
+
+[ADDONS]
+ADDED - Vote reward support (L2Top.Gr, L2Top.Online).
+ADDED - Database table for immediate item delivery.
+
+===================================================================
+#CHANGESET 21
+===================================================================
+[FIXES]
+FIXED - Treasure Chest movement.
+FIXED - Over Hit issue.
+FIXED - Town War Event zone.
+FIXED - Quests: Path to Scavenger, Magical Power of Water.
+
+[SYSTEMS]
+ADDED - `.dressme` command.
+ADDED - `ShowNpcCrest` config.
+ADDED - `SiegeDelay` config (Default 14 days).
+
+[GAMEPLAY]
+CORRECTED - Monster decay time (L2OFF).
+REWORKED - Quest engine (L2OFF).
+
+===================================================================
+#CHANGESET 22
+===================================================================
+[SYSTEMS & EVENTS]
+ADDED - Tournament Event (Beta).
+ADDED - Random PvP Zone (Timer/Auto-flag).
+ADDED - Achievement System (50+ achievements).
+ADDED - Warehouse Deposit Price config.
+ADDED - New DressMe configs (Currency, Premium only).
+
+[FIXES]
+CORRECTED - Olympiad damage counting.
+CORRECTED - Geo-Engine movement.
+CORRECTED - Siegeable Clan Halls buy lists.
+FIXED - Buffer UI (50+ buffs issue).
+FIXED - Wrong target bug on multi-attack.
+FIXED - Attack speed bug (>1.5k).
+
+===================================================================
+#CHANGESET 23
+===================================================================
+[GAMEPLAY & MECHANICS]
+RE-WORKED - Attacking System & Bow mechanics (L2OFF).
+RE-WORKED - NPC Instances (L2OFF).
+CORRECTED - Character movement (Water/Pathfinding).
+CORRECTED - Pets Food and Run/Walk.
+CORRECTED - 7Signs Teleports (Moved to DB, Exploit fixed).
+CORRECTED - Skills on attack (L2OFF).
+CORRECTED - `/unstuck` command.
+
+[SYSTEMS]
+ADDED - Warehouse Deposit Item Protection.
+ADDED - HTML Encoding/Decoding system.
+ADDED - New DressMe System (Weapon, Armor, Hair, Face).
+CORRECTED - Buffer/GK/Shop Community Board integration.
+ADDED - Cursed Weapon teleport price config.
+ADDED - New Exclude function.
+ADDED - Captcha Punishment system.
+
+[SPAWNS & ZONES]
+CORRECTED - Multiple spawns (Rune, Core, Cemetery, Swamp of Screams, Wasteland, Ivory Tower, VoS).
+CORRECTED - Random PvP Zone visibility logic.
+CORRECTED - Raid Bosses (Sejarr, Core).
+
+[FIXES]
+FIXED - Clan level up achievement.
+FIXED - Skill: Provoke (Guards).
+FIXED - Premium Buffs time.
+FIXED - Clan Reputation buying bug.
+
+===================================================================
+#CHANGESET 24
+===================================================================
+[AI & MOBS]
+ADDED - AI: Help request logic (Swamp of Screams, Orc Barracks, Abandoned Camp, Lizardmen).
+ADDED - AI: Timak Orcs and Cats Eye Bandit.
+ADDED - Missing Minions and Drops (Ice Queen, Freya's Servant).
+
+[QUESTS]
+ADDED - Quest: "Kamael: A window to the Future".
+CORRECTED - Party Quest Item drop logic for multiple quests.
+FIXED - Strider Quest reworked (L2OFF).
+
+[SKILLS & MECHANICS]
+FIXED - Apella Sets Debuffs (L2OFF).
+FIXED - Skills: Vortex damage logic.
+FIXED - Skill: Lure.
+FIXED - Anchor/Paralyze movement bug.
+CORRECTED - Soul Crystal absorb types/chances.
+
+[FIXES]
+FIXED - Party Range check for Quests/Soul Crystals.
+FIXED - Scroll of Escape (Race forbidden zones).
+FIXED - Seven Signs Dawn/Dusk flags visibility.
+
+===================================================================
+#CHANGESET 25
+===================================================================
+[SYSTEMS & BOTS]
+ADDED - Bots Engine (Newbie, Farm, Walker, PvP).
+ADDED - Squash Event.
+UPDATED - Tournament Event (1x1 support, auto-time).
+UPDATED - Random PvP Zone (Instance system, Fake names).
+UPDATED - DressMe config.
+
+[ADMIN]
+ADDED - Commands `//loc`, `//loc2`, `//loc3`, `//loc4` (Save to file).
+
+[GAMEPLAY]
+CORRECTED - Attack/Auto-attack in PvP mode (L2OFF).
+UPDATED - Drop/Spoil shift-click info.
+
+[FIXES]
+FIXED - Quest "Eye of Argos" range issue.
+CORRECTED - Spawns (Valley of Saints, Partisan's Hideaway).
+
+===================================================================
+#CHANGESET 26
+===================================================================
+[SECURITY]
+IMPROVED - Server pack security (Exploits/Cheats protection Part 2).
+MOVED - Console loggers to file (Clean console).
+
+[SYSTEMS]
+UPDATED - Bots Engine (Exclude targets config, Town stuck fix).
+UPDATED - Admin Menu (Online list, Drop list pages).
+RENAMED - `market_icons` table to `item_icons`.
+
+[FIXES]
+UPDATED - Raid Curse and Strider Quest mobs.
+FIXED - Party Quests (Ketra/Varka/Precious Soul) logic.
+FIXED - Clan Hall weekly payments.
+FIXED - Castle Siege running time save.
+FIXED - DressMe hair skin persistence.
+
+===================================================================
+#CHANGESET 27
+===================================================================
+[FIXES]
+FIXED - Premium System exploit.
+FIXED - Clan Hall payment issue.
+FIXED - Skill: Snipe range bug.
+FIXED - Skill: Instant Jump & Get Player.
+FIXED - Soulshots activating issues (L2OFF).
+FIXED - Toggle skills deactivation on attack.
+FIXED - Weapon Pole soulshot count.
+FIXED - Bot flood error (Auto learn).
+
+[OPTIMIZATION]
+IMPROVED - Server security (Part 3).
+IMPROVED - Performance and stability (Part 2).
+
+[DATA]
+CORRECTED - Seven Signs Festival HTMLs.
+UPDATED - Online list (Show Real Players option).
+
+===================================================================
+#CHANGESET 28
+===================================================================
+[SYSTEMS]
+ADDED - Autofarm Bot Mod.
+
+[GAMEPLAY]
+CORRECTED - Soul Crystal chance (Anakim/Lilith).
+CORRECTED - NPC Innocentin subclasses.
+CORRECTED - Skills list sorting.
+
+[FIXES]
+FIXED - Quest active list bug.
+FIXED - Toggle skills weapon change bug.
+
+[OPTIMIZATION]
+IMPROVED - Server security (Part 4).
+IMPROVED - Performance and stability (Part 3).
+
+===================================================================
+#CHANGESET 29
+===================================================================
+[CORE & ENGINE]
+UPDATED - Database Connector: MariaDB is now default.
+REMOVED - Connection Pools: `c3p0`, `commons-dbcp`, `commons-pool`.
+REMOVED - Libs: `commons-io-2.0.1.jar`, `ecj-4.4.2.jar`.
+REMOVED - License file.
+
+[DATA & XML]
+MOVED TO XML - AccessLevels, AdminCommands, StaticObjects, Teleports, ArmorSets, ExtractableItems, NewbieBuffs, SummonItems, Henna, Fish, WalkerRoutes.
+
+[DATA & XML]
+MOVED - recipes to xml.
+MOVED - autoChat to xml.
+MOVED - seeds to xml.
+
+===================================================================
+#CHANGESET 30
+===================================================================
+[CORE ENGINE & FIXES]
+UPDATED - Source Engine upgraded to Java 21.
+REMOVED - Javolution library dependency (Code modernization).
+REMOVED - Strix Guard system.
+CLEANED - Fixed project dependencies and warnings (Source cleanup).
+FIXED - Visual Bug: Weapon remaining on character hand after unequip (RequestUnEquipItem reworked).
+FIXED - AugmentationData: Rewritten in Java 21 with dynamic XML loading (Fixed "missing file" errors).
+FIXED - Database: Cleaned invalid spawn data (NPC ID 0 error resolved).
+FIXED - Critical Exploit: Full Armor (e.g., Draconic) having 100% Enchant success rate.
+FIXED - Config Limit: Crystal Scrolls ignoring global Max Enchant limits.
+
+[SKILLS & MECHANICS]
+FIXED - Skill Double Cast: Added strict server-side checks (Casting State & Reuse Delay) to prevent skill spamming exploits.
+FIXED - Ghost Casting: Implemented 500ms minimum cast time limit to prevent animation glitch on high-speed casting (Retail-like logic).
+REWORKED - Formulas: Complete overhaul of Physical, Magic, and Blow calculation methods.
+IMPROVED - Blow Success: Implemented precise positioning logic (Back: 2x, Side: 1.5x, Front: 1x) and added support for BLOW_RATE stats.
+IMPROVED - Physical Damage: Optimized calcPhysDam structure, fixed isPvP logic, and cleaned up obsolete stats references.
+IMPROVED - Magic Damage: Added Level Penalty system (Anti-Exploit vs High Level Mobs) and Retail-like Random Damage Variance (+/- 3%).
+REWORKED - Instant Jump: Added GeoData check (Anti-Wall), Evasion logic, and proper Effect application.
+
+[SYSTEMS EVENTS & XML]
+ADDED - New Dungeon Event system structure and HTMLs.
+ADDED - New Party Zone Event system structure and HTMLs.
+IMPLEMENTED - New Auto Farm V2 system improvements.
+REMOVED - Old Orion Auto Farm system.
+MOVED - CharTemplate to XML.
