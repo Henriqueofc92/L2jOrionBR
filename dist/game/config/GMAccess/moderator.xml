@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<list>
+	<!-- Moderator - Chat moderation only -->
+	<!-- Add PlayerID to assign this profile: <PlayerID set="12345"/> -->
+	<char>
+		<!-- Access Level Properties -->
+		<AccessLevel set="5"/>
+		<LevelName set="Moderator"/>
+		<NameColor set="0000FF"/>
+		<TitleColor set="77FFFF"/>
+		<UseNameColor set="true"/>
+		<UseTitleColor set="false"/>
+		<GiveDamage set="true"/>
+		<TakeAggro set="true"/>
+		<GainExp set="true"/>
+		<CanDisableGmStatus set="true"/>
+		<!-- Core GM -->
+		<IsGM set="true"/>
+		<CanUseGMCommand set="true"/>
+		<!-- Permissions -->
+		<CanBanChat set="true"/>
+		<CanUnBanChat set="true"/>
+	</char>
+</list>

@@ -777,6 +777,10 @@ public class NpcTable
 		{
 			LOG.warn("NPCTable: Error reading NPC AI Data: " + e.getMessage(), e);
 		}
+		finally
+		{
+			CloseUtil.close(con);
+		}
 	}
 	
 	public void reloadNpc(final int id)

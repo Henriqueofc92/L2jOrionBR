@@ -30,7 +30,7 @@ import l2jorion.game.network.serverpackets.CreatureSay;
 import l2jorion.game.network.serverpackets.Earthquake;
 import l2jorion.game.network.serverpackets.ExShowScreenMessage;
 import l2jorion.game.network.serverpackets.MagicSkillCanceld;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcInfo;
 import l2jorion.game.network.serverpackets.PlaySound;
 import l2jorion.game.network.serverpackets.SocialAction;
@@ -1585,7 +1585,7 @@ public class Frintezza extends Quest implements Runnable
 		else if (event.equalsIgnoreCase("camera_14"))
 		{
 			_Zone.broadcastPacket(new SpecialCamera(frintezza.getObjectId(), 120, 180, 45, 1500, 10000));
-			_Zone.broadcastPacket(new MagicSkillUser(frintezza, frintezza, 5006, 1, 34000, 0));
+			_Zone.broadcastPacket(new MagicSkillUse(frintezza, frintezza, 5006, 1, 34000, 0));
 			startQuestTimer("camera_16", 1500, frintezza, null);
 		}
 		else if (event.equalsIgnoreCase("camera_16"))
@@ -1606,7 +1606,7 @@ public class Frintezza extends Quest implements Runnable
 		else if (event.equalsIgnoreCase("camera_18b"))
 		{
 			_Zone.broadcastPacket(new SpecialCamera(_overheadDummy.getObjectId(), 600, 180, -25, 0, 10000));
-			_Zone.broadcastPacket(new MagicSkillUser(_scarletDummy, _overheadDummy, 5004, 1, 5800, 0));
+			_Zone.broadcastPacket(new MagicSkillUse(_scarletDummy, _overheadDummy, 5004, 1, 5800, 0));
 			
 			weakScarlet = (L2GrandBossInstance) addSpawn(SCARLET1, 174232, -88020, -5110, 16384, false, 0);
 			weakScarlet.setIsInvul(true);
@@ -1809,7 +1809,7 @@ public class Frintezza extends Quest implements Runnable
 		}
 		else if (event.equalsIgnoreCase("morph_07"))
 		{
-			_Zone.broadcastPacket(new MagicSkillUser(frintezza, frintezza, 5006, 1, 34000, 0));
+			_Zone.broadcastPacket(new MagicSkillUse(frintezza, frintezza, 5006, 1, 34000, 0));
 			_Zone.broadcastPacket(new SpecialCamera(frintezza.getObjectId(), 500, 70, 15, 3000, 10000));
 			startQuestTimer("morph_08", 3000, frintezza, null);
 		}
@@ -1943,21 +1943,21 @@ public class Frintezza extends Quest implements Runnable
 				if (_OnSong == 1 && _ThirdMorph == 1 && strongScarlet.getCurrentHp() < strongScarlet.getMaxHp() * 0.6 && Rnd.get(100) < 80)
 				{
 					_Zone.broadcastPacket(new SocialAction(frintezza.getObjectId(), 4));
-					_Zone.broadcastPacket(new MagicSkillUser(frintezza, frintezza, 5007, 1, 32000, 0));
+					_Zone.broadcastPacket(new MagicSkillUse(frintezza, frintezza, 5007, 1, 32000, 0));
 					startQuestTimer("songs_effect", 5000, frintezza, null);
 					startQuestTimer("songs_play", 32000 + Rnd.get(10000), frintezza, null);
 				}
 				else if (_OnSong == 2 || _OnSong == 3)
 				{
 					_Zone.broadcastPacket(new SocialAction(frintezza.getObjectId(), 4));
-					_Zone.broadcastPacket(new MagicSkillUser(frintezza, frintezza, 5007, _OnSong, 32000, 0));
+					_Zone.broadcastPacket(new MagicSkillUse(frintezza, frintezza, 5007, _OnSong, 32000, 0));
 					startQuestTimer("songs_effect", 5000, frintezza, null);
 					startQuestTimer("songs_play", 32000 + Rnd.get(10000), frintezza, null);
 				}
 				else if (_OnSong == 4 && _SecondMorph == 1)
 				{
 					_Zone.broadcastPacket(new SocialAction(frintezza.getObjectId(), 4));
-					_Zone.broadcastPacket(new MagicSkillUser(frintezza, frintezza, 5007, 4, 31000, 0));
+					_Zone.broadcastPacket(new MagicSkillUse(frintezza, frintezza, 5007, 4, 31000, 0));
 					startQuestTimer("songs_effect", 5000, frintezza, null);
 					startQuestTimer("songs_play", 31000 + Rnd.get(10000), frintezza, null);
 				}
@@ -1965,7 +1965,7 @@ public class Frintezza extends Quest implements Runnable
 				{
 					_Abnormal = 1;
 					_Zone.broadcastPacket(new SocialAction(frintezza.getObjectId(), 4));
-					_Zone.broadcastPacket(new MagicSkillUser(frintezza, frintezza, 5007, 5, 35000, 0));
+					_Zone.broadcastPacket(new MagicSkillUse(frintezza, frintezza, 5007, 5, 35000, 0));
 					startQuestTimer("songs_effect", 5000, frintezza, null);
 					startQuestTimer("songs_play", 35000 + Rnd.get(10000), frintezza, null);
 				}

@@ -551,4 +551,9 @@
 	<adm_cmd adminCommand="admin_setinstance" accessLevel="1"/>
 	<adm_cmd adminCommand="admin_ghoston" accessLevel="1"/>
 	<adm_cmd adminCommand="admin_ghostoff" accessLevel="1"/>
+
+	<!-- Section: GMAccess Management -->
+	<adm_cmd adminCommand="admin_gmaccess" accessLevel="1"/>
+	<adm_cmd adminCommand="admin_gmaccess_list" accessLevel="1"/>
+	<adm_cmd adminCommand="admin_gmaccess_info" accessLevel="1"/>
 </list>

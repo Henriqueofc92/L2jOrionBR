@@ -1,0 +1,149 @@
+package l2jorion.game.data.quests;
+
+import l2jorion.game.model.actor.instance.L2NpcInstance;
+import l2jorion.game.model.actor.instance.L2PcInstance;
+import l2jorion.game.model.quest.Quest;
+import l2jorion.game.model.quest.QuestState;
+import l2jorion.util.random.Rnd;
+
+public class Q601_WatchingEyes extends Quest
+{
+	private static final String qn = "Q601_WatchingEyes";
+	
+	// Items
+	private static final int ProofOfAvenger = 7188;
+	
+	// Rewards
+	private static final int[][] REWARDS =
+	{
+		{
+			6699,
+			90000,
+			19
+		},
+		{
+			6698,
+			80000,
+			39
+		},
+		{
+			6700,
+			40000,
+			49
+		},
+		{
+			0,
+			230000,
+			99
+		}
+	};
+	
+	public Q601_WatchingEyes()
+	{
+		super(601, qn, "Watching Eyes");
+		
+		setItemsIds(ProofOfAvenger);
+		
+		addStartNpc(31683); // Eye of Argos
+		addTalkId(31683);
+		
+		addKillId(21306, 21308, 21309, 21310, 21311);
+	}
+	
+	@Override
+	public String onAdvEvent(String event, L2NpcInstance npc, L2PcInstance player)
+	{
+		String htmltext = event;
+		QuestState st = player.getQuestState(qn);
+		if (st == null)
+			return htmltext;
+		
+		if (event.equalsIgnoreCase("31683-03.htm"))
+		{
+			if (player.getLevel() < 71)
+			{
+				htmltext = "31683-02.htm";
+				st.exitQuest(true);
+			}
+			else
+			{
+				st.set("cond", "1");
+				st.setState(STATE_STARTED);
+				st.playSound(QuestState.SOUND_ACCEPT);
+			}
+		}
+		else if (event.equalsIgnoreCase("31683-07.htm"))
+		{
+			st.takeItems(ProofOfAvenger, -1);
+			
+			final int random = Rnd.get(100);
+			for (int[] element : REWARDS)
+			{
+				if (random <= element[2])
+				{
+					st.rewardItems(57, element[1]);
+					
+					int itemId = element[0];
+					if (itemId != 0)
+					{
+						st.giveItems(itemId, 5);
+						st.rewardExpAndSp(120000, 10000);
+					}
+					break;
+				}
+			}
+			st.playSound(QuestState.SOUND_FINISH);
+			st.exitQuest(true);
+		}
+		
+		return htmltext;
+	}
+	
+	@Override
+	public String onTalk(L2NpcInstance npc, L2PcInstance player)
+	{
+		String htmltext = getNoQuestMsg();
+		QuestState st = player.getQuestState(qn);
+		if (st == null)
+			return htmltext;
+		
+		switch (st.getStateByte())
+		{
+			case STATE_CREATED:
+				htmltext = "31683-01.htm";
+				break;
+			
+			case STATE_STARTED:
+				int cond = st.getInt("cond");
+				if (cond == 1)
+				{
+					if (st.hasQuestItems(ProofOfAvenger))
+						htmltext = "31683-05.htm";
+					else
+						htmltext = "31683-04.htm";
+				}
+				else if (cond == 2)
+					htmltext = "31683-06.htm";
+				break;
+		}
+		return htmltext;
+	}
+	
+	@Override
+	public String onKill(L2NpcInstance npc, L2PcInstance player, boolean isPet)
+	{
+		QuestState st = getRandomPartyMember(player, npc, "cond", "1");
+		if (st == null)
+			return null;
+				
+		if (st.dropItems(ProofOfAvenger, 1, 100, 500000))
+			st.set("cond", "2");
+		
+		return null;
+	}
+	
+	public static void main(String[] args)
+	{
+		new Q601_WatchingEyes();
+	}
+}

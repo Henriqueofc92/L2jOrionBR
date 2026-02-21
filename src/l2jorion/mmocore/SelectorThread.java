@@ -575,6 +575,7 @@ public final class SelectorThread<T extends MMOClient<?>> extends Thread
 		sp._client = client;
 		sp.write();
 		sp._buf = null;
+		sp._client = null;
 		
 		int dataSize = WRITE_BUFFER.position() - dataPos;
 		WRITE_BUFFER.position(dataPos);

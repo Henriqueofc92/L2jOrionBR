@@ -31,7 +31,7 @@ import l2jorion.game.model.actor.instance.L2NpcInstance;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.quest.Quest;
 import l2jorion.game.model.spawn.L2Spawn;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SpecialCamera;
 import l2jorion.game.templates.L2NpcTemplate;
 import l2jorion.game.templates.StatsSet;
@@ -1313,7 +1313,7 @@ public class VanHalter extends Quest implements Runnable
 				if (pc.getFirstEffect(bleed) == null)
 				{
 					bleed.getEffects(tr, pc, false, false, false);
-					tr.broadcastPacket(new MagicSkillUser(tr, pc, bleed.getId(), 12, 1, 1));
+					tr.broadcastPacket(new MagicSkillUse(tr, pc, bleed.getId(), 12, 1, 1));
 				}
 				
 				bpc.add(pc);

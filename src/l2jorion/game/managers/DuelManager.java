@@ -150,7 +150,10 @@ public class DuelManager
 			return;
 		}
 		Duel duel = getDuel(player.getDuelId());
-		duel.doSurrender(player);
+		if (duel != null)
+		{
+			duel.doSurrender(player);
+		}
 		duel = null;
 	}
 	

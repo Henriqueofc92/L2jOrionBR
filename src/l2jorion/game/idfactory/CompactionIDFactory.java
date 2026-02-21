@@ -38,7 +38,6 @@ import java.sql.SQLException;
 import l2jorion.Config;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
-import l2jorion.util.CloseUtil;
 import l2jorion.util.database.L2DatabaseFactory;
 
 public class CompactionIDFactory extends IdFactory
@@ -55,31 +54,21 @@ public class CompactionIDFactory extends IdFactory
 		_curOID = FIRST_OID;
 		_freeSize = 0;
 		
-		Connection con = null;
-		try
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			con = L2DatabaseFactory.getInstance().getConnection();
-			
 			final int[] tmp_obj_ids = extractUsedObjectIDTable();
-			
 			int N = tmp_obj_ids.length;
 			for (int idx = 0; idx < N; idx++)
 			{
 				N = insertUntil(tmp_obj_ids, idx, N, con);
 			}
 			_curOID++;
-			
 			LOG.info("IdFactory: Next usable Object ID is: " + _curOID);
-			
 			_initialized = true;
 		}
 		catch (final Exception e1)
 		{
 			LOG.error("ID Factory could not be initialized correctly", e1);
-		}
-		finally
-		{
-			CloseUtil.close(con);
 		}
 	}
 	
@@ -97,18 +86,18 @@ public class CompactionIDFactory extends IdFactory
 		{
 			for (final String check : ID_CHECKS)
 			{
-				final PreparedStatement ps = con.prepareStatement(check);
-				ps.setInt(1, _curOID);
-				ps.setInt(2, id);
-				final ResultSet rs = ps.executeQuery();
-				while (rs.next())
+				try (PreparedStatement ps = con.prepareStatement(check);
+					ResultSet rs = ps.executeQuery())
 				{
-					final int badId = rs.getInt(1);
-					LOG.warn("Bad ID " + badId + " in DB found by: " + check);
-					throw new RuntimeException();
+					ps.setInt(1, _curOID);
+					ps.setInt(2, id);
+					while (rs.next())
+					{
+						final int badId = rs.getInt(1);
+						LOG.warn("Bad ID " + badId + " in DB found by: " + check);
+						throw new RuntimeException();
+					}
 				}
-				rs.close();
-				ps.close();
 			}
 		}
 		
@@ -123,11 +112,12 @@ public class CompactionIDFactory extends IdFactory
 			LOG.info("Compacting DB object ID=" + id + " into " + (_curOID));
 			for (final String update : ID_UPDATES)
 			{
-				final PreparedStatement ps = con.prepareStatement(update);
-				ps.setInt(1, _curOID);
-				ps.setInt(2, id);
-				ps.execute();
-				ps.close();
+				try (PreparedStatement ps = con.prepareStatement(update))
+				{
+					ps.setInt(1, _curOID);
+					ps.setInt(2, id);
+					ps.execute();
+				}
 			}
 			_curOID++;
 		}

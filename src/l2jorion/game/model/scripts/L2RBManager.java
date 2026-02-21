@@ -20,7 +20,7 @@ import l2jorion.Config;
 import l2jorion.game.ai.CtrlIntention;
 import l2jorion.game.controllers.GameTimeController;
 import l2jorion.game.model.actor.instance.L2PcInstance;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SetupGauge;
 import l2jorion.game.thread.ThreadPoolManager;
 import l2jorion.util.random.Rnd;
@@ -40,7 +40,7 @@ public class L2RBManager
 		player.setTarget(player);
 		player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
-		final MagicSkillUser msk = new MagicSkillUser(player, 361, 1, unstuckTimer, 0);
+		final MagicSkillUse msk = new MagicSkillUse(player, 361, 1, unstuckTimer, 0);
 		player.broadcastPacket(msk);
 		final SetupGauge sg = new SetupGauge(0, unstuckTimer);
 		player.sendPacket(sg);
@@ -187,7 +187,7 @@ public class L2RBManager
 		player.setTarget(player);
 		player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
-		final MagicSkillUser msk = new MagicSkillUser(player, 361, 1, unstuckTimer, 0);
+		final MagicSkillUse msk = new MagicSkillUse(player, 361, 1, unstuckTimer, 0);
 		player.broadcastPacket(msk);
 		final SetupGauge sg = new SetupGauge(0, unstuckTimer);
 		player.sendPacket(sg);
@@ -288,7 +288,7 @@ public class L2RBManager
 		player.setTarget(player);
 		player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
-		final MagicSkillUser msk = new MagicSkillUser(player, 361, 1, unstuckTimer, 0);
+		final MagicSkillUse msk = new MagicSkillUse(player, 361, 1, unstuckTimer, 0);
 		player.broadcastPacket(msk);
 		final SetupGauge sg = new SetupGauge(0, unstuckTimer);
 		player.sendPacket(sg);
@@ -408,7 +408,7 @@ public class L2RBManager
 		player.setTarget(player);
 		player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
-		final MagicSkillUser msk = new MagicSkillUser(player, 361, 1, unstuckTimer, 0);
+		final MagicSkillUse msk = new MagicSkillUse(player, 361, 1, unstuckTimer, 0);
 		player.broadcastPacket(msk);
 		final SetupGauge sg = new SetupGauge(0, unstuckTimer);
 		player.sendPacket(sg);
@@ -520,7 +520,7 @@ public class L2RBManager
 		player.setTarget(player);
 		player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
-		final MagicSkillUser msk = new MagicSkillUser(player, 361, 1, unstuckTimer, 0);
+		final MagicSkillUse msk = new MagicSkillUse(player, 361, 1, unstuckTimer, 0);
 		player.broadcastPacket(msk);
 		final SetupGauge sg = new SetupGauge(0, unstuckTimer);
 		player.sendPacket(sg);
@@ -612,7 +612,7 @@ public class L2RBManager
 		player.setTarget(player);
 		player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
-		final MagicSkillUser msk = new MagicSkillUser(player, 361, 1, unstuckTimer, 0);
+		final MagicSkillUse msk = new MagicSkillUse(player, 361, 1, unstuckTimer, 0);
 		player.broadcastPacket(msk);
 		final SetupGauge sg = new SetupGauge(0, unstuckTimer);
 		player.sendPacket(sg);
@@ -728,7 +728,7 @@ public class L2RBManager
 		player.setTarget(player);
 		player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
-		final MagicSkillUser msk = new MagicSkillUser(player, 361, 1, unstuckTimer, 0);
+		final MagicSkillUse msk = new MagicSkillUse(player, 361, 1, unstuckTimer, 0);
 		player.broadcastPacket(msk);
 		final SetupGauge sg = new SetupGauge(0, unstuckTimer);
 		player.sendPacket(sg);

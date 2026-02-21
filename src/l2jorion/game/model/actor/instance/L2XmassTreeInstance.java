@@ -25,7 +25,7 @@ import l2jorion.game.datatables.SkillTable;
 import l2jorion.game.model.L2Character;
 import l2jorion.game.model.L2Object;
 import l2jorion.game.model.L2Skill;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.templates.L2NpcTemplate;
 import l2jorion.game.thread.ThreadPoolManager;
 import l2jorion.util.random.Rnd;
@@ -62,7 +62,7 @@ public class L2XmassTreeInstance extends L2NpcInstance
 				setTarget(player);
 				doCast(skill);
 				
-				MagicSkillUser msu = new MagicSkillUser(_caster, player, skill.getId(), 1, skill.getHitTime(), 0);
+				MagicSkillUse msu = new MagicSkillUse(_caster, player, skill.getId(), 1, skill.getHitTime(), 0);
 				broadcastPacket(msu);
 				return true;
 			}

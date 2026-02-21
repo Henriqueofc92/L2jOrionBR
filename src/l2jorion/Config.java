@@ -37,7 +37,6 @@ public final class Config
 	
 	public static final String EOL = System.lineSeparator();
 	
-	public static boolean EVERYBODY_HAS_ADMIN_RIGHTS;
 	public static boolean SHOW_GM_LOGIN;
 	public static boolean GM_STARTUP_INVISIBLE;
 	public static boolean GM_SPECIAL_EFFECT;
@@ -63,7 +62,6 @@ public final class Config
 			AccessSettings.load(is);
 			is.close();
 			
-			EVERYBODY_HAS_ADMIN_RIGHTS = Boolean.parseBoolean(AccessSettings.getProperty("EverybodyHasAdminRights", "false"));
 			GM_STARTUP_AUTO_LIST = Boolean.parseBoolean(AccessSettings.getProperty("GMStartupAutoList", "true"));
 			GM_ADMIN_MENU_STYLE = AccessSettings.getProperty("GMAdminMenuStyle", "modern");
 			GM_HERO_AURA = Boolean.parseBoolean(AccessSettings.getProperty("GMHeroAura", "false"));
@@ -1954,6 +1952,9 @@ public final class Config
 		}
 	}
 	
+	public static boolean TM_EVENT_ENABLED;
+	public static String[] TM_START_TIMES;
+	public static int TM_EVENT_DURATION;
 	public static String TM_NAME;
 	public static String TM_DESC;
 	public static String TM_JOIN_LOC;
@@ -2006,6 +2007,10 @@ public final class Config
 			InputStream is = new FileInputStream(new File(EVENT_TOURNAMENT));
 			TournamentSettings.load(is);
 			is.close();
+			
+			TM_EVENT_ENABLED = Boolean.parseBoolean(TournamentSettings.getProperty("TournamentEventEnabled", "False"));
+			TM_START_TIMES = TournamentSettings.getProperty("TournamentStartTimes", "10:00;14:00;19:00;22:00;02:41").split(";");
+			TM_EVENT_DURATION = Integer.parseInt(TournamentSettings.getProperty("TournamentDurationMinutes", "25"));
 			
 			TM_NAME = TournamentSettings.getProperty("TournamentName", "Tournament");
 			TM_DESC = TournamentSettings.getProperty("TournamentDescription", "Tournament");
@@ -2132,41 +2137,6 @@ public final class Config
 		{
 			e.printStackTrace();
 			throw new Error("Failed to Load " + EVENT_PZ + " File.");
-		}
-	}
-	
-	public static boolean REBIRTH_ENABLE;
-	public static String[] REBIRTH_ITEM_PRICE;
-	public static String[] REBIRTH_MAGE_SKILL;
-	public static String[] REBIRTH_FIGHTER_SKILL;
-	public static int REBIRTH_MIN_LEVEL;
-	public static int REBIRTH_MAX;
-	public static int REBIRTH_RETURN_TO_LEVEL;
-	
-	public static void loadREBIRTHConfig()
-	{
-		final String EVENT_REBIRTH = ConfigLoader.EVENT_REBIRTH_FILE;
-		
-		try
-		{
-			Properties REBIRTHSettings = new Properties();
-			InputStream is = new FileInputStream(new File(EVENT_REBIRTH));
-			REBIRTHSettings.load(is);
-			is.close();
-			
-			REBIRTH_ENABLE = Boolean.parseBoolean(REBIRTHSettings.getProperty("REBIRTH_ENABLE", "false"));
-			REBIRTH_MIN_LEVEL = Integer.parseInt(REBIRTHSettings.getProperty("REBIRTH_MIN_LEVEL", "80"));
-			REBIRTH_MAX = Integer.parseInt(REBIRTHSettings.getProperty("REBIRTH_MAX", "3"));
-			REBIRTH_RETURN_TO_LEVEL = Integer.parseInt(REBIRTHSettings.getProperty("REBIRTH_RETURN_TO_LEVEL", "1"));
-			
-			REBIRTH_ITEM_PRICE = REBIRTHSettings.getProperty("REBIRTH_ITEM_PRICE", "").split(";");
-			REBIRTH_MAGE_SKILL = REBIRTHSettings.getProperty("REBIRTH_MAGE_SKILL", "").split(";");
-			REBIRTH_FIGHTER_SKILL = REBIRTHSettings.getProperty("REBIRTH_FIGHTER_SKILL", "").split(";");
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw new Error("Failed to Load " + EVENT_REBIRTH + " File.");
 		}
 	}
 	
@@ -2790,7 +2760,6 @@ public final class Config
 	public static boolean CHAR_TITLE;
 	public static String ADD_CHAR_TITLE;
 	public static boolean NOBLE_CUSTOM_ITEMS;
-	public static boolean ACCESS_CUSTOM_ITEMS;
 	public static boolean HERO_CUSTOM_ITEMS;
 	public static boolean ALLOW_CREATE_LVL;
 	public static int CHAR_CREATE_LVL;
@@ -2818,7 +2787,6 @@ public final class Config
 	public static int DIFFERENT_Z_NEW_MOVIE;
 	public static int HERO_CUSTOM_ITEM_ID;
 	public static int NOOBLE_CUSTOM_ITEM_ID;
-	public static int ACCESS_CUSTOM_ITEM_ID;
 	public static int HERO_CUSTOM_DAY;
 	public static boolean GM_TRADE_RESTRICTED_ITEMS;
 	public static boolean GM_CRITANNOUNCER_NAME;
@@ -2974,8 +2942,6 @@ public final class Config
 			
 			NOBLE_CUSTOM_ITEMS = Boolean.parseBoolean(L2jOrionSettings.getProperty("EnableNobleCustomItem", "true"));
 			NOOBLE_CUSTOM_ITEM_ID = Integer.parseInt(L2jOrionSettings.getProperty("NoobleCustomItemId", "6673"));
-			ACCESS_CUSTOM_ITEMS = Boolean.parseBoolean(L2jOrionSettings.getProperty("EnableAccessCustomItem", "true"));
-			ACCESS_CUSTOM_ITEM_ID = Integer.parseInt(L2jOrionSettings.getProperty("AccessCustomItemId", "6673"));
 			HERO_CUSTOM_ITEMS = Boolean.parseBoolean(L2jOrionSettings.getProperty("EnableHeroCustomItem", "true"));
 			HERO_CUSTOM_ITEM_ID = Integer.parseInt(L2jOrionSettings.getProperty("HeroCustomItemId", "3481"));
 			HERO_CUSTOM_DAY = Integer.parseInt(L2jOrionSettings.getProperty("HeroCustomDay", "0"));
@@ -4203,18 +4169,7 @@ public final class Config
 		}
 	}
 	
-	public static int MOVE_TO_PAWN_TIMEOUT;
-	public static int FOLLOW_INTERVAL;
-	public static int ATTACK_FOLLOW_INTERVAL;
-	
-	public static void loadSyncConfig()
-	{
-		final PropertiesParser sync = new PropertiesParser(ConfigLoader.SYNC_FILE);
-		
-		MOVE_TO_PAWN_TIMEOUT = sync.getInt("moveToPawnTimeout", 1000);
-		FOLLOW_INTERVAL = sync.getInt("followInterval", 500);
-		ATTACK_FOLLOW_INTERVAL = sync.getInt("attackFollowInterval", 1000);
-	}
+
 	
 	public static Map<String, List<String>> EXTENDERS;
 	
@@ -4861,7 +4816,6 @@ public final class Config
 			// Fun
 			loadChampionConfig();
 			loadWeddingConfig();
-			loadREBIRTHConfig();
 			loadPCBPointConfig();
 			
 			loadOfflineConfig();
@@ -4875,7 +4829,7 @@ public final class Config
 			
 			loadScriptConfig();
 			loadPowerPack();
-			loadSyncConfig();
+
 			// Other
 			loadExtendersConfig();
 			loadDaemonsConf();

@@ -365,9 +365,10 @@ public final class L2TamedBeastInstance extends L2FeedableBeastInstance
 			for (final L2Skill skill : getTemplate().getSkills().values())
 			{
 				// if the skill is a debuff, check if the attacker has it already [ attacker.getEffect(L2Skill skill) ]
-				if (skill.getSkillType() == L2Skill.SkillType.DEBUFF && Rnd.get(3) < 1 && attacker.getFirstEffect(skill) != null)
+				if (skill.getSkillType() == L2Skill.SkillType.DEBUFF && Rnd.get(3) < 1 && attacker.getFirstEffect(skill) == null)
 				{
 					sitCastAndFollow(skill, attacker);
+					return;
 				}
 			}
 		}

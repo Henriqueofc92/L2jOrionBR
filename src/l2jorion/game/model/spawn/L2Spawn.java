@@ -1,22 +1,9 @@
 /*
  * L2jOrion Project - www.l2jorion.com 
- * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
- *
- * http://www.gnu.org/copyleft/gpl.html
  */
 package l2jorion.game.model.spawn;
 
@@ -71,6 +58,8 @@ public class L2Spawn
 	private boolean _customSpawn;
 	private boolean _customBossInstance = false;
 	
+	private SpawnTerritory _territory;
+	
 	private L2NpcInstance _lastSpawn;
 	private static List<SpawnListener> _spawnListeners = new ArrayList<>();
 	
@@ -113,8 +102,7 @@ public class L2Spawn
 			return;
 		}
 		
-		// The Name of the L2NpcInstance type managed by this L2Spawn
-		String implementationName = _template.type; // implementing class name
+		String implementationName = _template.type;
 		
 		if (mobTemplate.getNpcId() == 30995)
 		{
@@ -126,12 +114,11 @@ public class L2Spawn
 			implementationName = "L2SymbolMaker";
 		}
 		
-		if (mobTemplate.getNpcId() == 70013) // quick fix
+		if (mobTemplate.getNpcId() == 70013)
 		{
 			implementationName = "L2Npc";
 		}
 		
-		// Create the generic constructor of L2NpcInstance managed by this L2Spawn
 		final Class<?>[] parameters =
 		{
 			int.class,
@@ -221,6 +208,16 @@ public class L2Spawn
 		_location = location;
 	}
 	
+	public void setTerritory(SpawnTerritory territory)
+	{
+		_territory = territory;
+	}
+	
+	public SpawnTerritory getTerritory()
+	{
+		return _territory;
+	}
+	
 	public void setRespawnMinDelay(final int date)
 	{
 		_respawnMinDelay = date;
@@ -289,6 +286,16 @@ public class L2Spawn
 	public void set_customBossInstance(final boolean customBossInstance)
 	{
 		_customBossInstance = customBossInstance;
+	}
+	
+	public void setRespawnDelay(int delay, int randomInterval)
+	{
+		if (delay < 10)
+		{
+			delay = 10;
+		}
+		
+		_respawnDelay = (randomInterval > 0 ? Rnd.get(delay - randomInterval, delay) : delay) * 1000;
 	}
 	
 	public void decreaseCount(L2NpcInstance oldNpc)
@@ -411,31 +418,46 @@ public class L2Spawn
 		int newlocy = 0;
 		int newlocz = 0;
 		
-		if (getLocx() == 0 && getLocy() == 0)
+		if (_territory != null)
 		{
-			if (getLocation() == 0)
-			{
-				return mob;
-			}
-			
-			final Location location = TerritoryTable.getInstance().getRandomPoint(getLocation());
-			
-			if (location != null)
-			{
-				newlocx = location.getX();
-				newlocy = location.getY();
-				newlocz = location.getZ();
-			}
+			int[] p = _territory.getRandomPoint();
+			newlocx = p[0];
+			newlocy = p[1];
+			newlocz = p[2];
 		}
 		else
 		{
-			newlocx = getLocx();
-			newlocy = getLocy();
-			newlocz = getLocz();
+			if (getLocx() == 0 && getLocy() == 0)
+			{
+				if (getLocation() == 0)
+				{
+					return mob;
+				}
+				
+				final Location location = TerritoryTable.getInstance().getRandomPoint(getLocation());
+				
+				if (location != null)
+				{
+					newlocx = location.getX();
+					newlocy = location.getY();
+					newlocz = location.getZ();
+				}
+			}
+			else
+			{
+				newlocx = getLocx();
+				newlocy = getLocy();
+				newlocz = getLocz();
+			}
 		}
 		
 		if (mob != null)
 		{
+			if (Config.GEODATA && !mob.isFlying())
+			{
+				newlocz = GeoData.getInstance().getSpawnHeight(newlocx, newlocy, newlocz);
+			}
+			
 			mob.stopAllEffects();
 			
 			mob.setCurrentHpMp(mob.getMaxHp(), mob.getMaxMp());
@@ -449,12 +471,10 @@ public class L2Spawn
 				mob.setHeading(getHeading());
 			}
 			
-			// Reset decay info
 			mob.setDecayed(false);
 			
 			mob.setNpcValue(0);
 			
-			// Link the L2NpcInstance to this L2Spawn
 			mob.setSpawn(this);
 			
 			for (final Quest quest : mob.getTemplate().getEventQuests(Quest.QuestEventType.ON_SPAWN))

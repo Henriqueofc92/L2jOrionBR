@@ -26,7 +26,7 @@ import l2jorion.game.model.L2Skill;
 import l2jorion.game.model.actor.instance.L2ItemInstance;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.network.serverpackets.ExShowScreenMessage;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.skills.Stats;
 import l2jorion.game.skills.holders.IntIntHolder;
 import l2jorion.logger.Logger;
@@ -371,9 +371,6 @@ public class AugmentationData
 		getInstance();
 	}
 	
-	// --- MÉTODOS DE GERAÇÃO (LÓGICA RETAIL + MODS) ---
-	
-	// Método restaurado para o Market (PowerPack)
 	public L2Augmentation generateAugmentationForMarket(final L2ItemInstance item, int effectId, L2Skill skill)
 	{
 		return new L2Augmentation(item, effectId, skill, true);
@@ -410,7 +407,6 @@ public class AugmentationData
 		return new L2Augmentation(item, ((stat34 << 16) + stat12), skill, true);
 	}
 	
-	// Método overload restaurado para o RequestRefine
 	public L2Augmentation generateRandomAugmentation(final L2ItemInstance item, final int lifeStoneLevel, final int lifeStoneGrade)
 	{
 		return generateRandomAugmentation(item, lifeStoneLevel, lifeStoneGrade, null, false);
@@ -522,7 +518,7 @@ public class AugmentationData
 			
 			if (effect && player != null && skill != null)
 			{
-				player.sendPacket(new MagicSkillUser(player, player, 2024, 1, 1, 0));
+				player.sendPacket(new MagicSkillUse(player, player, 2024, 1, 1, 0));
 				player.useMagic(SkillTable.getInstance().getInfo(2024, 1), false, false);
 				
 				String type = (skill.isActive() || skill.isChance()) ? "(Active)" : "(Passive)";

@@ -490,7 +490,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		}
 		
 		// Minions following leader
-		if (_actor instanceof L2MinionInstance && ((L2MinionInstance) _actor).getLeader() != null)
+		if (_actor instanceof L2MinionInstance && ((L2MinionInstance) _actor).getLeader() != null && !npc.isCastingNow())
 		{
 			int offset;
 			
@@ -2208,40 +2208,42 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		int range = 0;
 		L2Attackable actor = getActiveChar();
 		
+		if (actor.getHateList() == null || actor.getHateList().size() <= 1)
+		{
+			return;
+		}
+		
 		L2Character MostHate = actor.getMostHated();
 		
-		if (actor.getHateList() != null)
+		for (L2Character obj : actor.getHateList())
 		{
-			for (L2Character obj : actor.getHateList())
+			if ((obj == null) || obj.isDead() || !GeoData.getInstance().canSeeTarget(actor, obj) || (obj != MostHate) || (obj == actor))
 			{
-				if ((obj == null) || obj.isDead() || !GeoData.getInstance().canSeeTarget(actor, obj) || (obj != MostHate) || (obj == actor))
+				continue;
+			}
+			
+			dist = Math.sqrt(actor.getPlanDistanceSq(obj.getX(), obj.getY()));
+			dist2 = dist - actor.getTemplate().getCollisionRadius();
+			range = actor.getPhysicalAttackRange() + actor.getTemplate().getCollisionRadius() + obj.getTemplate().getCollisionRadius();
+			if (obj.isMoving())
+			{
+				dist2 = dist2 - 70;
+			}
+			
+			if (dist2 <= range)
+			{
+				if (MostHate != null)
 				{
-					continue;
+					actor.addDamageHate(obj, 0, actor.getHating(MostHate));
+				}
+				else
+				{
+					actor.addDamageHate(obj, 0, 2000);
 				}
 				
-				dist = Math.sqrt(actor.getPlanDistanceSq(obj.getX(), obj.getY()));
-				dist2 = dist - actor.getTemplate().getCollisionRadius();
-				range = actor.getPhysicalAttackRange() + actor.getTemplate().getCollisionRadius() + obj.getTemplate().getCollisionRadius();
-				if (obj.isMoving())
-				{
-					dist2 = dist2 - 70;
-				}
-				
-				if (dist2 <= range)
-				{
-					if (MostHate != null)
-					{
-						actor.addDamageHate(obj, 0, actor.getHating(MostHate));
-					}
-					else
-					{
-						actor.addDamageHate(obj, 0, 2000);
-					}
-					
-					actor.setTarget(obj);
-					setTarget(obj);
-					return;
-				}
+				actor.setTarget(obj);
+				setTarget(obj);
+				return;
 			}
 		}
 		

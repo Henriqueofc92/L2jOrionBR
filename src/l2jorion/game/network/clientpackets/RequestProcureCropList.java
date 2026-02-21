@@ -88,7 +88,7 @@ public class RequestProcureCropList extends PacketClient
 		
 		// Calculate summary values
 		int slots = 0;
-		int weight = 0;
+		long weight = 0;
 		
 		for (Crop i : _items)
 		{
@@ -96,7 +96,7 @@ public class RequestProcureCropList extends PacketClient
 				continue;
 			
 			L2Item template = ItemTable.getInstance().getTemplate(i.getReward());
-			weight += i.getCount() * template.getWeight();
+			weight += (long) i.getCount() * template.getWeight();
 			
 			if (!template.isStackable())
 				slots += i.getCount();
@@ -104,15 +104,15 @@ public class RequestProcureCropList extends PacketClient
 				slots++;
 		}
 		
-		if (!player.getInventory().validateWeight(weight))
-		{
-			sendPacket(SystemMessage.getSystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
-			return;
-		}
-		
 		if (!player.getInventory().validateCapacity(slots))
 		{
 			sendPacket(SystemMessage.getSystemMessage(SystemMessageId.SLOTS_FULL));
+			return;
+		}
+		
+		if (weight > Integer.MAX_VALUE || weight < 0 || !player.getInventory().validateWeight((int) weight))
+		{
+			sendPacket(SystemMessage.getSystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
 			return;
 		}
 		

@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import l2jorion.game.cache.HtmCache;
 import l2jorion.game.community.CommunityBoardManager;
 import l2jorion.game.datatables.sql.CharNameTable;
+import l2jorion.game.datatables.xml.GmAccessTable;
 import l2jorion.game.handler.ICommunityBoardHandler;
 import l2jorion.game.model.BlockList;
 import l2jorion.game.model.L2World;
@@ -34,7 +35,7 @@ public class MailBBSManager extends BaseBBSManager implements ICommunityBoardHan
 	private static final String MARK_MAIL_READ = "UPDATE character_mail SET unread = 0 WHERE letterId = ?";
 	private static final String SET_MAIL_LOC = "UPDATE character_mail SET location = ? WHERE letterId = ?";
 	private static final String SELECT_LAST_ID = "SELECT letterId FROM character_mail ORDER BY letterId DESC LIMIT 1";
-	private static final String GET_GM_STATUS = "SELECT accesslevel FROM characters WHERE obj_Id = ?";
+	// GM status is now determined by GmAccessTable XML profiles, not by database column
 	
 	private final Map<Integer, Set<Mail>> _mails = new ConcurrentHashMap<>();
 	private int _lastid = 0;
@@ -748,7 +749,11 @@ public class MailBBSManager extends BaseBBSManager implements ICommunityBoardHan
 	
 	private void setMailToRead(L2PcInstance player, int mailId)
 	{
-		getMail(player, mailId).unread = false;
+		final Mail mail = getMail(player, mailId);
+		if (mail != null)
+		{
+			mail.unread = false;
+		}
 		
 		Connection con = null;
 		
@@ -772,7 +777,11 @@ public class MailBBSManager extends BaseBBSManager implements ICommunityBoardHan
 	
 	private void setMailLocation(L2PcInstance player, int mailId, MailType location)
 	{
-		getMail(player, mailId).location = location;
+		final Mail mail = getMail(player, mailId);
+		if (mail != null)
+		{
+			mail.location = location;
+		}
 		
 		Connection con = null;
 		
@@ -803,34 +812,7 @@ public class MailBBSManager extends BaseBBSManager implements ICommunityBoardHan
 	
 	protected static boolean isGM(int objectId)
 	{
-		boolean isGM = false;
-		
-		Connection con = null;
-		
-		try
-		{
-			con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement ps = con.prepareStatement(GET_GM_STATUS);
-			ps.setInt(1, objectId);
-			
-			try (ResultSet rs = ps.executeQuery())
-			{
-				if (rs.next())
-				{
-					isGM = rs.getInt(1) > 0;
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			LOG.error("Couldn't verify GM access for {}.", e, objectId);
-		}
-		finally
-		{
-			CloseUtil.close(con);
-		}
-		
-		return isGM;
+		return GmAccessTable.getInstance().hasProfile(objectId);
 	}
 	
 	private boolean isInboxFull(int objectId)

@@ -39,7 +39,7 @@ import l2jorion.game.model.entity.event.DM;
 import l2jorion.game.model.entity.event.TvT;
 import l2jorion.game.model.entity.event.VIP;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SetupGauge;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.thread.ThreadPoolManager;
@@ -210,7 +210,7 @@ public class ScrollOfEscape implements IItemHandler
 		activeChar.setTarget(activeChar);
 		
 		final L2Skill skill = SkillTable.getInstance().getInfo(escapeSkill, 1);
-		final MagicSkillUser msu = new MagicSkillUser(activeChar, escapeSkill, 1, skill.getHitTime(), 0);
+		final MagicSkillUse msu = new MagicSkillUse(activeChar, escapeSkill, 1, skill.getHitTime(), 0);
 		activeChar.broadcastPacket(msu);
 		activeChar.setTarget(oldtarget);
 		SetupGauge sg = new SetupGauge(0, skill.getHitTime());

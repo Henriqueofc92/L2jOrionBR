@@ -285,9 +285,8 @@ public abstract class L2ZoneType
 	
 	public void removeCharacter(L2Character character)
 	{
-		if (_characterList.containsKey(character.getObjectId()))
+		if (_characterList.remove(character.getObjectId()) != null)
 		{
-			_characterList.remove(character.getObjectId());
 			onExit(character);
 		}
 	}

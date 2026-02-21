@@ -27,7 +27,7 @@ import l2jorion.game.model.L2Character;
 import l2jorion.game.model.L2Skill;
 import l2jorion.game.model.L2Summon;
 import l2jorion.game.network.serverpackets.CreatureSay;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.templates.L2NpcTemplate;
 import l2jorion.game.thread.ThreadPoolManager;
 
@@ -84,7 +84,7 @@ public class L2ProtectorInstance extends L2NpcInstance
 			{
 				final int objId = _caster.getObjectId();
 				skill.getEffects(_caster, player, false, false, false);
-				broadcastPacket(new MagicSkillUser(_caster, player, skillId, skillLevel, Config.PROTECTOR_SKILLTIME, 0));
+				broadcastPacket(new MagicSkillUse(_caster, player, skillId, skillLevel, Config.PROTECTOR_SKILLTIME, 0));
 				broadcastPacket(new CreatureSay(objId, 0, String.valueOf(getName()), Config.PROTECTOR_MESSAGE));
 				
 				skill = null;
@@ -107,7 +107,7 @@ public class L2ProtectorInstance extends L2NpcInstance
 			{
 				final int objId = _caster.getObjectId();
 				skill.getEffects(_caster, player, false, false, false);
-				broadcastPacket(new MagicSkillUser(_caster, player, skillId, skillLevel, Config.PROTECTOR_SKILLTIME, 0));
+				broadcastPacket(new MagicSkillUse(_caster, player, skillId, skillLevel, Config.PROTECTOR_SKILLTIME, 0));
 				broadcastPacket(new CreatureSay(objId, 0, String.valueOf(getName()), Config.PROTECTOR_MESSAGE));
 				
 				skill = null;

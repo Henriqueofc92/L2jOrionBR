@@ -35,7 +35,7 @@ import l2jorion.game.model.base.Race;
 import l2jorion.game.model.entity.Announcements;
 import l2jorion.game.model.spawn.L2Spawn;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.StatusUpdate;
 import l2jorion.game.network.serverpackets.SystemMessage;
@@ -273,7 +273,7 @@ public class VIP
 			_endSpawn.getLastSpawn().decayMe();
 			_endSpawn.getLastSpawn().spawnMe(_endSpawn.getLastSpawn().getX(), _endSpawn.getLastSpawn().getY(), _endSpawn.getLastSpawn().getZ());
 			
-			_endSpawn.getLastSpawn().broadcastPacket(new MagicSkillUser(_endSpawn.getLastSpawn(), _endSpawn.getLastSpawn(), 1034, 1, 1, 1));
+			_endSpawn.getLastSpawn().broadcastPacket(new MagicSkillUse(_endSpawn.getLastSpawn(), _endSpawn.getLastSpawn(), 1034, 1, 1, 1));
 		}
 		catch (final Exception e)
 		{
@@ -297,7 +297,7 @@ public class VIP
 			_joinSpawn.getLastSpawn().decayMe();
 			_joinSpawn.getLastSpawn().spawnMe(_joinSpawn.getLastSpawn().getX(), _joinSpawn.getLastSpawn().getY(), _joinSpawn.getLastSpawn().getZ());
 			
-			_joinSpawn.getLastSpawn().broadcastPacket(new MagicSkillUser(_joinSpawn.getLastSpawn(), _joinSpawn.getLastSpawn(), 1034, 1, 1, 1));
+			_joinSpawn.getLastSpawn().broadcastPacket(new MagicSkillUse(_joinSpawn.getLastSpawn(), _joinSpawn.getLastSpawn(), 1034, 1, 1, 1));
 		}
 		catch (final Exception e)
 		{

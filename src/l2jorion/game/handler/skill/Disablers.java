@@ -288,15 +288,18 @@ public class Disablers implements ISkillHandler
 				}
 				case ERASE:
 				{
-					if (Formulas.getInstance().calcSkillSuccess(activeChar, target, skill, ss, sps, bss) && !(target instanceof L2SiegeSummonInstance))
+					if (Formulas.getInstance().calcSkillSuccess(activeChar, target, skill, ss, sps, bss) && target instanceof L2Summon && !(target instanceof L2SiegeSummonInstance))
 					{
-						L2PcInstance summonOwner = null;
-						L2Summon summonPet = null;
-						summonOwner = ((L2Summon) target).getOwner();
-						summonPet = summonOwner.getPet();
-						summonPet.unSummon(summonOwner);
-						SystemMessage sm = new SystemMessage(SystemMessageId.YOUR_SERVITOR_HAS_VANISHED);
-						summonOwner.sendPacket(sm);
+						final L2PcInstance summonOwner = ((L2Summon) target).getOwner();
+						if (summonOwner != null)
+						{
+							final L2Summon summonPet = summonOwner.getPet();
+							if (summonPet != null)
+							{
+								summonPet.unSummon(summonOwner);
+								summonOwner.sendPacket(new SystemMessage(SystemMessageId.YOUR_SERVITOR_HAS_VANISHED));
+							}
+						}
 					}
 					else
 					{

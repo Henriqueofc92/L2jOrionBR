@@ -1,7 +1,5 @@
-Welcome to the TEST Server!
-Rates: x10 (Retail)
-FREE items in the Town of Giran.
-Boss respawn times: Epic 1 hour, Simple 1-2 minutes.
+%name% edit announcements.txt !
+Have fun with project! [Genesis Team]
 Player Commands: .menu .shop .buff .gk .market .votereward .sub
 .setlvl .class .boss .bank .sellbuffs .cancelsellbuffs .dressme
 Please report any bugs/mistakes on the l2jbrasil forum. Thank you!

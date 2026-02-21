@@ -23,7 +23,7 @@ import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.network.serverpackets.EtcStatusUpdate;
 import l2jorion.game.network.serverpackets.ExAutoSoulShot;
 import l2jorion.game.network.serverpackets.ExShowScreenMessage;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.PlaySound;
 import l2jorion.game.templates.L2Item;
@@ -530,20 +530,18 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 	private boolean checkPunish(L2PcInstance activeChar, String repairChar)
 	{
 		boolean result = false;
-		int accessLevel = 0;
 		int repCharJail = 0;
 		Connection con = null;
 		try
 		{
 			con = L2DatabaseFactory.getInstance().getConnection();
 			
-			PreparedStatement statement = con.prepareStatement("SELECT accesslevel,punish_level FROM characters WHERE char_name=?");
+			PreparedStatement statement = con.prepareStatement("SELECT punish_level FROM characters WHERE char_name=?");
 			statement.setString(1, repairChar);
 			ResultSet rset = statement.executeQuery();
 			if (rset.next())
 			{
-				accessLevel = rset.getInt(1);
-				repCharJail = rset.getInt(2);
+				repCharJail = rset.getInt(1);
 			}
 			rset.close();
 			statement.close();
@@ -558,7 +556,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 			CloseUtil.close(con);
 			con = null;
 		}
-		if (repCharJail == 1 || accessLevel < 0)
+		if (repCharJail == 1)
 		{
 			result = true;
 		}
@@ -775,7 +773,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 						}
 						else
 						{
-							MagicSkillUser msu = new MagicSkillUser(player, player, 2166, 2, 0, 100);
+							MagicSkillUse msu = new MagicSkillUse(player, player, 2166, 2, 0, 100);
 							player.broadcastPacket(msu);
 							
 							Potions is = new Potions();
@@ -818,7 +816,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 						}
 						else
 						{
-							MagicSkillUser msu = new MagicSkillUser(player, player, 2037, 1, 0, 100);
+							MagicSkillUse msu = new MagicSkillUse(player, player, 2037, 1, 0, 100);
 							player.broadcastPacket(msu);
 							
 							Potions is = new Potions();
@@ -861,7 +859,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 						}
 						else
 						{
-							MagicSkillUser msu = new MagicSkillUser(player, player, 2005, 1, 0, 100);
+							MagicSkillUse msu = new MagicSkillUse(player, player, 2005, 1, 0, 100);
 							player.broadcastPacket(msu);
 							
 							Potions is = new Potions();
@@ -1526,7 +1524,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 				{
 					if (!_activeChar.isInvul() && (_activeChar.getInventory().getItemByItemId(_id) != null) && _activeChar.getCurrentMp() < _pTime * _activeChar.getMaxMp())
 					{
-						MagicSkillUser msu = new MagicSkillUser(_activeChar, _activeChar, 2005, 1, 0, 100);
+						MagicSkillUse msu = new MagicSkillUse(_activeChar, _activeChar, 2005, 1, 0, 100);
 						_activeChar.broadcastPacket(msu);
 						
 						Potions is = new Potions();
@@ -1538,7 +1536,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 				{
 					if (!_activeChar.isInvul() && (_activeChar.getInventory().getItemByItemId(_id) != null) && _activeChar.getCurrentMp() < _pTime * _activeChar.getMaxMp())
 					{
-						MagicSkillUser msu = new MagicSkillUser(_activeChar, _activeChar, 2003, 1, 0, 100);
+						MagicSkillUse msu = new MagicSkillUse(_activeChar, _activeChar, 2003, 1, 0, 100);
 						_activeChar.broadcastPacket(msu);
 						
 						Potions is = new Potions();
@@ -1550,7 +1548,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 				{
 					if (!_activeChar.isInvul() && (_activeChar.getInventory().getItemByItemId(_id) != null) && _activeChar.getCurrentHp() < _pTime * _activeChar.getMaxHp())
 					{
-						MagicSkillUser msu = new MagicSkillUser(_activeChar, _activeChar, 2037, 1, 0, 100);
+						MagicSkillUse msu = new MagicSkillUse(_activeChar, _activeChar, 2037, 1, 0, 100);
 						_activeChar.broadcastPacket(msu);
 						
 						Potions is = new Potions();
@@ -1562,7 +1560,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 				{
 					if (!_activeChar.isInvul() && (_activeChar.getInventory().getItemByItemId(_id) != null) && _activeChar.getCurrentHp() < _pTime * _activeChar.getMaxHp())
 					{
-						MagicSkillUser msu = new MagicSkillUser(_activeChar, _activeChar, 2032, 1, 0, 100);
+						MagicSkillUse msu = new MagicSkillUse(_activeChar, _activeChar, 2032, 1, 0, 100);
 						_activeChar.broadcastPacket(msu);
 						
 						Potions is = new Potions();
@@ -1574,7 +1572,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 				{
 					if (!_activeChar.isInvul() && (_activeChar.getInventory().getItemByItemId(_id) != null) && _activeChar.getCurrentHp() < _pTime * _activeChar.getMaxHp())
 					{
-						MagicSkillUser msu = new MagicSkillUser(_activeChar, _activeChar, 2031, 1, 0, 100);
+						MagicSkillUse msu = new MagicSkillUse(_activeChar, _activeChar, 2031, 1, 0, 100);
 						_activeChar.broadcastPacket(msu);
 						
 						Potions is = new Potions();
@@ -1586,7 +1584,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 				{
 					if (!_activeChar.isInvul() && (_activeChar.getInventory().getItemByItemId(5592) != null) && _activeChar.getCurrentCp() < _pTime * _activeChar.getMaxCp())
 					{
-						MagicSkillUser msu = new MagicSkillUser(_activeChar, _activeChar, 2166, 2, 0, 100);
+						MagicSkillUse msu = new MagicSkillUse(_activeChar, _activeChar, 2166, 2, 0, 100);
 						_activeChar.broadcastPacket(msu);
 						
 						Potions is = new Potions();
@@ -1598,7 +1596,7 @@ public class PremiumMenu implements IVoicedCommandHandler, ICustomByPassHandler
 				{
 					if (!_activeChar.isInvul() && (_activeChar.getInventory().getItemByItemId(5592) != null) && _activeChar.getCurrentCp() < _pTime * _activeChar.getMaxCp())
 					{
-						MagicSkillUser msu = new MagicSkillUser(_activeChar, _activeChar, 2166, 1, 0, 100);
+						MagicSkillUse msu = new MagicSkillUse(_activeChar, _activeChar, 2166, 1, 0, 100);
 						_activeChar.broadcastPacket(msu);
 						
 						Potions is = new Potions();

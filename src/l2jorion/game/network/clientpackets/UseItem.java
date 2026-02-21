@@ -56,20 +56,26 @@ public final class UseItem extends PacketClient
 	
 	private static class WeaponEquipTask implements Runnable
 	{
-		private final L2ItemInstance item;
+		private final int _itemObjectId;
 		private final L2PcInstance activeChar;
 		
-		protected WeaponEquipTask(L2ItemInstance it, L2PcInstance character)
+		protected WeaponEquipTask(int itemObjectId, L2PcInstance character)
 		{
-			item = it;
+			_itemObjectId = itemObjectId;
 			activeChar = character;
 		}
 		
 		@Override
 		public void run()
 		{
-			// Equip or unEquip
-			activeChar.useEquippableItem(item, false);
+			// Re-fetch item from inventory — it may have been moved/destroyed while waiting
+			final L2ItemInstance itemToEquip = activeChar.getInventory().getItemByObjectId(_itemObjectId);
+			if (itemToEquip == null)
+			{
+				return;
+			}
+			
+			activeChar.useEquippableItem(itemToEquip, false);
 		}
 	}
 	
@@ -453,7 +459,7 @@ public final class UseItem extends PacketClient
 			}
 			else if (activeChar.isAttackingNow())
 			{
-				ThreadPoolManager.getInstance().scheduleGeneral(new WeaponEquipTask(item, activeChar), TimeUnit.MILLISECONDS.convert(activeChar.getAttackEndTime() - System.nanoTime(), TimeUnit.NANOSECONDS));
+				ThreadPoolManager.getInstance().scheduleGeneral(new WeaponEquipTask(_objectId, activeChar), TimeUnit.MILLISECONDS.convert(activeChar.getAttackEndTime() - System.nanoTime(), TimeUnit.NANOSECONDS));
 			}
 			else
 			{

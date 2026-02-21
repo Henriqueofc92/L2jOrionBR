@@ -82,7 +82,7 @@ import l2jorion.game.network.serverpackets.ActionFailed;
 import l2jorion.game.network.serverpackets.ExShowVariationCancelWindow;
 import l2jorion.game.network.serverpackets.ExShowVariationMakeWindow;
 import l2jorion.game.network.serverpackets.InventoryUpdate;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.MoveToPawn;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.NpcInfo;
@@ -130,6 +130,8 @@ public class L2NpcInstance extends L2Character
 	public String _CTF_FlagTeamName;
 	
 	private int _isSpoiledBy = 0;
+	
+	private int _scriptValue = 0;
 	
 	protected RandomAnimationTask _rAniTask = null;
 	
@@ -197,7 +199,7 @@ public class L2NpcInstance extends L2Character
 			if (Rnd.get(100) <= getSoulShotChance())
 			{
 				_soulshotamount = _soulshotamount - 1;
-				broadcastPacket(new MagicSkillUser(this, this, 2154, 1, 0, 0), 360000);
+				broadcastPacket(new MagicSkillUse(this, this, 2154, 1, 0, 0), 360000);
 				_soulshotcharged = true;
 			}
 		}
@@ -226,7 +228,7 @@ public class L2NpcInstance extends L2Character
 			if (Rnd.get(100) <= getSpiritShotChance())
 			{
 				_spiritshotamount = _spiritshotamount - 1;
-				broadcastPacket(new MagicSkillUser(this, this, 2061, 1, 0, 0), 360000);
+				broadcastPacket(new MagicSkillUse(this, this, 2061, 1, 0, 0), 360000);
 				_spiritshotcharged = true;
 			}
 		}
@@ -545,6 +547,27 @@ public class L2NpcInstance extends L2Character
 	public int getNpcId()
 	{
 		return getTemplate().getNpcId();
+	}
+	
+	public int getScriptValue()
+	{
+		return _scriptValue;
+	}
+	
+	public boolean isScriptValue(int val)
+	{
+		return _scriptValue == val;
+	}
+	
+	public void setScriptValue(int val)
+	{
+		_scriptValue = val;
+	}
+	
+	@Override
+	public void broadcastSocialActionInRadius(int actionId)
+	{
+		broadcastPacket(new SocialAction(getObjectId(), actionId));
 	}
 	
 	@Override

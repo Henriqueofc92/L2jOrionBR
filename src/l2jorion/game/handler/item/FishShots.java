@@ -26,7 +26,7 @@ import l2jorion.game.model.actor.instance.L2ItemInstance;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.actor.instance.L2PlayableInstance;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.templates.L2Item;
 import l2jorion.game.templates.L2Weapon;
@@ -101,7 +101,7 @@ public class FishShots implements IItemHandler
 		final L2Object oldTarget = activeChar.getTarget();
 		activeChar.setTarget(activeChar);
 		
-		activeChar.broadcastPacket(new MagicSkillUser(activeChar, SKILL_IDS[grade], 1, 0, 0), 360000);
+		activeChar.broadcastPacket(new MagicSkillUse(activeChar, SKILL_IDS[grade], 1, 0, 0), 360000);
 		activeChar.setTarget(oldTarget);
 	}
 	

@@ -24,6 +24,11 @@ public final class SkillHolder
 	private final int _skillId;
 	private final int _skillLvl;
 	
+	public SkillHolder(final int skillId)
+	{
+		this(skillId, 1);
+	}
+	
 	public SkillHolder(final int skillId, final int skillLvl)
 	{
 		_skillId = skillId;

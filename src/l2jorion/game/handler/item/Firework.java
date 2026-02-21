@@ -26,7 +26,7 @@ import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.actor.instance.L2PlayableInstance;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.ActionFailed;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 
 public class Firework implements IItemHandler
@@ -110,7 +110,7 @@ public class Firework implements IItemHandler
 		 */
 		if (itemId == 6403) // elven_firecracker, xml: 2023
 		{
-			MagicSkillUser MSU = new MagicSkillUser(playable, activeChar, 2023, 1, 1, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, activeChar, 2023, 1, 1, 0);
 			activeChar.sendPacket(MSU);
 			activeChar.broadcastPacket(MSU);
 			MSU = null;
@@ -122,7 +122,7 @@ public class Firework implements IItemHandler
 		 */
 		else if (itemId == 6406) // firework, xml: 2024
 		{
-			MagicSkillUser MSU = new MagicSkillUser(playable, activeChar, 2024, 1, 1, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, activeChar, 2024, 1, 1, 0);
 			activeChar.sendPacket(MSU);
 			activeChar.broadcastPacket(MSU);
 			MSU = null;
@@ -134,7 +134,7 @@ public class Firework implements IItemHandler
 		 */
 		else if (itemId == 6407) // large_firework, xml: 2025
 		{
-			MagicSkillUser MSU = new MagicSkillUser(playable, activeChar, 2025, 1, 1, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, activeChar, 2025, 1, 1, 0);
 			activeChar.sendPacket(MSU);
 			activeChar.broadcastPacket(MSU);
 			MSU = null;

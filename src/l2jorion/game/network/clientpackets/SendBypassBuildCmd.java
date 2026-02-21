@@ -56,7 +56,7 @@ public final class SendBypassBuildCmd extends PacketClient
 		}
 		
 		// Checks The Access and notify requester if requester access it not allowed for that command
-		if (!AdminCommands.getInstance().hasAccess(_command, activeChar.getAccessLevel()))
+		if (!AdminCommands.getInstance().hasAccess(_command, activeChar.getAccessLevel(), activeChar.getGmAccessProfile()))
 		{
 			activeChar.sendMessage("You don't have the access right to use this command!");
 			GmListTable.broadcastMessageToGMs("Character " + activeChar.getName() + " tried to use admin command " + _command + ", but doesn't have access to it!");

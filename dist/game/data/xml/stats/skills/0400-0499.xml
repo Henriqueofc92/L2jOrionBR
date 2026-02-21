@@ -717,18 +717,18 @@
     <add order="0x40" stat="pAtk" val="70">
       <using kind="Dagger"/>
     </add>
-    <mul order="0x30" stat="blowRate" val="1.03">
+    <mul order="0x30" stat="blowRate" val="1.2">
       <and>
         <player front="True"/>
       </and>
     </mul>
-    <mul order="0x30" stat="blowRate" val="1.03">
+    <mul order="0x30" stat="blowRate" val="1.2">
       <and>
         <player front="False"/>
         <player behind="False"/>
       </and>
     </mul>
-    <mul order="0x30" stat="blowRate" val="1.03">
+    <mul order="0x30" stat="blowRate" val="1.2">
       <and>
         <player behind="True"/>
       </and>

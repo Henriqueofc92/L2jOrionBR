@@ -62,8 +62,6 @@ public class AutofarmPlayerRoutine
 	
 	public void start()
 	{
-		// A lógica de Thread saiu daqui. O Manager que controla o loop.
-		// Aqui apenas configuramos o visual e variaveis iniciais.
 		_originalTitle = player.getTitle();
 		_originalTitleColor = player.getAppearance().getTitleColor();
 		player.setTitle("Auto Farm");
@@ -82,7 +80,6 @@ public class AutofarmPlayerRoutine
 	
 	public void stop()
 	{
-		// A lógica de cancelar Thread saiu daqui.
 		committedTarget = null;
 		_startTime = 0;
 		if (_originalTitle != null)
@@ -105,7 +102,6 @@ public class AutofarmPlayerRoutine
 		return System.currentTimeMillis() - _startTime;
 	}
 	
-	// Alterado para PUBLIC para o Manager acessar
 	public void executeRoutine()
 	{
 		if (player.isDead() || player.isTeleporting() || player.isOnline() == 0)
@@ -200,9 +196,6 @@ public class AutofarmPlayerRoutine
 		
 		checkSpoil();
 	}
-	
-	// Daqui para baixo, a lógica auxiliar continua igual (isInsideRestrictedZone, checkRestingState, etc...)
-	// Mantive os métodos auxiliares aqui para o código ficar completo para você copiar.
 	
 	private boolean isInsideRestrictedZone()
 	{

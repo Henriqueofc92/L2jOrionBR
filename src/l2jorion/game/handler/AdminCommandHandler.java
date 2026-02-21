@@ -33,6 +33,7 @@ import l2jorion.game.handler.admin.AdminFightCalculator;
 import l2jorion.game.handler.admin.AdminFortSiege;
 import l2jorion.game.handler.admin.AdminGeodata;
 import l2jorion.game.handler.admin.AdminGm;
+import l2jorion.game.handler.admin.AdminGmAccess;
 import l2jorion.game.handler.admin.AdminGmChat;
 import l2jorion.game.handler.admin.AdminHeal;
 import l2jorion.game.handler.admin.AdminHelpPage;
@@ -167,6 +168,7 @@ public class AdminCommandHandler
 		// registerAdminCommandHandler(new AdminPhantom());
 		registerAdminCommandHandler(new AdminFakePlayers());
 		registerAdminCommandHandler(new AdminPremium());
+		registerAdminCommandHandler(new AdminGmAccess());
 		
 		LOG.info("AdminCommandHandler: Loaded " + _datatable.size() + " handlers");
 		

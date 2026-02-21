@@ -482,12 +482,12 @@ public final class CharacterCreate extends PacketClient
 	
 	public void startTutorialQuest(final L2PcInstance player)
 	{
-		final QuestState qs = player.getQuestState("255_Tutorial");
+		final QuestState qs = player.getQuestState("Q255_Tutorial");
 		Quest q = null;
 		
 		if (qs == null && !Config.ALT_DEV_NO_QUESTS)
 		{
-			q = QuestManager.getInstance().getQuest("255_Tutorial");
+			q = QuestManager.getInstance().getQuest("Q255_Tutorial");
 		}
 		
 		if (q != null)

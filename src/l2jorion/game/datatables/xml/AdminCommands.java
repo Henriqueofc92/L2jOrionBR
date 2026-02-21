@@ -17,6 +17,7 @@ import org.xml.sax.SAXException;
 
 import l2jorion.Config;
 import l2jorion.game.datatables.AccessLevel;
+import l2jorion.game.datatables.GmAccessProfile;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
 
@@ -76,7 +77,26 @@ public class AdminCommands
 		return _instance == null ? (_instance = new AdminCommands()) : _instance;
 	}
 	
+	/**
+	 * Check if the given access level allows the admin command.
+	 * Also checks granular GMAccess permissions if a profile is provided.
+	 * @param adminCommand the admin command
+	 * @param accessLevel the player's access level
+	 * @return true if allowed
+	 */
 	public boolean hasAccess(String adminCommand, AccessLevel accessLevel)
+	{
+		return hasAccess(adminCommand, accessLevel, null);
+	}
+	
+	/**
+	 * Check if the given access level allows the admin command, with granular GMAccess check.
+	 * @param adminCommand the admin command
+	 * @param accessLevel the player's access level
+	 * @param profile the player's GMAccess profile (can be null)
+	 * @return true if allowed
+	 */
+	public boolean hasAccess(String adminCommand, AccessLevel accessLevel, GmAccessProfile profile)
 	{
 		if (accessLevel.getLevel() <= 0 || !accessLevel.isGm())
 		{
@@ -95,6 +115,7 @@ public class AdminCommands
 			command = adminCommand.substring(0, adminCommand.indexOf(" "));
 		}
 		
+		// First check numeric access level from adminCommands.xml
 		int acar = _adminCommandAccessRights.getOrDefault(command, 0);
 		
 		if (acar == 0)
@@ -103,7 +124,18 @@ public class AdminCommands
 			return false;
 		}
 		
-		return acar >= accessLevel.getLevel();
+		if (acar < accessLevel.getLevel())
+		{
+			return false;
+		}
+		
+		// If player has a GMAccess profile, check granular permissions
+		if (profile != null)
+		{
+			return profile.isCommandAllowed(command);
+		}
+		
+		return true;
 	}
 	
 	public int accessRightForCommand(final String command)

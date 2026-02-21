@@ -20,7 +20,6 @@
  */
 package l2jorion.game.network.serverpackets;
 
-import l2jorion.game.model.L2Character;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.network.PacketServer;
 
@@ -28,12 +27,12 @@ public class ExFishingEnd extends PacketServer
 {
 	private static final String _S__FE_14_EXFISHINGEND = "[S] FE:14 ExFishingEnd";
 	private final boolean _win;
-	L2Character _activeChar;
+	private final int _charObjId;
 	
 	public ExFishingEnd(final boolean win, final L2PcInstance character)
 	{
 		_win = win;
-		_activeChar = character;
+		_charObjId = character.getObjectId();
 	}
 	
 	@Override
@@ -41,9 +40,8 @@ public class ExFishingEnd extends PacketServer
 	{
 		writeC(0xfe);
 		writeH(0x14);
-		writeD(_activeChar.getObjectId());
+		writeD(_charObjId);
 		writeC(_win ? 1 : 0);
-		
 	}
 	
 	@Override

@@ -313,7 +313,7 @@
 <skill id="2229" levels="8" name="Treasure Chest Key">
   <table name="#itemConsume">6665 6666 6667 6668 6669 6670 6671 6672</table>
   <set name="power" val="0"/>
-  <set name="target" val="TARGET_ONE"/>
+  <set name="target" val="TARGET_UNLOCKABLE"/>
   <set name="hitTime" val="500"/>
   <set name="reuseDelay" val="8000"/>
   <set name="skillType" val="DELUXE_KEY_UNLOCK"/>

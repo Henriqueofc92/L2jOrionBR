@@ -26,7 +26,7 @@ import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.actor.instance.L2PetInstance;
 import l2jorion.game.model.actor.instance.L2PlayableInstance;
 import l2jorion.game.network.serverpackets.ActionFailed;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.UserInfo;
 
 public class CharChangePotions implements IItemHandler
@@ -123,7 +123,7 @@ public class CharChangePotions implements IItemHandler
 		}
 		
 		// Create a summon effect!
-		MagicSkillUser MSU = new MagicSkillUser(playable, activeChar, 2003, 1, 1, 0);
+		MagicSkillUse MSU = new MagicSkillUse(playable, activeChar, 2003, 1, 1, 0);
 		activeChar.broadcastPacket(MSU);
 		
 		// Update the changed stat for the character in the DB.

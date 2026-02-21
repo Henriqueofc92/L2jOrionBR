@@ -28,7 +28,7 @@ import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.actor.instance.L2PetInstance;
 import l2jorion.game.model.actor.instance.L2PlayableInstance;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 
 public class Remedy implements IItemHandler
@@ -79,7 +79,7 @@ public class Remedy implements IItemHandler
 				}
 			}
 			effects = null;
-			MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2042, 1, 0, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2042, 1, 0, 0);
 			activeChar.sendPacket(MSU);
 			activeChar.broadcastPacket(MSU);
 			MSU = null;
@@ -97,7 +97,7 @@ public class Remedy implements IItemHandler
 				}
 			}
 			effects = null;
-			MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2043, 1, 0, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2043, 1, 0, 0);
 			activeChar.sendPacket(MSU);
 			activeChar.broadcastPacket(MSU);
 			MSU = null;
@@ -115,7 +115,7 @@ public class Remedy implements IItemHandler
 				}
 			}
 			
-			MagicSkillUser MSU = new MagicSkillUser(playable, playable, 34, 1, 0, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 34, 1, 0, 0);
 			activeChar.sendPacket(MSU);
 			activeChar.broadcastPacket(MSU);
 			
@@ -133,7 +133,7 @@ public class Remedy implements IItemHandler
 				}
 			}
 			
-			MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2045, 1, 0, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2045, 1, 0, 0);
 			activeChar.sendPacket(MSU);
 			activeChar.broadcastPacket(MSU);
 			
@@ -157,7 +157,7 @@ public class Remedy implements IItemHandler
 				activeChar.stopRooting(null);
 			}
 			
-			MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2042, 1, 0, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2042, 1, 0, 0);
 			activeChar.sendPacket(MSU);
 			activeChar.broadcastPacket(MSU);
 			

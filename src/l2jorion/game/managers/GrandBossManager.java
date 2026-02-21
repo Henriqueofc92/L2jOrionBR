@@ -88,12 +88,8 @@ public class GrandBossManager
 				info.set("heading", rset.getInt("heading"));
 				info.set("respawn_time", rset.getLong("respawn_time"));
 				
-				double HP = rset.getDouble("currentHP"); // jython doesn't recognize doubles
-				int true_HP = (int) HP; // so use java's ability to type cast
-				info.set("currentHP", true_HP); // to convert double to int
-				double MP = rset.getDouble("currentMP");
-				int true_MP = (int) MP;
-				info.set("currentMP", true_MP);
+				info.set("currentHP", (int) rset.getDouble("currentHP"));
+				info.set("currentMP", (int) rset.getDouble("currentMP"));
 				
 				_bossStatus.put(bossId, rset.getInt("status"));
 				

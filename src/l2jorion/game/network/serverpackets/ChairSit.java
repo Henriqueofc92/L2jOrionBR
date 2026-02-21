@@ -27,12 +27,12 @@ public class ChairSit extends PacketServer
 {
 	private static final String _S__e1_CHAIRSIT = "[S] e1 ChairSit";
 	
-	private final L2PcInstance _activeChar;
+	private final int _charObjId;
 	private final int _staticObjectId;
 	
 	public ChairSit(final L2PcInstance player, final int staticObjectId)
 	{
-		_activeChar = player;
+		_charObjId = player.getObjectId();
 		_staticObjectId = staticObjectId;
 	}
 	
@@ -40,7 +40,7 @@ public class ChairSit extends PacketServer
 	protected final void writeImpl()
 	{
 		writeC(0xe1);
-		writeD(_activeChar.getObjectId());
+		writeD(_charObjId);
 		writeD(_staticObjectId);
 	}
 	

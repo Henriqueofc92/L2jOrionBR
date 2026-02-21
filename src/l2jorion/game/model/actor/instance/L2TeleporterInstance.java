@@ -38,7 +38,7 @@ import l2jorion.game.model.zone.type.L2BossZone;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.ActionFailed;
 import l2jorion.game.network.serverpackets.ExShowScreenMessage;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.SetupGauge;
 import l2jorion.game.network.serverpackets.SystemMessage;
@@ -362,7 +362,7 @@ public final class L2TeleporterInstance extends L2FolkInstance
 								member.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 								
 								member.setTarget(member);
-								member.broadcastPacket(new MagicSkillUser(member, 1050, 1, unstuckTimer, 0));
+								member.broadcastPacket(new MagicSkillUse(member, 1050, 1, unstuckTimer, 0));
 								member.sendPacket(new SetupGauge(0, unstuckTimer));
 								member.setTarget(null);
 								

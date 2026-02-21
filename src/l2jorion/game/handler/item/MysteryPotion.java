@@ -26,7 +26,7 @@ import l2jorion.game.model.actor.instance.L2ItemInstance;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.actor.instance.L2PlayableInstance;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.thread.ThreadPoolManager;
 
@@ -56,7 +56,7 @@ public class MysteryPotion implements IItemHandler
 		L2PcInstance activeChar = (L2PcInstance) playable;
 		
 		// Use a summon skill effect for fun ;)
-		MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2103, 1, 0, 0);
+		MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2103, 1, 0, 0);
 		activeChar.sendPacket(MSU);
 		activeChar.broadcastPacket(MSU);
 		

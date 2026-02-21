@@ -1,23 +1,6 @@
-/*
- * Copyright (C) 2004-2013 L2J Server
- * 
- * This file is part of L2J Server.
- * 
- * L2J Server is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * L2J Server is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package l2jorion.game.model.entity.event.tournament;
 
+import java.util.Calendar;
 import java.util.List;
 
 import l2jorion.Config;
@@ -34,10 +17,11 @@ import l2jorion.game.model.entity.Announcements;
 import l2jorion.game.model.entity.event.manager.EventTask;
 import l2jorion.game.model.olympiad.OlympiadManager;
 import l2jorion.game.model.spawn.L2Spawn;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.templates.L2Item;
 import l2jorion.game.templates.L2NpcTemplate;
+import l2jorion.game.thread.ThreadPoolManager;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
 
@@ -62,6 +46,11 @@ public class Tournament implements EventTask, IVoicedCommandHandler, ICustomByPa
 	public static Tournament getNewInstance()
 	{
 		return new Tournament();
+	}
+	
+	public static Tournament getInstance()
+	{
+		return SingletonHolder.INSTANCE;
 	}
 	
 	@Override
@@ -453,6 +442,8 @@ public class Tournament implements EventTask, IVoicedCommandHandler, ICustomByPa
 	{
 		LOG.info("Tournament: Event notification start");
 		eventOnceStart();
+		// Re-schedule for next time after run
+		scheduleNextEvent();
 	}
 	
 	public static String get_eventName()
@@ -564,7 +555,7 @@ public class Tournament implements EventTask, IVoicedCommandHandler, ICustomByPa
 			_npcSpawn.getLastSpawn().decayMe();
 			_npcSpawn.getLastSpawn().spawnMe(_npcSpawn.getLastSpawn().getX(), _npcSpawn.getLastSpawn().getY(), _npcSpawn.getLastSpawn().getZ());
 			
-			_npcSpawn.getLastSpawn().broadcastPacket(new MagicSkillUser(_npcSpawn.getLastSpawn(), _npcSpawn.getLastSpawn(), 1034, 1, 1, 1));
+			_npcSpawn.getLastSpawn().broadcastPacket(new MagicSkillUse(_npcSpawn.getLastSpawn(), _npcSpawn.getLastSpawn(), 1034, 1, 1, 1));
 		}
 		catch (Exception e)
 		{
@@ -689,6 +680,64 @@ public class Tournament implements EventTask, IVoicedCommandHandler, ICustomByPa
 		return _inProgress;
 	}
 	
+	/**
+	 * Auto Scheduler to start event at configured times
+	 */
+	public void scheduleNextEvent()
+	{
+		if (!Config.TM_EVENT_ENABLED)
+		{
+			LOG.info("Tournament: Auto-start is DISABLED via config. Manual start only.");
+			return;
+		}
+		
+		if (Config.TM_START_TIMES == null || Config.TM_START_TIMES.length == 0)
+		{
+			LOG.info("Tournament: No start times configured. Manual start only.");
+			return;
+		}
+		
+		long currentTime = System.currentTimeMillis();
+		long closestDelay = Long.MAX_VALUE;
+		boolean found = false;
+		
+		for (String timeStr : Config.TM_START_TIMES)
+		{
+			try
+			{
+				String[] split = timeStr.split(":");
+				int hour = Integer.parseInt(split[0]);
+				int minute = Integer.parseInt(split[1]);
+				
+				Calendar c = Calendar.getInstance();
+				c.set(Calendar.HOUR_OF_DAY, hour);
+				c.set(Calendar.MINUTE, minute);
+				c.set(Calendar.SECOND, 0);
+				if (c.getTimeInMillis() < currentTime)
+				{
+					c.add(Calendar.DAY_OF_YEAR, 1);
+				}
+				
+				long delay = c.getTimeInMillis() - currentTime;
+				if (delay < closestDelay)
+				{
+					closestDelay = delay;
+					found = true;
+				}
+			}
+			catch (Exception e)
+			{
+				LOG.warn("Tournament: Invalid time format in config: " + timeStr);
+			}
+		}
+		
+		if (found)
+		{
+			LOG.info("Tournament: Next event scheduled in " + (closestDelay / 1000 / 60) + " minutes.");
+			ThreadPoolManager.getInstance().scheduleGeneral(this, closestDelay);
+		}
+	}
+	
 	@Override
 	public String[] getByPassCommands()
 	{
@@ -705,5 +754,15 @@ public class Tournament implements EventTask, IVoicedCommandHandler, ICustomByPa
 		{
 			"tmevent"
 		};
+	}
+	
+	private static class SingletonHolder
+	{
+		protected static final Tournament INSTANCE = new Tournament();
+		static
+		{
+			// Initialize scheduler when Singleton is first accessed
+			INSTANCE.scheduleNextEvent();
+		}
 	}
 }

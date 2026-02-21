@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="l2jserver" default="BUILD" basedir=".">
 
+    <!-- Load environment variables -->
+    <property environment="env"/>
+
     <!-- Define properties related to source and library directories -->
     <property name="src" location="src"/>
     <property name="src-lib" location="lib"/>
@@ -37,16 +40,11 @@
         <!-- Compile source code -->
         <echo>Compiling source code...</echo>
         <javac destdir="${build.classes}" includeantruntime="false"
-            optimize="on" debug="on" source="21" target="21" encoding="UTF-8" nowarn="off">
+            optimize="on" debug="on" source="24" target="24" encoding="UTF-8" nowarn="off"
+            fork="true" executable="C:/Program Files/Java/jdk-24/bin/javac">
             <src path="${src}"/>
             <classpath refid="classpath"/>
         </javac>
-
-        <!-- Copy specific service files -->
-        <echo>Copying specific service files...</echo>
-        <copy todir="${build.classes}/META-INF/services">
-            <fileset dir="${src}/META-INF/services"/>
-        </copy>
 
         <!-- Create JAR file -->
         <echo>Creating JAR file...</echo>

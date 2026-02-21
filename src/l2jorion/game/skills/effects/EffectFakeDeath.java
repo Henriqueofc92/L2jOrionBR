@@ -18,16 +18,19 @@
  */
 package l2jorion.game.skills.effects;
 
-import l2jorion.game.model.L2Character;
 import l2jorion.game.model.L2Effect;
-import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.skills.Env;
 
+/**
+ * Fake Death effect — puts the character in a fake death state.
+ * Drains MP over time; if MP runs out on a toggle skill, the effect ends.
+ * On start, calls startFakeDeath() which aborts attacks/casts and stops movement.
+ * On exit, calls stopFakeDeath() which properly resets all fake death flags.
+ */
 final class EffectFakeDeath extends L2Effect
 {
-	
 	public EffectFakeDeath(Env env, EffectTemplate template)
 	{
 		super(env, template);
@@ -42,25 +45,15 @@ final class EffectFakeDeath extends L2Effect
 	@Override
 	public void onStart()
 	{
+		getEffected().startFakeDeath();
 		super.onStart();
-		
-		L2Character effected = getEffected();
-		if (effected instanceof L2PcInstance)
-		{
-			effected.startFakeDeath();
-		}
 	}
 	
 	@Override
 	public void onExit()
 	{
+		getEffected().stopFakeDeath(this);
 		super.onExit();
-		
-		L2Character effected = getEffected();
-		if (effected instanceof L2PcInstance)
-		{
-			effected.stopFakeDeath(this);
-		}
 	}
 	
 	@Override
@@ -71,14 +64,13 @@ final class EffectFakeDeath extends L2Effect
 			return false;
 		}
 		
-		double manaDam = calc();
+		final double manaDam = calc();
 		
 		if (manaDam > getEffected().getCurrentMp())
 		{
 			if (getSkill().isToggle())
 			{
-				SystemMessage sm = new SystemMessage(SystemMessageId.SKILL_REMOVED_DUE_LACK_MP);
-				getEffected().sendPacket(sm);
+				getEffected().sendPacket(new SystemMessage(SystemMessageId.SKILL_REMOVED_DUE_LACK_MP));
 				return false;
 			}
 		}

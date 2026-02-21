@@ -14,7 +14,7 @@ import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.InventoryUpdate;
 import l2jorion.game.network.serverpackets.ItemList;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.StatusUpdate;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.templates.L2EtcItemType;
@@ -216,7 +216,7 @@ public class TradeList
 			L2Skill skill = SkillTable.getInstance().getInfo(sk.getId(), sk.getEnchant());
 			
 			skill.getEffects(player, player);
-			player.broadcastPacket(new MagicSkillUser(player, player, sk.getItemId(), sk.getEnchant(), 500, 0));
+			player.broadcastPacket(new MagicSkillUse(player, player, sk.getItemId(), sk.getEnchant(), 500, 0));
 			
 			SystemMessage sm = new SystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT);
 			sm.addSkillName(sk.getItemId());
@@ -791,9 +791,9 @@ public class TradeList
 		return slots;
 	}
 	
-	public int calcItemsWeight()
+	public long calcItemsWeight()
 	{
-		int weight = 0;
+		long weight = 0;
 		
 		for (TradeItem item : _items)
 		{
@@ -808,7 +808,7 @@ public class TradeList
 				continue;
 			}
 			
-			weight += item.getCount() * template.getWeight();
+			weight += (long) item.getCount() * template.getWeight();
 		}
 		
 		return weight;
@@ -818,15 +818,17 @@ public class TradeList
 	{
 		boolean success = false;
 		// check weight and slots
-		if (!getOwner().getInventory().validateWeight(partnerList.calcItemsWeight()) || !partnerList.getOwner().getInventory().validateWeight(calcItemsWeight()))
-		{
-			partnerList.getOwner().sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
-			getOwner().sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
-		}
-		else if (!getOwner().getInventory().validateCapacity(partnerList.countItemsSlots(getOwner())) || !partnerList.getOwner().getInventory().validateCapacity(countItemsSlots(partnerList.getOwner())))
+		long partnerWeight = partnerList.calcItemsWeight();
+		long ownerWeight = calcItemsWeight();
+		if (!getOwner().getInventory().validateCapacity(partnerList.countItemsSlots(getOwner())) || !partnerList.getOwner().getInventory().validateCapacity(countItemsSlots(partnerList.getOwner())))
 		{
 			partnerList.getOwner().sendPacket(new SystemMessage(SystemMessageId.SLOTS_FULL));
 			getOwner().sendPacket(new SystemMessage(SystemMessageId.SLOTS_FULL));
+		}
+		else if (partnerWeight > Integer.MAX_VALUE || ownerWeight > Integer.MAX_VALUE || !getOwner().getInventory().validateWeight((int) partnerWeight) || !partnerList.getOwner().getInventory().validateWeight((int) ownerWeight))
+		{
+			partnerList.getOwner().sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
+			getOwner().sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
 		}
 		else
 		{
@@ -899,7 +901,7 @@ public class TradeList
 		}
 		
 		int slots = 0;
-		int weight = 0;
+		long weight = 0;
 		
 		for (ItemRequest item : items)
 		{
@@ -938,7 +940,7 @@ public class TradeList
 				return false;
 			}
 			
-			weight += item.getCount() * template.getWeight();
+			weight += (long) item.getCount() * template.getWeight();
 			if (!template.isStackable())
 			{
 				slots += item.getCount();
@@ -949,15 +951,15 @@ public class TradeList
 			}
 		}
 		
-		if (!player.getInventory().validateWeight(weight))
-		{
-			player.sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
-			return false;
-		}
-		
 		if (!player.getInventory().validateCapacity(slots))
 		{
 			player.sendPacket(new SystemMessage(SystemMessageId.SLOTS_FULL));
+			return false;
+		}
+		
+		if (weight > Integer.MAX_VALUE || weight < 0 || !player.getInventory().validateWeight((int) weight))
+		{
+			player.sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
 			return false;
 		}
 		

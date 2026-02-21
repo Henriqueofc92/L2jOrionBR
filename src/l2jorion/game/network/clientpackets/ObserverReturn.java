@@ -43,7 +43,6 @@ public final class ObserverReturn extends PacketClient
 			if (activeChar.isBossObserve())
 			{
 				activeChar.setBossObserve(false);
-				activeChar.setBossTaskNull();
 				
 				activeChar.sendMessage("Teleporting back");
 				activeChar.sendPacket(new ExShowScreenMessage("Teleporting back", 2000, 2, false));

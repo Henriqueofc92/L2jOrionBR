@@ -64,7 +64,7 @@ public final class HennaInfo extends PacketServer
 		writeC(_activeChar.getHennaStatDEX()); // equip DEX
 		writeC(_activeChar.getHennaStatWIT()); // equip WIT
 		
-		writeD(3); // slots?
+		writeD(3 - _count); // empty slots
 		
 		writeD(_count); // size
 		for (int i = 0; i < _count; i++)

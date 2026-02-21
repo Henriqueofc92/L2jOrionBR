@@ -30,7 +30,7 @@ import l2jorion.game.model.L2Character;
 import l2jorion.game.model.L2Object;
 import l2jorion.game.model.L2Skill;
 import l2jorion.game.model.actor.instance.L2PcInstance;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.thread.ThreadPoolManager;
 
 public class AdminTest implements IAdminCommandHandler
@@ -173,7 +173,7 @@ public class AdminTest implements IAdminCommandHandler
 			player = (L2Character) target;
 		}
 		
-		player.broadcastPacket(new MagicSkillUser(activeChar, player, id, 1, 1, 1));
+		player.broadcastPacket(new MagicSkillUse(activeChar, player, id, 1, 1, 1));
 	}
 	
 	@Override

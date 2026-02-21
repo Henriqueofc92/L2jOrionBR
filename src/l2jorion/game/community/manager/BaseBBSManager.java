@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 import l2jorion.game.GameServer;
 import l2jorion.game.cache.HtmCache;
-import l2jorion.game.datatables.xml.CharTemplateTable;
 import l2jorion.game.datatables.sql.ClanTable;
+import l2jorion.game.datatables.xml.CharTemplateTable;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.network.serverpackets.ShowBoard;
 import l2jorion.logger.Logger;

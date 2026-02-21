@@ -27,7 +27,7 @@ import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.actor.instance.L2PlayableInstance;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.ExAutoSoulShot;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.templates.L2Item;
 import l2jorion.game.templates.L2Weapon;
@@ -126,7 +126,7 @@ public class SpiritShot implements IItemHandler
 		
 		if (!activeChar.getEffects())
 		{
-			activeChar.broadcastPacket(new MagicSkillUser(activeChar, activeChar, SKILL_IDS[weaponGrade], 1, 0, 0), 500);
+			activeChar.broadcastPacket(new MagicSkillUse(activeChar, activeChar, SKILL_IDS[weaponGrade], 1, 0, 0), 500);
 		}
 	}
 	

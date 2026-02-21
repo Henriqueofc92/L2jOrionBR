@@ -81,7 +81,7 @@ public class RequestBuySeed extends PacketClient
 	{
 		long totalPrice = 0;
 		int slots = 0;
-		int totalWeight = 0;
+		long totalWeight = 0;
 		
 		final L2PcInstance player = getClient().getActiveChar();
 		if (player == null)
@@ -135,10 +135,16 @@ public class RequestBuySeed extends PacketClient
 				return;
 			}
 			
-			totalPrice += count * price;
+			totalPrice += (long) count * price;
+			// Check for overflow
+			if (Integer.MAX_VALUE / count < price || totalPrice > Integer.MAX_VALUE || totalPrice < 0)
+			{
+				Util.handleIllegalPlayerAction(player, "Warning!! Character " + player.getName() + " of account " + player.getAccountName() + " tried to purchase over " + Integer.MAX_VALUE + " adena worth of goods.", Config.DEFAULT_PUNISH);
+				return;
+			}
 			
 			final L2Item template = ItemTable.getInstance().getTemplate(seedId);
-			totalWeight += count * template.getWeight();
+			totalWeight += (long) count * template.getWeight();
 			if (!template.isStackable())
 			{
 				slots += count;
@@ -149,26 +155,20 @@ public class RequestBuySeed extends PacketClient
 			}
 		}
 		
-		if (totalPrice > Integer.MAX_VALUE)
-		{
-			Util.handleIllegalPlayerAction(player, "Warning!! Character " + player.getName() + " of account " + player.getAccountName() + " tried to purchase over " + Integer.MAX_VALUE + " adena worth of goods.", Config.DEFAULT_PUNISH);
-			return;
-		}
-		
-		if (!player.getInventory().validateWeight(totalWeight))
-		{
-			sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
-			return;
-		}
-		
 		if (!player.getInventory().validateCapacity(slots))
 		{
 			sendPacket(new SystemMessage(SystemMessageId.SLOTS_FULL));
 			return;
 		}
 		
+		if (totalWeight > Integer.MAX_VALUE || totalWeight < 0 || !player.getInventory().validateWeight((int) totalWeight))
+		{
+			sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
+			return;
+		}
+		
 		// Charge buyer
-		if (totalPrice < 0 || !player.reduceAdena("Buy", (int) totalPrice, target, false))
+		if (!player.reduceAdena("Buy", (int) totalPrice, target, false))
 		{
 			sendPacket(new SystemMessage(SystemMessageId.YOU_NOT_ENOUGH_ADENA));
 			return;

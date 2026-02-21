@@ -81,6 +81,7 @@ import l2jorion.game.datatables.sql.SkillSpellbookTable;
 import l2jorion.game.datatables.sql.SkillTreeTable;
 import l2jorion.game.datatables.xml.AccessLevels;
 import l2jorion.game.datatables.xml.AdminCommands;
+import l2jorion.game.datatables.xml.GmAccessTable;
 import l2jorion.game.datatables.xml.ArmorSetsTable;
 import l2jorion.game.datatables.xml.AugmentationData;
 import l2jorion.game.datatables.xml.AugmentationScrollData;
@@ -168,6 +169,7 @@ import l2jorion.game.powerpack.PowerPack;
 import l2jorion.game.script.EventDroplist;
 import l2jorion.game.script.faenor.FaenorScriptEngine;
 import l2jorion.game.scripting.L2ScriptEngineManager;
+import l2jorion.game.scripting.ScriptLoader;
 import l2jorion.game.taskmanager.KnownListUpdateTaskManager;
 import l2jorion.game.taskmanager.RandomZoneTaskManager;
 import l2jorion.game.taskmanager.TaskManager;
@@ -224,6 +226,7 @@ public class GameServer
 		
 		L2ScriptEngineManager.getInstance();
 		
+		Util.printSection("Database");
 		L2DatabaseFactory.getInstance();
 		
 		gameServer = new GameServer();
@@ -464,6 +467,7 @@ public class GameServer
 		Hero.getInstance();
 		
 		Util.printSection("Access Levels");
+		GmAccessTable.getInstance();
 		AccessLevels.getInstance();
 		AdminCommands.getInstance();
 		GmListTable.getInstance();
@@ -548,15 +552,8 @@ public class GameServer
 		
 		if (!Config.ALT_DEV_NO_SCRIPT)
 		{
-			try
-			{
-				L2ScriptEngineManager.getInstance().executeScriptList(new File(Config.DATAPACK_ROOT, "data/scripts/scripts.cfg"));
-				FaenorScriptEngine.getInstance();
-			}
-			catch (IOException ioe)
-			{
-				LOG.error("{}: Failed loading scripts.cfg.", getClass().getSimpleName());
-			}
+			ScriptLoader.loadAllScripts();
+			FaenorScriptEngine.getInstance();
 			
 			if (!Config.ALT_DEV_NO_QUESTS)
 			{
@@ -617,34 +614,31 @@ public class GameServer
 			}
 			EventManager.getInstance().startEventRegistration();
 		}
+		
 		if (Config.ARENA_EVENT_ENABLED_1X1 || Config.ARENA_EVENT_ENABLED_2X2 || Config.ARENA_EVENT_ENABLED_4X4 || Config.ARENA_EVENT_ENABLED_9X9)
 		{
-			CustomBypassHandler.getInstance().registerCustomBypassHandler(Tournament.getNewInstance());
-			VoicedCommandHandler.getInstance().registerVoicedCommandHandler(Tournament.getNewInstance());
-			
+			CustomBypassHandler.getInstance().registerCustomBypassHandler(Tournament.getInstance());
+			VoicedCommandHandler.getInstance().registerVoicedCommandHandler(Tournament.getInstance());
 			if (Config.ARENA_EVENT_ENABLED_1X1)
 			{
 				ThreadPoolManager.getInstance().scheduleGeneral(Arena1x1.getInstance(), 0);
 			}
-			
 			if (Config.ARENA_EVENT_ENABLED_2X2)
 			{
 				ThreadPoolManager.getInstance().scheduleGeneral(Arena2x2.getInstance(), 0);
 			}
-			
 			if (Config.ARENA_EVENT_ENABLED_4X4)
 			{
 				ThreadPoolManager.getInstance().scheduleGeneral(Arena4x4.getInstance(), 0);
 			}
-			
 			if (Config.ARENA_EVENT_ENABLED_9X9)
 			{
 				ThreadPoolManager.getInstance().scheduleGeneral(Arena9x9.getInstance(), 0);
 			}
+			Tournament.getInstance();
 		}
 		
 		EventManager.getInstance().startEventRegistration();
-		
 		Runtime.getRuntime().addShutdownHook(Shutdown.getInstance());
 		
 		Util.printSection("Offline trade");

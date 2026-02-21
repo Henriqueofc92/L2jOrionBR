@@ -20,7 +20,7 @@ import l2jorion.game.model.actor.instance.L2RecipeInstance;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.ActionFailed;
 import l2jorion.game.network.serverpackets.ItemList;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.RecipeBookItemList;
 import l2jorion.game.network.serverpackets.RecipeItemMakeInfo;
 import l2jorion.game.network.serverpackets.RecipeShopItemInfo;
@@ -359,7 +359,7 @@ public class RecipeController
 					// divided by RATE_CONSUMABLES_COST to remove craft time increase on higher consumables rates
 					_delay = (int) (Config.ALT_GAME_CREATION_SPEED * _player.getMReuseRate(_skill) * GameTimeController.TICKS_PER_SECOND / Config.RATE_CONSUMABLE_COST) * GameTimeController.MILLIS_IN_TICK;
 					
-					MagicSkillUser msk = new MagicSkillUser(_player, _skillId, _skillLevel, _delay, 0);
+					MagicSkillUse msk = new MagicSkillUse(_player, _skillId, _skillLevel, _delay, 0);
 					_player.broadcastPacket(msk);
 					
 					_player.sendPacket(new SetupGauge(0, _delay));

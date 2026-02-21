@@ -4,8 +4,8 @@ import java.util.Map;
 
 import l2jorion.Config;
 import l2jorion.game.ai.CtrlIntention;
-import l2jorion.game.datatables.xml.CharTemplateTable;
 import l2jorion.game.datatables.sql.ItemTable;
+import l2jorion.game.datatables.xml.CharTemplateTable;
 import l2jorion.game.model.L2Character;
 import l2jorion.game.model.base.ClassId;
 import l2jorion.game.model.base.ClassLevel;

@@ -19,14 +19,11 @@
  */
 package l2jorion.game.managers;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import l2jorion.Config;
 import l2jorion.game.model.quest.Quest;
-import l2jorion.game.scripting.L2ScriptEngineManager;
+import l2jorion.game.scripting.ScriptLoader;
 import l2jorion.game.scripting.ScriptManager;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
@@ -62,7 +59,7 @@ public class QuestManager extends ScriptManager<Quest>
 		return q != null && q.reload();
 	}
 	
-	public final void reloadAllQuests() throws IOException
+	public final void reloadAllQuests()
 	{
 		LOG.info("Reloading Server Scripts");
 		
@@ -75,9 +72,8 @@ public class QuestManager extends ScriptManager<Quest>
 			}
 		}
 		
-		// Now load all scripts
-		final File scripts = new File(Config.DATAPACK_ROOT, "data/scripts/scripts.cfg");
-		L2ScriptEngineManager.getInstance().executeScriptList(scripts);
+		// Reload all scripts from scripts.xml
+		ScriptLoader.loadAllScripts();
 		QuestManager.getInstance().report();
 	}
 	

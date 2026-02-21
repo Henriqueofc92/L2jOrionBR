@@ -309,15 +309,10 @@ public class CharSelectInfo extends PacketServer
 			writeF(charInfoPackage.getMaxMp()); // Mp max
 			
 			final long deleteTime = charInfoPackage.getDeleteTimer();
-			final int accesslevels = charInfoPackage.getAccessLevel();
 			int deletedays = 0;
 			if (deleteTime > 0)
 			{
 				deletedays = (int) ((deleteTime - System.currentTimeMillis()) / 1000);
-			}
-			else if (accesslevels < 0)
-			{
-				deletedays = -1; // Like L2OFF player looks dead if he is banned.
 			}
 			writeD(deletedays); // Days left before
 			
@@ -347,7 +342,7 @@ public class CharSelectInfo extends PacketServer
 		try
 		{
 			con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT account_name, obj_Id, char_name, level, maxHp, curHp, maxMp, curMp, acc, crit, evasion, mAtk, mDef, mSpd, pAtk, pDef, pSpd, runSpd, walkSpd, str, con, dex, _int, men, wit, face, hairStyle, hairColor, sex, heading, x, y, z, movement_multiplier, attack_speed_multiplier, colRad, colHeight, exp, sp, karma, pvpkills, pkkills, clanid, maxload, race, classid, deletetime, cancraft, title, rec_have, rec_left, accesslevel, online, char_slot, lastAccess, base_class FROM characters WHERE account_name=?");
+			PreparedStatement statement = con.prepareStatement("SELECT account_name, obj_Id, char_name, level, maxHp, curHp, maxMp, curMp, acc, crit, evasion, mAtk, mDef, mSpd, pAtk, pDef, pSpd, runSpd, walkSpd, str, con, dex, _int, men, wit, face, hairStyle, hairColor, sex, heading, x, y, z, movement_multiplier, attack_speed_multiplier, colRad, colHeight, exp, sp, karma, pvpkills, pkkills, clanid, maxload, race, classid, deletetime, cancraft, title, rec_have, rec_left, online, char_slot, lastAccess, base_class FROM characters WHERE account_name=?");
 			
 			statement.setString(1, _loginName);
 			final ResultSet charList = statement.executeQuery();
@@ -481,8 +476,6 @@ public class CharSelectInfo extends PacketServer
 		charInfopackage.setClanId(chardata.getInt("clanid"));
 		
 		charInfopackage.setRace(chardata.getInt("race"));
-		
-		charInfopackage.setAccessLevel(chardata.getInt("accesslevel"));
 		
 		final int baseClassId = chardata.getInt("base_class");
 		final int activeClassId = chardata.getInt("classid");

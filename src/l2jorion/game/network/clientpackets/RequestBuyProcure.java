@@ -110,7 +110,7 @@ public class RequestBuyProcure extends PacketClient
 		
 		// Check for buylist validity and calculates summary values
 		int slots = 0;
-		int weight = 0;
+		long weight = 0;
 		
 		if (!(player.getTarget() instanceof L2ManorManagerInstance))
 		{
@@ -133,7 +133,7 @@ public class RequestBuyProcure extends PacketClient
 			}
 			
 			final L2Item template = ItemTable.getInstance().getTemplate(L2Manor.getInstance().getRewardItem(itemId, manor.getCastle().getCrop(itemId, CastleManorManager.PERIOD_CURRENT).getReward()));
-			weight += count * template.getWeight();
+			weight += (long) count * template.getWeight();
 			
 			if (!template.isStackable())
 			{
@@ -145,15 +145,15 @@ public class RequestBuyProcure extends PacketClient
 			}
 		}
 		
-		if (!player.getInventory().validateWeight(weight))
-		{
-			sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
-			return;
-		}
-		
 		if (!player.getInventory().validateCapacity(slots))
 		{
 			sendPacket(new SystemMessage(SystemMessageId.SLOTS_FULL));
+			return;
+		}
+		
+		if (weight > Integer.MAX_VALUE || weight < 0 || !player.getInventory().validateWeight((int) weight))
+		{
+			sendPacket(new SystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
 			return;
 		}
 		

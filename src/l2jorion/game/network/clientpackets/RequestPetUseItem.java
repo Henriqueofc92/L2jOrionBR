@@ -27,7 +27,7 @@ import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.actor.instance.L2PetInstance;
 import l2jorion.game.network.PacketClient;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.PetInfo;
 import l2jorion.game.network.serverpackets.PetItemList;
 import l2jorion.game.network.serverpackets.SystemMessage;
@@ -213,7 +213,7 @@ public final class RequestPetUseItem extends PacketClient
 			
 			pet.checkFed();
 			
-			pet.broadcastPacket(new MagicSkillUser(pet, pet, 2048, 1, 0, 0));
+			pet.broadcastPacket(new MagicSkillUse(pet, pet, 2048, 1, 0, 0));
 		}
 		
 		player.sendPacket(new PetInfo(pet));

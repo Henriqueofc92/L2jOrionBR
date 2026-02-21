@@ -31,7 +31,9 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import l2jorion.Config;
 import l2jorion.game.ai.CtrlEvent;
@@ -73,6 +75,11 @@ public class Quest extends ManagedScript
 	protected static final Logger LOG = LoggerFactory.getLogger(Quest.class);
 	
 	private static final String HTML_NONE_AVAILABLE = "<html><body>You are either not on a quest that involves this NPC, or you don't meet this NPC's minimum quest requirements.</body></html>";
+	private static final String HTML_ALREADY_COMPLETED = "<html><body>This quest has already been completed.</body></html>";
+	
+	public static final byte STATE_CREATED = 0;
+	public static final byte STATE_STARTED = 1;
+	public static final byte STATE_COMPLETED = 2;
 	
 	private static Map<String, Quest> _allEventsS = new HashMap<>();
 	private final Map<String, ArrayList<QuestTimer>> _allEventTimers = new HashMap<>();
@@ -96,6 +103,12 @@ public class Quest extends ManagedScript
 		_name = name;
 		_descr = descr;
 		_states = new HashMap<>();
+		
+		// Auto-register standard quest states so setState(byte) works for all quests
+		final State start = new State("Start", this);
+		new State("Started", this);
+		new State("Completed", this);
+		setInitialState(start);
 		
 		// for admin reload only
 		StringBuffer temp = new StringBuffer(getClass().getCanonicalName());
@@ -170,6 +183,13 @@ public class Quest extends ManagedScript
 	
 	public QuestState newQuestState(final L2PcInstance player)
 	{
+		// Check if the player already has this quest state (loaded from DB or created earlier)
+		QuestState existing = player.getQuestState(getName());
+		if (existing != null)
+		{
+			return existing;
+		}
+		
 		final QuestState qs = new QuestState(this, player, getInitialState(), false);
 		player.setQuestState(qs);
 		Quest.createQuestInDb(qs);
@@ -179,6 +199,11 @@ public class Quest extends ManagedScript
 	public State getInitialState()
 	{
 		return _initialState;
+	}
+	
+	public State getStateByName(String name)
+	{
+		return _states.get(name);
 	}
 	
 	public String getName()
@@ -1148,20 +1173,29 @@ public class Quest extends ManagedScript
 				}
 				
 				// Create an object State containing the state of the quest
-				final State state = q._states.get(stateId);
+				State state = q._states.get(stateId);
 				if (state == null)
 				{
-					if (Config.DEVELOPER)
+					// Fallback: treat legacy "Created" or numeric "0" states as the initial state
+					if ("Created".equals(stateId) || "0".equals(stateId))
 					{
-						LOG.info("Unknown state in quest " + questId + " for player " + player.getName());
+						state = q.getInitialState();
 					}
-					if (Config.AUTODELETE_INVALID_QUEST_DATA)
+					
+					if (state == null)
 					{
-						invalidQuestData.setInt(1, player.getObjectId());
-						invalidQuestData.setString(2, questId);
-						invalidQuestData.executeUpdate();
+						if (Config.DEVELOPER)
+						{
+							LOG.info("Unknown state in quest " + questId + " for player " + player.getName());
+						}
+						if (Config.AUTODELETE_INVALID_QUEST_DATA)
+						{
+							invalidQuestData.setInt(1, player.getObjectId());
+							invalidQuestData.setString(2, questId);
+							invalidQuestData.executeUpdate();
+						}
+						continue;
 					}
-					continue;
 				}
 				
 				// Create a new QuestState for the player that will be added to the player's list of quests
@@ -1724,6 +1758,14 @@ public class Quest extends ManagedScript
 		_questItemIds.add(itemId);
 	}
 	
+	public void setItemsIds(int... itemIds)
+	{
+		for (int id : itemIds)
+		{
+			registerItem(id);
+		}
+	}
+	
 	public ArrayList<Integer> getRegisteredItemIds()
 	{
 		return _questItemIds;
@@ -1841,7 +1883,389 @@ public class Quest extends ManagedScript
 		return HTML_NONE_AVAILABLE;
 	}
 	
+	public static String getAlreadyCompletedMsg()
+	{
+		return HTML_ALREADY_COMPLETED;
+	}
+	
+	public void addSkillSeeId(int... npcIds)
+	{
+		for (int id : npcIds)
+		{
+			addSkillSee(id);
+		}
+	}
+	
 	public void onSiegeEvent()
 	{
+	}
+	
+	public QuestState checkPlayerState(L2PcInstance player, L2NpcInstance npc, byte state)
+	{
+		if (player == null)
+		{
+			return null;
+		}
+		
+		final QuestState st = player.getQuestState(getName());
+		if (st == null || st.getStateByte() != state)
+		{
+			return null;
+		}
+		
+		if (npc != null && !player.isInsideRadius(npc, 1500, true, false))
+		{
+			return null;
+		}
+		
+		return st;
+	}
+	
+	/**
+	 * Check if player has this quest with the given variable value and is near the NPC.
+	 * @param player the player
+	 * @param npc the NPC
+	 * @param var the quest variable name (e.g. "cond")
+	 * @param val the expected value
+	 * @return the QuestState if conditions met, null otherwise
+	 */
+	public QuestState checkPlayerCondition(L2PcInstance player, L2NpcInstance npc, String var, String val)
+	{
+		if (player == null)
+		{
+			return null;
+		}
+		
+		final QuestState st = player.getQuestState(getName());
+		if (st == null)
+		{
+			return null;
+		}
+		
+		final String value = (String) st.get(var);
+		if (value == null || !value.equalsIgnoreCase(val))
+		{
+			return null;
+		}
+		
+		if (npc != null && !player.isInsideRadius(npc, 1500, true, false))
+		{
+			return null;
+		}
+		
+		return st;
+	}
+	
+	/**
+	 * Returns the HTML content of a quest HTML file without sending it to a player.
+	 * @param fileName the HTML file name (e.g. "31002-13.htm")
+	 * @return the HTML content string
+	 */
+	public String getHtmlText(String fileName)
+	{
+		final String questId = getName();
+		String content = HtmCache.getInstance().getHtm("data/scripts/quests/" + questId + "/" + fileName);
+		if (content == null)
+		{
+			content = HtmCache.getInstance().getHtmForce("data/scripts/quests/" + questId + "/" + fileName);
+		}
+		return content;
+	}
+	
+	/**
+	 * Returns the QuestState of the player's clan leader for this quest.
+	 * @param player the clan member
+	 * @param npc the NPC (for distance check, can be null)
+	 * @return the clan leader's QuestState, or null
+	 */
+	public QuestState getClanLeaderQuestState(L2PcInstance player, L2NpcInstance npc)
+	{
+		if (player == null || player.getClan() == null || player.getClan().getLeader() == null)
+		{
+			return null;
+		}
+		
+		final L2PcInstance leader = player.getClan().getLeader().getPlayerInstance();
+		if (leader == null)
+		{
+			return null;
+		}
+		
+		if (npc != null && !leader.isInsideRadius(npc, 1500, true, false))
+		{
+			return null;
+		}
+		
+		return leader.getQuestState(getName());
+	}
+	
+	public L2NpcInstance addSpawn(int npcId, L2Character cha, boolean randomOffset, int despawnDelay, boolean isSummonSpawn)
+	{
+		return QuestSpawn.getInstance().addSpawn(npcId, cha.getX(), cha.getY(), cha.getZ(), cha.getHeading(), randomOffset, despawnDelay);
+	}
+	
+	public L2NpcInstance addSpawn(int npcId, Location loc, boolean randomOffset, int despawnDelay, boolean isSummonSpawn)
+	{
+		return QuestSpawn.getInstance().addSpawn(npcId, loc.getX(), loc.getY(), loc.getZ(), loc.getHeading(), randomOffset, despawnDelay);
+	}
+	
+	public L2NpcInstance addSpawn(int npcId, int x, int y, int z, int heading, boolean randomOffset, int despawnDelay, boolean isSummonSpawn)
+	{
+		return QuestSpawn.getInstance().addSpawn(npcId, x, y, z, heading, randomOffset, despawnDelay);
+	}
+	
+	public void addKillId(Set<Integer> killIds)
+	{
+		for (int killId : killIds)
+		{
+			addEventId(killId, Quest.QuestEventType.ON_KILL);
+		}
+	}
+	
+	public void addAggroRangeEnterId(int... npcIds)
+	{
+		for (int npcId : npcIds)
+		{
+			addEventId(npcId, Quest.QuestEventType.ON_AGGRO_RANGE_ENTER);
+		}
+	}
+	
+	public void addEnterZoneId(int... zoneIds)
+	{
+		// Zone-based quest events are not supported in this L2jOrion build.
+	}
+	
+	public String onEnterZone(L2Character character, Object zone)
+	{
+		return null;
+	}
+	
+	public QuestState getRandomPartyMember(L2PcInstance player, L2NpcInstance npc, String value)
+	{
+		return getRandomPartyMember(player, npc, "cond", value);
+	}
+	
+	public QuestState getRandomPartyMember(L2PcInstance player, L2NpcInstance npc, String var, String value)
+	{
+		if (player == null)
+		{
+			return null;
+		}
+		
+		QuestState temp = null;
+		L2Party party = player.getParty();
+		
+		if (party == null || party.getPartyMembers().isEmpty())
+		{
+			temp = player.getQuestState(getName());
+			if (temp != null && temp.isSet(var) && temp.get(var) != null && String.valueOf(temp.get(var)).equals(value))
+			{
+				if (npc == null || player.isInsideRadius(npc, Config.ALT_PARTY_RANGE, true, false))
+				{
+					return temp;
+				}
+			}
+			return null;
+		}
+		
+		final List<QuestState> candidates = new ArrayList<>();
+		for (L2PcInstance partyMember : party.getPartyMembers())
+		{
+			if (npc != null && !partyMember.isInsideRadius(npc, Config.ALT_PARTY_RANGE, true, false))
+			{
+				continue;
+			}
+			
+			temp = partyMember.getQuestState(getName());
+			if (temp != null && temp.isSet(var) && temp.get(var) != null && String.valueOf(temp.get(var)).equals(value))
+			{
+				candidates.add(temp);
+			}
+		}
+		
+		if (candidates.isEmpty())
+		{
+			return null;
+		}
+		
+		return candidates.get(Rnd.get(candidates.size()));
+	}
+	
+	public QuestState getRandomPartyMemberState(L2PcInstance player, L2NpcInstance npc, byte state)
+	{
+		if (player == null)
+		{
+			return null;
+		}
+		
+		final State targetState = getStateByName(state == STATE_COMPLETED ? "Completed" : state == STATE_STARTED ? "Started" : "Start");
+		
+		QuestState temp = null;
+		L2Party party = player.getParty();
+		
+		if (party == null || party.getPartyMembers().isEmpty())
+		{
+			temp = player.getQuestState(getName());
+			if (temp != null && temp.getState() == targetState)
+			{
+				if (npc == null || player.isInsideRadius(npc, Config.ALT_PARTY_RANGE, true, false))
+				{
+					return temp;
+				}
+			}
+			return null;
+		}
+		
+		final List<QuestState> candidates = new ArrayList<>();
+		for (L2PcInstance partyMember : party.getPartyMembers())
+		{
+			if (npc != null && !partyMember.isInsideRadius(npc, Config.ALT_PARTY_RANGE, true, false))
+			{
+				continue;
+			}
+			
+			temp = partyMember.getQuestState(getName());
+			if (temp != null && temp.getState() == targetState)
+			{
+				candidates.add(temp);
+			}
+		}
+		
+		if (candidates.isEmpty())
+		{
+			return null;
+		}
+		
+		return candidates.get(Rnd.get(candidates.size()));
+	}
+	
+	public List<QuestState> getPartyMembers(L2PcInstance player, L2NpcInstance npc, String var, String value)
+	{
+		final List<QuestState> result = new ArrayList<>();
+		if (player == null)
+		{
+			return result;
+		}
+		
+		L2Party party = player.getParty();
+		
+		if (party == null || party.getPartyMembers().isEmpty())
+		{
+			QuestState temp = player.getQuestState(getName());
+			if (temp != null && temp.isSet(var) && String.valueOf(temp.get(var)).equals(value))
+			{
+				if (npc == null || player.isInsideRadius(npc, Config.ALT_PARTY_RANGE, true, false))
+				{
+					result.add(temp);
+				}
+			}
+			return result;
+		}
+		
+		for (L2PcInstance partyMember : party.getPartyMembers())
+		{
+			if (npc != null && !partyMember.isInsideRadius(npc, Config.ALT_PARTY_RANGE, true, false))
+			{
+				continue;
+			}
+			
+			QuestState temp = partyMember.getQuestState(getName());
+			if (temp != null && temp.isSet(var) && String.valueOf(temp.get(var)).equals(value))
+			{
+				result.add(temp);
+			}
+		}
+		
+		return result;
+	}
+	
+	public void castSkill(L2NpcInstance npc, L2PcInstance player, L2Skill skill)
+	{
+		if (npc != null && player != null && skill != null)
+		{
+			npc.setTarget(player);
+			npc.doCast(skill);
+		}
+	}
+	
+	public void removeNotifyQuestOfDeath(QuestState qs)
+	{
+		if (qs != null && qs.getPlayer() != null)
+		{
+			qs.getPlayer().removeNotifyQuestOfDeath(qs);
+		}
+	}
+	
+	public boolean giveItemRandomly(L2PcInstance player, L2NpcInstance npc, int itemId, int minAmount, int maxAmount, int neededCount, boolean dropChance100)
+	{
+		if (player == null)
+		{
+			return false;
+		}
+		
+		final QuestState st = player.getQuestState(getName());
+		if (st == null)
+		{
+			return false;
+		}
+		
+		return st.giveItemRandomly(player, npc, itemId, minAmount, maxAmount, neededCount, dropChance100);
+	}
+	
+	public boolean giveItemRandomly(L2PcInstance player, L2NpcInstance npc, int itemId, int minAmount, int maxAmount, int neededCount, double dropChance)
+	{
+		if (player == null)
+		{
+			return false;
+		}
+		
+		final QuestState st = player.getQuestState(getName());
+		if (st == null)
+		{
+			return false;
+		}
+		
+		return st.giveItemRandomly(player, npc, itemId, minAmount, maxAmount, neededCount, dropChance);
+	}
+	
+	public L2PcInstance getRandomPartyMember(L2PcInstance player, L2NpcInstance npc)
+	{
+		if (player == null)
+		{
+			return null;
+		}
+		
+		L2Party party = player.getParty();
+		
+		if (party == null || party.getPartyMembers().isEmpty())
+		{
+			if (npc == null || player.isInsideRadius(npc, Config.ALT_PARTY_RANGE, true, false))
+			{
+				return player;
+			}
+			return null;
+		}
+		
+		final List<L2PcInstance> candidates = new ArrayList<>();
+		for (L2PcInstance partyMember : party.getPartyMembers())
+		{
+			if (npc != null && !partyMember.isInsideRadius(npc, Config.ALT_PARTY_RANGE, true, false))
+			{
+				continue;
+			}
+			
+			QuestState temp = partyMember.getQuestState(getName());
+			if (temp != null)
+			{
+				candidates.add(partyMember);
+			}
+		}
+		
+		if (candidates.isEmpty())
+		{
+			return null;
+		}
+		
+		return candidates.get(Rnd.get(candidates.size()));
 	}
 }

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import l2jorion.Config;
 import l2jorion.game.GameServer;
-import l2jorion.game.handler.item.AccessLevelCustomItem;
 import l2jorion.game.handler.item.AugmentItem;
 import l2jorion.game.handler.item.BeastSoulShot;
 import l2jorion.game.handler.item.BeastSpice;
@@ -77,7 +76,6 @@ public class ItemHandler
 	protected ItemHandler()
 	{
 		registerItemHandler(new AugmentItem());
-		registerItemHandler(new AccessLevelCustomItem());
 		registerItemHandler(new ScrollOfEscape());
 		registerItemHandler(new ScrollOfResurrection());
 		registerItemHandler(new SoulShots());

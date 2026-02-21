@@ -29,7 +29,7 @@ import l2jorion.game.model.L2Skill;
 import l2jorion.game.model.entity.sevensigns.SevenSigns;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.ActionFailed;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.MoveToPawn;
 import l2jorion.game.network.serverpackets.SocialAction;
 import l2jorion.game.network.serverpackets.SystemMessage;
@@ -177,7 +177,7 @@ public class L2CabaleBufferInstance extends L2NpcInstance
 			if (player.getFirstEffect(skill) == null)
 			{
 				skill.getEffects(_caster, player, false, false, false);
-				broadcastPacket(new MagicSkillUser(_caster, player, skill.getId(), skillLevel, skill.getHitTime(), 0));
+				broadcastPacket(new MagicSkillUse(_caster, player, skill.getId(), skillLevel, skill.getHitTime(), 0));
 				final SystemMessage sm = new SystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT);
 				sm.addSkillName(skillId);
 				player.sendPacket(sm);

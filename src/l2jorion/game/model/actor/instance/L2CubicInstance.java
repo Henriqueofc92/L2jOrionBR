@@ -33,7 +33,7 @@ import l2jorion.game.model.L2Skill;
 import l2jorion.game.model.L2Skill.SkillType;
 import l2jorion.game.model.zone.ZoneId;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.skills.Formulas;
 import l2jorion.game.skills.l2skills.L2SkillDrain;
@@ -592,7 +592,7 @@ public class L2CubicInstance
 				{
 					// Smart Cubic debuff cancel is needed, no other skill is used in this
 					// activation period
-					final MagicSkillUser msu = new MagicSkillUser(owner, owner, SKILL_CUBIC_CURE, 1, 0, 0);
+					final MagicSkillUse msu = new MagicSkillUse(owner, owner, SKILL_CUBIC_CURE, 1, 0, 0);
 					owner.broadcastPacket(msu);
 				}
 				else if (Rnd.get(100) < _chance)
@@ -626,7 +626,7 @@ public class L2CubicInstance
 								LOG.info("Cubic Id: " + _id + " Target: " + target.getName() + " distance: " + Math.sqrt(target.getDistanceSq(owner.getX(), owner.getY(), owner.getZ())));
 							}
 							
-							owner.broadcastPacket(new MagicSkillUser(owner, target, skill.getId(), skill.getLevel(), 0, 0));
+							owner.broadcastPacket(new MagicSkillUse(owner, target, skill.getId(), skill.getLevel(), 0, 0));
 							
 							final SkillType type = skill.getSkillType();
 							final ISkillHandler handler = SkillHandler.getInstance().getSkillHandler(skill.getSkillType());
@@ -1177,7 +1177,7 @@ public class L2CubicInstance
 								skill.useSkill(_owner, targets);
 							}
 							
-							final MagicSkillUser msu = new MagicSkillUser(_owner, target, skill.getId(), skill.getLevel(), 0, 0);
+							final MagicSkillUse msu = new MagicSkillUse(_owner, target, skill.getId(), skill.getLevel(), 0, 0);
 							_owner.broadcastPacket(msu);
 						}
 					}

@@ -101,13 +101,14 @@ import l2jorion.game.network.serverpackets.FlyToLocation.FlyType;
 import l2jorion.game.network.serverpackets.MagicEffectIcons;
 import l2jorion.game.network.serverpackets.MagicSkillCanceld;
 import l2jorion.game.network.serverpackets.MagicSkillLaunched;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.MyTargetSelected;
 import l2jorion.game.network.serverpackets.NpcInfo;
 import l2jorion.game.network.serverpackets.PartySpelled;
 import l2jorion.game.network.serverpackets.PetInfo;
 import l2jorion.game.network.serverpackets.Revive;
 import l2jorion.game.network.serverpackets.SetupGauge;
+import l2jorion.game.network.serverpackets.SocialAction;
 import l2jorion.game.network.serverpackets.StatusUpdate;
 import l2jorion.game.network.serverpackets.StopMove;
 import l2jorion.game.network.serverpackets.SystemMessage;
@@ -730,6 +731,12 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 				}
 			}
 			
+			// Stop effects that should be removed on any action (e.g., fake death, hide)
+			if (isFakeDeath())
+			{
+				stopFakeDeath(null);
+			}
+			
 			L2ItemInstance weaponInst = getActiveWeaponInstance();
 			L2Weapon weaponItem = getActiveWeaponItem();
 			final L2WeaponType weaponItemType = getAttackType();
@@ -1156,8 +1163,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		int attackcount = 0;
 		
 		boolean hitted = doAttackHitSimple(attack, target, 100, sAtk);
-		// by retail 100 too
-		double attackpercent = 100;
+		// Start at 85% for secondary targets with progressive decay per target
+		double attackpercent = 85;
 		L2Character temp;
 		Collection<L2Object> objs = getKnownList().getKnownObjects().values();
 		{
@@ -1204,8 +1211,8 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 						if (temp == getAI().getTarget() || temp.isAutoAttackable(this))
 						{
 							hitted |= doAttackHitSimple(attack, temp, attackpercent, sAtk);
-							// removed - interlude doesn't have it
-							// attackpercent /= 1.15;
+							// Progressive damage decay per additional target hit
+							attackpercent /= 1.15;
 							
 							attackcount++;
 							if (attackcount > attackRandomCountMax)
@@ -1498,9 +1505,11 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 			coolTime = (int) (0.70 * coolTime);
 		}
 		
-		if (!skill.isStaticHitTime() && skill.getHitTime() >= 500 && hitTime < 500)
+		// Minimum cast time floor enforced via Formulas.calcMAtkSpd (400ms)
+		// Additional safety net for edge cases
+		if (!skill.isStaticHitTime() && hitTime < 400)
 		{
-			hitTime = 500;
+			hitTime = 400;
 		}
 		
 		if (skill.isPotion())
@@ -1651,7 +1660,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		
 		// Send a Server->Client packet MagicSkillUser with target, displayId, level, skillTime, reuseDelay
 		// to the L2Character AND to all L2PcInstance in the _KnownPlayers of the L2Character
-		broadcastPacket(new MagicSkillUser(this, target, displayId, level, hitTime, reuseDelay));
+		broadcastPacket(new MagicSkillUse(this, target, displayId, level, hitTime, reuseDelay));
 		
 		if (this instanceof L2PlayableInstance)
 		{
@@ -3985,6 +3994,23 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 		_NotifyQuestOfDeathList.add(qs);
 	}
 	
+	public void removeNotifyQuestOfDeath(QuestState qs)
+	{
+		if (qs != null && _NotifyQuestOfDeathList != null)
+		{
+			_NotifyQuestOfDeathList.remove(qs);
+		}
+	}
+	
+	/**
+	 * Broadcasts a SocialAction packet to nearby players.
+	 * @param actionId the social action id
+	 */
+	public void broadcastSocialActionInRadius(int actionId)
+	{
+		broadcastPacket(new SocialAction(getObjectId(), actionId));
+	}
+	
 	public final List<QuestState> getNotifyQuestOfDeath()
 	{
 		if (_NotifyQuestOfDeathList == null)
@@ -4334,7 +4360,7 @@ public abstract class L2Character extends L2Object implements ISkillsHolder
 	
 	public boolean isInCombat()
 	{
-		return (/* getAI().getTarget() != null || WTF??? */getAI().isAutoAttacking());
+		return AttackStanceTaskManager.getInstance().getAttackStanceTask(this);
 	}
 	
 	public final boolean isMoving()

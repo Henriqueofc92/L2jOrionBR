@@ -29,7 +29,6 @@ public class ConfigLoader
 	public static final String PVP_CONFIG_FILE = "./config/main/pvp.ini";
 	public static final String POWERPACK_FILE = "./config/main/powerpack.ini";
 	public static final String OLYMP_CONFIG_FILE = "./config/main/olympiad.ini";
-	public static final String SYNC_FILE = "./config/main/synchronization.ini";
 	
 	public static final String SUBSCRIPTION_CONFIG_FILE = "./config/subscription/subscription.ini";
 	public static final String PROTECT_FLOOD_CONFIG_FILE = "./config/protection/flood.ini";
@@ -48,7 +47,6 @@ public class ConfigLoader
 	public static final String PHYSICS_CONFIGURATION_FILE = "./config/mods/balance/physics.ini";
 	
 	public static final String EVENT_CHAMPION_FILE = "./config/mods/champion.ini";
-	public static final String EVENT_REBIRTH_FILE = "./config/mods/rebirth.ini";
 	public static final String EVENT_WEDDING_FILE = "./config/mods/wedding.ini";
 	public static final String EVENT_PC_BANG_POINT_FILE = "./config/mods/pcBang.ini";
 	public static final String OFFLINE_FILE = "./config/mods/offline.ini";

@@ -117,8 +117,6 @@ public class DimensionalRiftManager
 		}
 		finally
 		{
-			// Correção crítica para Java 21: Fechamento explícito de Statement e ResultSet
-			// para evitar vazamento de memória e cursores no DB.
 			try
 			{
 				if (rs != null)

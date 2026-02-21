@@ -21,7 +21,7 @@ import l2jorion.game.model.L2Party;
 import l2jorion.game.model.Location;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.zone.ZoneId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SetupGauge;
 import l2jorion.game.thread.ThreadPoolManager;
 
@@ -192,7 +192,7 @@ public class PartyTeleport implements IVoicedCommandHandler
 					member.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 					
 					member.setTarget(member);
-					member.broadcastPacket(new MagicSkillUser(member, 1050, 1, unstuckTimer, 0));
+					member.broadcastPacket(new MagicSkillUse(member, 1050, 1, unstuckTimer, 0));
 					member.sendPacket(new SetupGauge(0, unstuckTimer));
 					member.setTarget(null);
 					
@@ -225,7 +225,7 @@ public class PartyTeleport implements IVoicedCommandHandler
 			player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 			
 			player.setTarget(player);
-			player.broadcastPacket(new MagicSkillUser(player, 1050, 1, unstuckTimer, 0));
+			player.broadcastPacket(new MagicSkillUse(player, 1050, 1, unstuckTimer, 0));
 			player.sendPacket(new SetupGauge(0, unstuckTimer));
 			player.setTarget(null);
 			

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<list>
+    <spawn name="custom_spawn" spawn_bydefault="true">
+        <npc count="1" id="1" pos="82233 148606 -3467 64668" respawn="10"/>
+    </spawn>
+</list>

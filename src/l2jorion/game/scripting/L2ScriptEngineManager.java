@@ -24,7 +24,6 @@ import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
 import l2jorion.Config;
-import l2jorion.game.script.jython.JythonScriptEngine;
 
 public final class L2ScriptEngineManager
 {
@@ -96,22 +95,7 @@ public final class L2ScriptEngineManager
 				_log.log(Level.WARNING, "Failed initializing factory: " + e.getMessage(), e);
 			}
 		}
-		
-		preConfigure();
-	}
-	
-	private void preConfigure()
-	{
-		String dataPackDirForwardSlashes = SCRIPT_FOLDER.getPath().replaceAll("\\\\", "/");
-		String configScript = "import sys;sys.path.insert(0,'" + dataPackDirForwardSlashes + "');";
-		try
-		{
-			eval("jython", configScript);
-		}
-		catch (ScriptException e)
-		{
-			_log.severe("Failed preconfiguring jython: " + e.getMessage());
-		}
+
 	}
 	
 	private ScriptEngine getEngineByName(String name)
@@ -386,7 +370,6 @@ public final class L2ScriptEngineManager
 				context.setAttribute(ScriptEngine.FILENAME, relativeName, ScriptContext.ENGINE_SCOPE);
 				context.setAttribute("classpath", SCRIPT_FOLDER.getAbsolutePath(), ScriptContext.ENGINE_SCOPE);
 				context.setAttribute("sourcepath", SCRIPT_FOLDER.getAbsolutePath(), ScriptContext.ENGINE_SCOPE);
-				context.setAttribute(JythonScriptEngine.JYTHON_ENGINE_INSTANCE, engine, ScriptContext.ENGINE_SCOPE);
 				
 				setCurrentLoadingScript(file);
 				ScriptContext ctx = engine.getContext();

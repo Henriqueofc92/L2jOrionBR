@@ -27,7 +27,7 @@ import l2jorion.game.model.entity.event.DM;
 import l2jorion.game.model.entity.event.TvT;
 import l2jorion.game.model.zone.ZoneId;
 import l2jorion.game.network.serverpackets.ExShowScreenMessage;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.PlaySound;
 import l2jorion.game.network.serverpackets.SetupGauge;
@@ -328,7 +328,7 @@ public class Gatekeeper implements IVoicedCommandHandler, ICustomByPassHandler, 
 								member.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 								
 								member.setTarget(member);
-								member.broadcastPacket(new MagicSkillUser(member, 1050, 1, unstuckTimer2, 0));
+								member.broadcastPacket(new MagicSkillUse(member, 1050, 1, unstuckTimer2, 0));
 								member.sendPacket(new SetupGauge(0, unstuckTimer2));
 								member.setTarget(null);
 								
@@ -359,7 +359,7 @@ public class Gatekeeper implements IVoicedCommandHandler, ICustomByPassHandler, 
 					player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 					
 					player.setTarget(player);
-					player.broadcastPacket(new MagicSkillUser(player, 1050, 1, unstuckTimer, 0));
+					player.broadcastPacket(new MagicSkillUse(player, 1050, 1, unstuckTimer, 0));
 					player.sendPacket(new SetupGauge(0, unstuckTimer));
 					player.setTarget(null);
 					
@@ -440,7 +440,7 @@ public class Gatekeeper implements IVoicedCommandHandler, ICustomByPassHandler, 
 								member.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 								
 								member.setTarget(member);
-								member.broadcastPacket(new MagicSkillUser(member, 1050, 1, unstuckTimer2, 0));
+								member.broadcastPacket(new MagicSkillUse(member, 1050, 1, unstuckTimer2, 0));
 								member.sendPacket(new SetupGauge(0, unstuckTimer2));
 								member.setTarget(null);
 								
@@ -471,7 +471,7 @@ public class Gatekeeper implements IVoicedCommandHandler, ICustomByPassHandler, 
 					player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 					
 					player.setTarget(player);
-					player.broadcastPacket(new MagicSkillUser(player, 1050, 1, unstuckTimer, 0));
+					player.broadcastPacket(new MagicSkillUse(player, 1050, 1, unstuckTimer, 0));
 					player.sendPacket(new SetupGauge(0, unstuckTimer));
 					player.setTarget(null);
 					
@@ -526,7 +526,7 @@ public class Gatekeeper implements IVoicedCommandHandler, ICustomByPassHandler, 
 								member.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 								
 								member.setTarget(member);
-								member.broadcastPacket(new MagicSkillUser(member, 1050, 1, unstuckTimer2, 0));
+								member.broadcastPacket(new MagicSkillUse(member, 1050, 1, unstuckTimer2, 0));
 								member.sendPacket(new SetupGauge(0, unstuckTimer2));
 								member.setTarget(null);
 								
@@ -557,7 +557,7 @@ public class Gatekeeper implements IVoicedCommandHandler, ICustomByPassHandler, 
 					player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 					
 					player.setTarget(player);
-					player.broadcastPacket(new MagicSkillUser(player, 1050, 1, unstuckTimer, 0));
+					player.broadcastPacket(new MagicSkillUse(player, 1050, 1, unstuckTimer, 0));
 					player.sendPacket(new SetupGauge(0, unstuckTimer));
 					player.setTarget(null);
 					

@@ -173,15 +173,12 @@ public abstract class ItemContainer
 		{
 			if (item != null && item.getItemId() == itemId && (item.getEnchantLevel() == enchantLevel || enchantLevel < 0))
 			{
-				// if (item.isAvailable((L2PcInstance)getOwner(), true) || item.getItem().getType2() == 3)//available or quest item
 				if (item.isStackable())
 				{
-					count = item.getCount();
+					return item.getCount();
 				}
-				else
-				{
-					count++;
-				}
+				
+				count++;
 			}
 		}
 		
@@ -196,7 +193,7 @@ public abstract class ItemContainer
 		{
 			if (item != null && item.getItemId() == itemId)
 			{
-				count = item.getCount();
+				return item.getCount();
 			}
 		}
 		

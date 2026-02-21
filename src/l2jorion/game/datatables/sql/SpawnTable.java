@@ -1,21 +1,31 @@
 package l2jorion.game.datatables.sql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import l2jorion.Config;
 import l2jorion.game.managers.DayNightSpawnManager;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.spawn.L2Spawn;
+import l2jorion.game.model.spawn.SpawnTerritory;
 import l2jorion.game.templates.L2NpcTemplate;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
-import l2jorion.util.CloseUtil;
-import l2jorion.util.database.DatabaseUtils;
-import l2jorion.util.database.L2DatabaseFactory;
 
 public class SpawnTable
 {
@@ -25,8 +35,10 @@ public class SpawnTable
 	
 	private Map<Integer, L2Spawn> spawntable = new HashMap<>();
 	private int customSpawnCount;
-	
 	private int _highestId;
+	
+	private static final String SPAWN_XML_FOLDER = "./data/xml/spawns/";
+	private static final String CUSTOM_SPAWN_FILE = "./data/xml/spawns/custom/custom_spawns.xml";
 	
 	public static SpawnTable getInstance()
 	{
@@ -37,7 +49,7 @@ public class SpawnTable
 	{
 		if (!Config.ALT_DEV_NO_SPAWNS)
 		{
-			fillSpawnTable();
+			loadXmlSpawns();
 		}
 	}
 	
@@ -46,166 +58,201 @@ public class SpawnTable
 		return spawntable;
 	}
 	
-	private void fillSpawnTable()
+	private void loadXmlSpawns()
 	{
-		Connection con = null;
+		File dir = new File(SPAWN_XML_FOLDER);
+		if (!dir.exists())
+		{
+			LOG.warn("SpawnTable: Folder " + SPAWN_XML_FOLDER + " does not exist!");
+			return;
+		}
+		AtomicInteger loadedFiles = new AtomicInteger(0);
 		
 		try
 		{
-			con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement;
-			
-			statement = con.prepareStatement("SELECT id, count, npc_templateid, locx, locy, locz, heading, respawn_delay, loc_id, periodOfDay FROM spawnlist ORDER BY id");
-			
-			final ResultSet rset = statement.executeQuery();
-			
-			L2Spawn spawnDat;
-			L2NpcTemplate template1;
-			
-			while (rset.next())
-			{
-				template1 = NpcTable.getInstance().getTemplate(rset.getInt("npc_templateid"));
-				if (template1 != null)
-				{
-					if ((template1.type.equalsIgnoreCase("L2SiegeGuard")) || (template1.type.equalsIgnoreCase("L2RaidBoss")) || (template1.type.equalsIgnoreCase("L2GrandBoss")) || (!Config.ALLOW_CLASS_MASTERS && template1.type.equals("L2ClassMaster"))
-						|| (!Config.ALLOW_HITMAN_GDE && template1.type.equals("L2Hitman")))
-					{
-						continue;
-					}
-					
-					spawnDat = new L2Spawn(template1);
-					spawnDat.setId(rset.getInt("id"));
-					spawnDat.setAmount(rset.getInt("count"));
-					spawnDat.setLocx(rset.getInt("locx"));
-					spawnDat.setLocy(rset.getInt("locy"));
-					spawnDat.setLocz(rset.getInt("locz"));
-					spawnDat.setHeading(rset.getInt("heading"));
-					spawnDat.setRespawnDelay(rset.getInt("respawn_delay"));
-					
-					final int loc_id = rset.getInt("loc_id");
-					
-					spawnDat.setLocation(loc_id);
-					
-					switch (rset.getInt("periodOfDay"))
-					{
-						case 0: // default
-							customSpawnCount += spawnDat.init();
-							break;
-						case 1: // Day
-							DayNightSpawnManager.getInstance().addDayCreature(spawnDat);
-							customSpawnCount++;
-							break;
-						case 2: // Night
-							DayNightSpawnManager.getInstance().addNightCreature(spawnDat);
-							customSpawnCount++;
-							break;
-					}
-					
-					spawntable.put(spawnDat.getId(), spawnDat);
-					
-					if (spawnDat.getId() > _highestId)
-					{
-						_highestId = spawnDat.getId();
-					}
-				}
-				else
-				{
-					LOG.warn("SpawnTable: Data missing in NPC table for ID: " + rset.getInt("npc_templateid"));
-				}
-			}
-			DatabaseUtils.close(statement);
-			DatabaseUtils.close(rset);
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			parseDirectory(dir, builder, loadedFiles);
 		}
-		catch (final Exception e)
+		catch (Exception e)
 		{
-			LOG.error("SpawnTable: Spawn could not be initialized ", e);
-		}
-		finally
-		{
-			CloseUtil.close(con);
+			LOG.error("SpawnTable: Critical Error initializing XML parser", e);
 		}
 		
-		// LOG.info("SpawnTable: Spawning completed, total number of NPCs in the world: " + spawntable.size());
-		
-		// -------------------------------Custom Spawnlist----------------------------//
-		if (Config.CUSTOM_SPAWNLIST_TABLE)
+		LOG.info("SpawnTable: Spawning completed. Loaded " + spawntable.size() + " spawns from " + loadedFiles.get() + " files.");
+		if (customSpawnCount > 0)
 		{
-			try
-			{
-				con = L2DatabaseFactory.getInstance().getConnection();
-				final PreparedStatement statement;
-				statement = con.prepareStatement("SELECT id, count, npc_templateid, locx, locy, locz, heading, respawn_delay, loc_id, periodOfDay FROM custom_spawnlist ORDER BY id");
-				final ResultSet rset = statement.executeQuery();
-				
-				L2Spawn spawnDat;
-				L2NpcTemplate template1;
-				
-				while (rset.next())
-				{
-					template1 = NpcTable.getInstance().getTemplate(rset.getInt("npc_templateid"));
-					
-					if (template1 != null)
-					{
-						spawnDat = new L2Spawn(template1);
-						spawnDat.setId(rset.getInt("id"));
-						spawnDat.setAmount(rset.getInt("count"));
-						spawnDat.setLocx(rset.getInt("locx"));
-						spawnDat.setLocy(rset.getInt("locy"));
-						spawnDat.setLocz(rset.getInt("locz"));
-						spawnDat.setHeading(rset.getInt("heading"));
-						spawnDat.setRespawnDelay(rset.getInt("respawn_delay"));
-						
-						final int loc_id = rset.getInt("loc_id");
-						
-						spawnDat.setLocation(loc_id);
-						spawnDat.setCustom(true);
-						
-						switch (rset.getInt("periodOfDay"))
-						{
-							case 0: // default
-								customSpawnCount += spawnDat.init();
-								break;
-							case 1: // Day
-								DayNightSpawnManager.getInstance().addDayCreature(spawnDat);
-								customSpawnCount++;
-								break;
-							case 2: // Night
-								DayNightSpawnManager.getInstance().addNightCreature(spawnDat);
-								customSpawnCount++;
-								break;
-						}
-						
-						spawntable.put(spawnDat.getId(), spawnDat);
-						if (spawnDat.getId() > _highestId)
-						{
-							_highestId = spawnDat.getId();
-						}
-						
-					}
-					else
-					{
-						LOG.warn("CustomSpawnTable: Data missing in NPC table for ID: {}. " + rset.getInt("npc_templateid"));
-					}
-				}
-				DatabaseUtils.close(statement);
-				DatabaseUtils.close(rset);
-			}
-			catch (final Exception e)
-			{
-				LOG.error("CustomSpawnTable: Spawn could not be initialized ", e);
-			}
-			finally
-			{
-				CloseUtil.close(con);
-			}
-			
-			LOG.info("SpawnTable: Spawning completed, total number of NPCs in the world: " + customSpawnCount);
+			LOG.info("SpawnTable: Custom/Event/DayNight spawns processed: " + customSpawnCount);
 		}
 	}
 	
-	public L2Spawn getTemplate(final int id)
+	private void parseDirectory(File dir, DocumentBuilder builder, AtomicInteger loadedFiles)
 	{
-		return spawntable.get(id);
+		File[] files = dir.listFiles();
+		if (files == null)
+		{
+			return;
+		}
+		
+		for (File file : files)
+		{
+			if (file.isDirectory())
+			{
+				parseDirectory(file, builder, loadedFiles);
+			}
+			else if (file.getName().endsWith(".xml"))
+			{
+				try
+				{
+					parseFile(builder, file);
+					loadedFiles.incrementAndGet();
+				}
+				catch (Exception e)
+				{
+					LOG.warn("SpawnTable: Error loading file " + file.getName() + ": " + e.getMessage());
+				}
+			}
+		}
+	}
+	
+	private void parseFile(DocumentBuilder builder, File file) throws Exception
+	{
+		Document doc = builder.parse(file);
+		for (Node listNode = doc.getFirstChild(); listNode != null; listNode = listNode.getNextSibling())
+		{
+			if ("list".equalsIgnoreCase(listNode.getNodeName()))
+			{
+				for (Node spawnNode = listNode.getFirstChild(); spawnNode != null; spawnNode = spawnNode.getNextSibling())
+				{
+					if ("spawn".equalsIgnoreCase(spawnNode.getNodeName()))
+					{
+						processSpawnGroup(spawnNode, file.getName());
+					}
+				}
+			}
+		}
+	}
+	
+	private void processSpawnGroup(Node spawnNode, String fileName)
+	{
+		NamedNodeMap spawnAttrs = spawnNode.getAttributes();
+		boolean spawnByDefault = parseBoolean(spawnAttrs, "spawn_bydefault", true);
+		String eventName = parseString(spawnAttrs, "event_name", "");
+		String spawnName = parseString(spawnAttrs, "name", "unnamed");
+		
+		SpawnTerritory territory = null;
+		
+		for (Node child = spawnNode.getFirstChild(); child != null; child = child.getNextSibling())
+		{
+			if ("territory".equalsIgnoreCase(child.getNodeName()))
+			{
+				territory = new SpawnTerritory(spawnName);
+				for (Node loc = child.getFirstChild(); loc != null; loc = loc.getNextSibling())
+				{
+					if ("location".equalsIgnoreCase(loc.getNodeName()))
+					{
+						NamedNodeMap locAttrs = loc.getAttributes();
+						int x = parseInteger(locAttrs, "x", 0);
+						int y = parseInteger(locAttrs, "y", 0);
+						int minz = parseInteger(locAttrs, "minz", -32000);
+						int maxz = parseInteger(locAttrs, "maxz", 32000);
+						territory.addPoint(x, y, minz, maxz);
+					}
+				}
+			}
+		}
+		
+		for (Node child = spawnNode.getFirstChild(); child != null; child = child.getNextSibling())
+		{
+			if ("npc".equalsIgnoreCase(child.getNodeName()))
+			{
+				NamedNodeMap npcAttrs = child.getAttributes();
+				int npcId = parseInteger(npcAttrs, "id", 0);
+				int count = parseInteger(npcAttrs, "count", 1);
+				int respawn = parseInteger(npcAttrs, "respawn", 60);
+				String pos = parseString(npcAttrs, "pos", null);
+				
+				L2NpcTemplate template = NpcTable.getInstance().getTemplate(npcId);
+				
+				if (template == null)
+				{
+					continue;
+				}
+				if (template.type.equalsIgnoreCase("L2SiegeGuard") || template.type.equalsIgnoreCase("L2RaidBoss") || template.type.equalsIgnoreCase("L2GrandBoss") || (!Config.ALLOW_CLASS_MASTERS && template.type.equals("L2ClassMaster")))
+				{
+					continue;
+				}
+				
+				try
+				{
+					L2Spawn spawn = new L2Spawn(template);
+					spawn.setAmount(count);
+					spawn.setRespawnDelay(respawn);
+					spawn.setCustom(!spawnByDefault);
+					
+					if (pos != null && !pos.isEmpty())
+					{
+						String[] coords = pos.split(" ");
+						spawn.setLocx(Integer.parseInt(coords[0]));
+						spawn.setLocy(Integer.parseInt(coords[1]));
+						spawn.setLocz(Integer.parseInt(coords[2]));
+						spawn.setHeading(coords.length > 3 ? Integer.parseInt(coords[3]) : 0);
+					}
+					else if (territory != null)
+					{
+						spawn.setTerritory(territory);
+						int[] p = territory.getRandomPoint();
+						spawn.setLocx(p[0]);
+						spawn.setLocy(p[1]);
+						spawn.setLocz(p[2]);
+						spawn.setHeading(-1);
+					}
+					else
+					{
+						continue;
+					}
+					if (_highestId < spawn.getId())
+					{
+						_highestId = spawn.getId();
+					}
+					
+					_highestId++;
+					spawn.setId(_highestId);
+					
+					spawntable.put(spawn.getId(), spawn);
+					
+					boolean isEvent = false;
+					if (eventName != null && !eventName.isEmpty())
+					{
+						if (eventName.toUpperCase().contains("DAY"))
+						{
+							DayNightSpawnManager.getInstance().addDayCreature(spawn);
+							customSpawnCount++;
+							isEvent = true;
+						}
+						else if (eventName.toUpperCase().contains("NIGHT"))
+						{
+							DayNightSpawnManager.getInstance().addNightCreature(spawn);
+							customSpawnCount++;
+							isEvent = true;
+						}
+					}
+					
+					if (spawnByDefault && !isEvent)
+					{
+						spawn.init();
+					}
+					else if (!spawnByDefault)
+					{
+						customSpawnCount++;
+					}
+				}
+				catch (Exception e)
+				{
+					LOG.warn("SpawnTable: Error creating spawn for NPC " + npcId + ": " + e.getMessage());
+				}
+			}
+		}
 	}
 	
 	public void addNewSpawn(final L2Spawn spawn, final boolean storeInDb)
@@ -213,74 +260,178 @@ public class SpawnTable
 		_highestId++;
 		spawn.setId(_highestId);
 		spawntable.put(_highestId, spawn);
-		
-		if (!(Config.ALT_DEV_NO_SPAWNS))
+		if (storeInDb)
 		{
-			if (storeInDb)
-			{
-				Connection con = null;
-				
-				try
-				{
-					con = L2DatabaseFactory.getInstance().getConnection();
-					PreparedStatement statement = con.prepareStatement("INSERT INTO " + (spawn.isCustom() ? "custom_spawnlist" : "spawnlist") + "(id,count,npc_templateid,locx,locy,locz,heading,respawn_delay,loc_id) values(?,?,?,?,?,?,?,?,?)");
-					statement.setInt(1, spawn.getId());
-					statement.setInt(2, spawn.getAmount());
-					statement.setInt(3, spawn.getNpcid());
-					statement.setInt(4, spawn.getLocx());
-					statement.setInt(5, spawn.getLocy());
-					statement.setInt(6, spawn.getLocz());
-					statement.setInt(7, spawn.getHeading());
-					statement.setInt(8, spawn.getRespawnDelay() / 1000);
-					statement.setInt(9, spawn.getLocation());
-					statement.execute();
-					DatabaseUtils.close(statement);
-				}
-				catch (final Exception e)
-				{
-					LOG.error("SpawnTable: Could not store spawn in the DB ", e);
-				}
-				finally
-				{
-					CloseUtil.close(con);
-				}
-			}
+			saveSpawnToXml(spawn);
 		}
 	}
 	
 	public void deleteSpawn(final L2Spawn spawn, final boolean updateDb)
 	{
-		if (spawntable.remove(spawn.getId()) == null)
+		spawntable.remove(spawn.getId());
+		
+		if (updateDb)
+		{
+			deleteSpawnFromXml(spawn);
+		}
+	}
+	
+	private void saveSpawnToXml(L2Spawn spawn)
+	{
+		File file = new File(CUSTOM_SPAWN_FILE);
+		Document doc = null;
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		
+		try
+		{
+			if (!file.exists())
+			{
+				file.getParentFile().mkdirs();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				doc = dBuilder.newDocument();
+				Element rootElement = doc.createElement("list");
+				doc.appendChild(rootElement);
+			}
+			else
+			{
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				doc = dBuilder.parse(file);
+			}
+			
+			Element root = doc.getDocumentElement();
+			Element spawnElement = doc.createElement("spawn");
+			spawnElement.setAttribute("name", "custom_spawn");
+			spawnElement.setAttribute("spawn_bydefault", "true");
+			Element npcElement = doc.createElement("npc");
+			npcElement.setAttribute("id", String.valueOf(spawn.getNpcid()));
+			npcElement.setAttribute("count", String.valueOf(spawn.getAmount()));
+			npcElement.setAttribute("respawn", String.valueOf(spawn.getRespawnDelay() / 1000));
+			String pos = spawn.getLocx() + " " + spawn.getLocy() + " " + spawn.getLocz() + " " + spawn.getHeading();
+			npcElement.setAttribute("pos", pos);
+			spawnElement.appendChild(npcElement);
+			root.appendChild(spawnElement);
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(file);
+			transformer.transform(source, result);
+			LOG.info("SpawnTable: New GM Spawn saved to " + CUSTOM_SPAWN_FILE);
+			
+		}
+		catch (Exception e)
+		{
+			LOG.warn("SpawnTable: Could not save spawn to XML.", e);
+		}
+	}
+	
+	private void deleteSpawnFromXml(L2Spawn spawn)
+	{
+		File file = new File(CUSTOM_SPAWN_FILE);
+		if (!file.exists())
 		{
 			return;
 		}
 		
-		if (updateDb)
+		try
 		{
-			Connection con = null;
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(file);
 			
-			try
+			Node listNode = doc.getFirstChild();
+			if (listNode == null)
 			{
-				con = L2DatabaseFactory.getInstance().getConnection();
-				final PreparedStatement statement = con.prepareStatement("DELETE FROM " + (Config.DELETE_GMSPAWN_ON_CUSTOM && (spawn.isCustom()) ? "custom_spawnlist" : "spawnlist") + " WHERE id=?");
-				statement.setInt(1, spawn.getId());
-				statement.execute();
-				DatabaseUtils.close(statement);
+				return;
 			}
-			catch (final Exception e)
+			
+			boolean changed = false;
+			String targetPos = spawn.getLocx() + " " + spawn.getLocy() + " " + spawn.getLocz() + " " + spawn.getHeading();
+			for (Node spawnNode = listNode.getFirstChild(); spawnNode != null; spawnNode = spawnNode.getNextSibling())
 			{
-				LOG.error("SpawnTable: Spawn {} could not be removed from DB " + spawn.getId(), e);
+				if ("spawn".equalsIgnoreCase(spawnNode.getNodeName()))
+				{
+					for (Node npcNode = spawnNode.getFirstChild(); npcNode != null; npcNode = npcNode.getNextSibling())
+					{
+						if ("npc".equalsIgnoreCase(npcNode.getNodeName()))
+						{
+							NamedNodeMap attrs = npcNode.getAttributes();
+							if (attrs == null)
+							{
+								continue;
+							}
+							
+							Node idNode = attrs.getNamedItem("id");
+							Node posNode = attrs.getNamedItem("pos");
+							
+							if (idNode != null && posNode != null)
+							{
+								String id = idNode.getNodeValue();
+								String pos = posNode.getNodeValue();
+								
+								if (id.equals(String.valueOf(spawn.getNpcid())) && pos.equals(targetPos))
+								{
+									listNode.removeChild(spawnNode);
+									changed = true;
+									break;
+								}
+							}
+						}
+					}
+				}
+				if (changed)
+				{
+					break;
+				}
 			}
-			finally
+			
+			if (changed)
 			{
-				CloseUtil.close(con);
+				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				DOMSource source = new DOMSource(doc);
+				StreamResult result = new StreamResult(file);
+				transformer.transform(source, result);
+				LOG.info("SpawnTable: GM Spawn removed from " + CUSTOM_SPAWN_FILE);
 			}
+			
 		}
+		catch (Exception e)
+		{
+			LOG.warn("SpawnTable: Could not delete spawn from XML.", e);
+		}
+	}
+	
+	private int parseInteger(NamedNodeMap attrs, String name, int defaultValue)
+	{
+		Node node = attrs.getNamedItem(name);
+		return (node != null) ? Integer.parseInt(node.getNodeValue()) : defaultValue;
+	}
+	
+	private boolean parseBoolean(NamedNodeMap attrs, String name, boolean defaultValue)
+	{
+		Node node = attrs.getNamedItem(name);
+		return (node != null) ? Boolean.parseBoolean(node.getNodeValue()) : defaultValue;
+	}
+	
+	private String parseString(NamedNodeMap attrs, String name, String defaultValue)
+	{
+		Node node = attrs.getNamedItem(name);
+		return (node != null) ? node.getNodeValue() : defaultValue;
+	}
+	
+	public L2Spawn getTemplate(final int id)
+	{
+		return spawntable.get(id);
 	}
 	
 	public void reloadAll()
 	{
-		fillSpawnTable();
+		spawntable.clear();
+		customSpawnCount = 0;
+		loadXmlSpawns();
 	}
 	
 	public void findNPCInstances(final L2PcInstance activeChar, final int npcId, final int teleportIndex)
@@ -304,7 +455,6 @@ public class SpawnTable
 				}
 			}
 		}
-		
 		if (index == 0)
 		{
 			activeChar.sendMessage("No current spawns found.");

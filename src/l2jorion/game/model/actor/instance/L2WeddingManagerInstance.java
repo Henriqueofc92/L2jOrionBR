@@ -29,7 +29,7 @@ import l2jorion.game.model.L2World;
 import l2jorion.game.model.entity.Announcements;
 import l2jorion.game.model.entity.Wedding;
 import l2jorion.game.network.serverpackets.ActionFailed;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.MoveToPawn;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.SocialAction;
@@ -177,21 +177,21 @@ public class L2WeddingManagerInstance extends L2NpcInstance
 			}
 			
 			// wedding march
-			MagicSkillUser MSU = new MagicSkillUser(player, player, 2230, 1, 1, 0);
+			MagicSkillUse MSU = new MagicSkillUse(player, player, 2230, 1, 1, 0);
 			player.broadcastPacket(MSU);
-			MSU = new MagicSkillUser(ptarget, ptarget, 2230, 1, 1, 0);
+			MSU = new MagicSkillUse(ptarget, ptarget, 2230, 1, 1, 0);
 			ptarget.broadcastPacket(MSU);
 			
 			// fireworks
 			L2Skill skill = SkillTable.getInstance().getInfo(2025, 1);
 			if (skill != null)
 			{
-				MSU = new MagicSkillUser(player, player, 2025, 1, 1, 0);
+				MSU = new MagicSkillUse(player, player, 2025, 1, 1, 0);
 				player.sendPacket(MSU);
 				player.broadcastPacket(MSU);
 				player.useMagic(skill, false, false);
 				
-				MSU = new MagicSkillUser(ptarget, ptarget, 2025, 1, 1, 0);
+				MSU = new MagicSkillUse(ptarget, ptarget, 2025, 1, 1, 0);
 				ptarget.sendPacket(MSU);
 				ptarget.broadcastPacket(MSU);
 				ptarget.useMagic(skill, false, false);

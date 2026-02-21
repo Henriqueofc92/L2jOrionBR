@@ -429,45 +429,127 @@ IMPROVED - Performance and stability (Part 3).
 #CHANGESET 29
 ===================================================================
 [CORE & ENGINE]
-UPDATED - Database Connector: MariaDB is now default.
-REMOVED - Connection Pools: `c3p0`, `commons-dbcp`, `commons-pool`.
-REMOVED - Libs: `commons-io-2.0.1.jar`, `ecj-4.4.2.jar`.
-REMOVED - License file.
+UPDATED - Database Connector: MariaDB is now default. [By Henrique]
+REMOVED - Connection Pools: `c3p0`, `commons-dbcp`, `commons-pool`. [By Henrique]
+REMOVED - Libs: `commons-io-2.0.1.jar`, `ecj-4.4.2.jar`. [By Henrique]
+REMOVED - License file. [By Henrique]
 
 [DATA & XML]
-MOVED TO XML - AccessLevels, AdminCommands, StaticObjects, Teleports, ArmorSets, ExtractableItems, NewbieBuffs, SummonItems, Henna, Fish, WalkerRoutes.
+MOVED TO XML - AccessLevels, AdminCommands, StaticObjects, Teleports, ArmorSets, ExtractableItems, NewbieBuffs, SummonItems, Henna, Fish, WalkerRoutes. [By Henrique]
 
 [DATA & XML]
-MOVED - recipes to xml.
-MOVED - autoChat to xml.
-MOVED - seeds to xml.
+MOVED - recipes to xml. [By Henrique]
+MOVED - autoChat to xml. [By Henrique]
+MOVED - seeds to xml. [By Henrique]
 
 ===================================================================
 #CHANGESET 30
 ===================================================================
-[CORE ENGINE & FIXES]
-UPDATED - Source Engine upgraded to Java 21.
-REMOVED - Javolution library dependency (Code modernization).
-REMOVED - Strix Guard system.
-CLEANED - Fixed project dependencies and warnings (Source cleanup).
-FIXED - Visual Bug: Weapon remaining on character hand after unequip (RequestUnEquipItem reworked).
-FIXED - AugmentationData: Rewritten in Java 21 with dynamic XML loading (Fixed "missing file" errors).
-FIXED - Database: Cleaned invalid spawn data (NPC ID 0 error resolved).
-FIXED - Critical Exploit: Full Armor (e.g., Draconic) having 100% Enchant success rate.
-FIXED - Config Limit: Crystal Scrolls ignoring global Max Enchant limits.
+[CORE & CLEANUP]
+UPDATED - Core Engine upgraded to Java 21. [By Henrique]
+REMOVED - Javolution dependency. [By Henrique]
+REMOVED - Strix Guard system. [By Henrique]
+CLEANED - Project dependencies cleaned and warnings fixed. [By Henrique]
 
-[SKILLS & MECHANICS]
-FIXED - Skill Double Cast: Added strict server-side checks (Casting State & Reuse Delay) to prevent skill spamming exploits.
-FIXED - Ghost Casting: Implemented 500ms minimum cast time limit to prevent animation glitch on high-speed casting (Retail-like logic).
-REWORKED - Formulas: Complete overhaul of Physical, Magic, and Blow calculation methods.
-IMPROVED - Blow Success: Implemented precise positioning logic (Back: 2x, Side: 1.5x, Front: 1x) and added support for BLOW_RATE stats.
-IMPROVED - Physical Damage: Optimized calcPhysDam structure, fixed isPvP logic, and cleaned up obsolete stats references.
-IMPROVED - Magic Damage: Added Level Penalty system (Anti-Exploit vs High Level Mobs) and Retail-like Random Damage Variance (+/- 3%).
-REWORKED - Instant Jump: Added GeoData check (Anti-Wall), Evasion logic, and proper Effect application.
+[GAMEPLAY & FORMULAS]
+REWORKED - Formulas: Rewritten Physical, Magic, and Blow Damage formulas. [By Henrique]
+IMPROVED - Physics: Adjusted Blow positioning logic (Back: 2x, Side: 1.5x, Front: 1x). [By Henrique]
+IMPROVED - Magic Damage: Added Level Penalty and Retail-like variance (+/- 3%). [By Henrique]
+FIXED - Ghost Casting: Implemented minimum cast limit (500ms) to prevent animation glitch. [By Henrique] 
+FIXED - Skill Double Cast: Added strict server-side state and reuse delay checks. [By Henrique]
+FIXED - Exploit Enchant: Fixed 100% chance bug on Full Armors. [By Henrique]
+FIXED - Config Limit: Crystal Scrolls now respect the global Enchant limit. [By Henrique]
 
-[SYSTEMS EVENTS & XML]
-ADDED - New Dungeon Event system structure and HTMLs.
-ADDED - New Party Zone Event system structure and HTMLs.
-IMPLEMENTED - New Auto Farm V2 system improvements.
-REMOVED - Old Orion Auto Farm system.
-MOVED - CharTemplate to XML.
+[EVENTS & SYSTEMS]
+ADDED - New Dungeon Event and Party Zone Event systems (Structure and HTMLs). [By Henrique]
+IMPROVED - Auto Farm V2: General improvements and removal of the old system. [By Henrique]
+DATA - CharTemplate migrated to XML. [By Henrique]
+FIXED - Visual Bug: Weapon stuck in hand when unequipping (RequestUnEquipItem). [By Henrique]
+FIXED - AugmentationData: Rewritten for Java 21 with dynamic XML loading. [By Henrique]
+FIXED - Database: Invalid spawn data cleanup (NPC ID 0). [By Henrique]
+
+===================================================================
+#CHANGESET 31
+===================================================================
+[DATABASE & PERFORMANCE]
+UPDATED - Updated the driver to MariaDB Connector 3.5.7 (optimized for Java 21); restructured the L2DatabaseFactory with secure initialization and modernized connection pooling; and optimized the IdFactory with an in-memory temporary table implementation (ENGINE=MEMORY) for fast ID extraction. [By Henrique]
+
+[FIXES & MECHANICS]
+FIXED - Skill Reuse Exploit: Fixed critical bug where cooldowns reset upon Restart/Logout. [By Henrique]
+FIXED - Auto Learn Skill: Logic rewritten to prevent freezes and fix Toggle updates. [By Henrique]
+FIXED - Bow Mechanics: Implemented L2OFF movement restriction (prevents sliding while firing). [By Henrique]
+FIXED - Shield Mechanics: Defense logic fixed (Adds P.Def instead of subtracting final damage). [By Henrique]
+FIXED - Skill Relax: Resolved exploit regarding Stand/Attack states; System Messages updated to match L2Off; code optimized and updated. [By Henrique]
+
+[DATA & XML]
+MOVED - spawnlist to xml. [By Henrique]
+
+[SYSTEMS]
+IMPROVED - Boss System Updated: removed selection interface, now shows status and drops only. [By Henrique]
+REMOVED - Rebirth System. [By Henrique]
+ADDED - New Skill Seller System: refactored and secured against exploits. [By Henrique]
+
+===================================================================
+#CHANGESET 32
+===================================================================
+[CORE & CLEANUP]
+UPDATED - Core Engine upgraded to Java 24. [By Henrique]
+UPDATED - All quests fully migrated to pure Java 65%/100%. [By Henrique]
+REMOVED - Jython engine and all related dependencies. [By Henrique]
+ADDED - New Administrator and GM registration system. [By Henrique]
+FIXED - Anti Duplicate Itens - Pet. [By Henrique]
+FIXED - Multisell Exploit. [By Henrique]
+
+[DATABASE]
+UPDATED - L2DatabaseFactory: HikariCP connection pool with SSL/TLS auto-fallback. [By Henrique]
+FIXED - L2DatabaseFactory: Bounded retries (max 10) with progressive back-off. [By Henrique]
+FIXED - L2DatabaseFactory: Leak detection (60s timeout). [By Henrique]
+FIXED - ConnectionCloser: Properly closes leaked connections. [By Henrique]
+FIXED - NpcTable: Connection leak in loadNpcsAI (missing finally block). [By Henrique]
+
+[SECURITY]
+FIXED - TradeList: Integer overflow exploit protection (long types + overflow guards). [By Henrique]
+FIXED - RequestBuyProcure: Integer overflow exploit. [By Henrique]
+FIXED - RequestBuySeed: Integer overflow exploit. [By Henrique]
+FIXED - RequestProcureCropList: Integer overflow exploit. [By Henrique]
+FIXED - SetPrivateStoreListBuy: Integer overflow exploit. [By Henrique]
+FIXED - RequestDestroyItem: Count validation (rejects invalid count with SystemMessageId). [By Henrique]
+
+[PACKETS & MEMORY]
+FIXED - SelectorThread: sp._client memory leak (null after write). [By Henrique]
+FIXED - ExFishingEnd: Stores objectId instead of player reference (memory leak). [By Henrique]
+FIXED - ChairSit: Stores objectId instead of player reference (memory leak). [By Henrique]
+FIXED - HennaInfo: Dynamic empty slot calculation instead of hardcoded 3. [By Henrique]
+FIXED - StopRotation: writeC(_degree) instead of hardcoded 0. [By Henrique]
+FIXED - ItemContainer: Early return for stackable items in getInventoryItemCount. [By Henrique]
+
+[FIXES & MECHANICS]
+FIXED - UseItem: WeaponEquipTask stores objectId, re-fetches at execution (stale reference). [By Henrique]
+FIXED - EffectFakeDeath: Removed unnecessary instanceof check. [By Henrique]
+FIXED - EffectRelax: Removed redundant setRelax() helper. [By Henrique]
+FIXED - L2Character: stopFakeDeath on attack, pole weapon damage decay, cast time 400ms floor. [By Henrique]
+FIXED - Formulas: Both calcMAtkSpd overloads enforce 400ms minimum. [By Henrique]
+FIXED - RequestSocialAction: Inverted condition to early-return pattern, removed unused imports. [By Henrique]
+FIXED - Logout: Festival message uses SystemMessageId.NO_LOGOUT_HERE; isInParty() cleanup. [By Henrique]
+FIXED - RequestRestart: Festival message uses SystemMessageId.NO_RESTART_HERE; isInParty() cleanup. [By Henrique]
+FIXED - RequestBuyItem: Removed isGM bypass on weight/slot validation. [By Henrique]
+FIXED - L2PcInstance: Removed InvDrop auto-drop on pickup and addItem (2 locations). [By Henrique]
+FIXED - L2PcInstance: Pickup weight message uses SystemMessageId.WEIGHT_LIMIT_EXCEEDED. [By Henrique]
+FIXED - Action: Added getActiveRequester + isOutOfControl checks. [By Henrique]
+FIXED - L2Character: isInCombat() now uses AttackStanceTaskManager instead of getAI().isAutoAttacking(). [By Henrique]
+FIXED - AbstractOlympiadGame: Dismount mounted players before Olympiad; pets are unsummoned, servitors only lose buffs. [By Henrique]
+FIXED - L2ZoneType: Race condition in removeCharacter (containsKey + remove replaced with atomic remove). [By Henrique]
+FIXED - Formulas FuncPAtkMod: Pets now receive levelMod in PAtk calculation (was ignored before). [By Henrique]
+FIXED - L2CharacterAI: Re-clicking same NPC no longer restarts movement (interact intention fix). [By Henrique]
+FIXED - L2CharacterAI: Auto-attack stops when target becomes non-attackable. [By Henrique]
+FIXED - L2AttackableAI: Minions no longer cancel casts to follow leader (isCastingNow check). [By Henrique]
+FIXED - L2AttackableAI: aggroReconsider skips processing when hate list has 1 or fewer targets. [By Henrique]
+FIXED - DuelManager: Null check on doSurrender prevents NPE/crash during duels. [By Henrique]
+FIXED - AbstractAI: _nextAction cleared after execution, preventing ghost/repeated actions. [By Henrique]
+FIXED - L2TamedBeastInstance: Inverted debuff condition (!= changed to ==) + added return to prevent multi-cast. [By Henrique]
+FIXED - Q023_LidiasHeart: Quest stuck at cond==5 due to missing INNOCENTIN dialog. [By Henrique]
+FIXED - MailBBSManager: NPE in setMailToRead/setMailLocation when mail doesn't exist (null check). [By Henrique]
+FIXED - L2OlympiadManagerInstance: String comparison with == replaced by .equals() for hero_main.htm. [By Henrique]
+FIXED - Disablers ERASE: Null checks on summon owner and pet before unsummon (prevents NPE/crash). [By Henrique]
+FIXED - Skill 432 (Assassination): blowRate corrected from 1.03 to 1.2 (was nearly no bonus). [By Henrique]
+FIXED - Skill 2229 (Treasure Chest Key): target changed from TARGET_ONE to TARGET_UNLOCKABLE. [By Henrique]

@@ -28,7 +28,7 @@ import l2jorion.game.model.L2Effect;
 import l2jorion.game.model.L2Skill;
 import l2jorion.game.model.actor.instance.L2EffectPointInstance;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.skills.Env;
 import l2jorion.game.skills.l2skills.L2SkillSignet;
@@ -95,7 +95,7 @@ public final class EffectSignet extends L2Effect
 				continue;
 			}
 			
-			_actor.broadcastPacket(new MagicSkillUser(_actor, cha, _skill.getId(), _skill.getLevel(), 0, 0));
+			_actor.broadcastPacket(new MagicSkillUse(_actor, cha, _skill.getId(), _skill.getLevel(), 0, 0));
 			
 			targets.add(cha);
 		}

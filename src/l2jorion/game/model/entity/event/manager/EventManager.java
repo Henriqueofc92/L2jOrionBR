@@ -11,7 +11,6 @@ import java.util.Properties;
 import l2jorion.game.model.entity.event.CTF;
 import l2jorion.game.model.entity.event.DM;
 import l2jorion.game.model.entity.event.TvT;
-import l2jorion.game.model.entity.event.tournament.Tournament;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
 
@@ -29,9 +28,6 @@ public class EventManager
 	
 	public static boolean DM_EVENT_ENABLED;
 	public static List<String> DM_TIMES_LIST;
-	
-	public static boolean TM_EVENT_ENABLED;
-	public static List<String> TM_TIMES_LIST;
 	
 	public static boolean POLL_ENABLED;
 	
@@ -67,9 +63,6 @@ public class EventManager
 			DM_EVENT_ENABLED = Boolean.parseBoolean(eventSettings.getProperty("DMEventEnabled", "false"));
 			DM_TIMES_LIST = new ArrayList<>(List.of(eventSettings.getProperty("DMStartTime", "").split(";")));
 			
-			TM_EVENT_ENABLED = Boolean.parseBoolean(eventSettings.getProperty("TournamentEventEnabled", "false"));
-			TM_TIMES_LIST = new ArrayList<>(List.of(eventSettings.getProperty("TournamentStartTime", "").split(";")));
-			
 			POLL_ENABLED = Boolean.parseBoolean(eventSettings.getProperty("PollEnabled", "false"));
 		}
 		catch (IOException e)
@@ -93,11 +86,6 @@ public class EventManager
 		if (DM_EVENT_ENABLED)
 		{
 			registerDM();
-		}
-		
-		if (TM_EVENT_ENABLED)
-		{
-			registerTM();
 		}
 	}
 	
@@ -168,23 +156,6 @@ public class EventManager
 			}
 			
 			DM newInstance = DM.getNewInstance();
-			newInstance.setEventStartTime(time);
-			EventsGlobalTask.getInstance().registerNewEventTask(newInstance);
-		}
-	}
-	
-	public static void registerTM()
-	{
-		EventsGlobalTask.getInstance().clearEventTasksByEventName(Tournament.get_eventName());
-		
-		for (String time : TM_TIMES_LIST)
-		{
-			if (time == null || time.trim().isEmpty())
-			{
-				continue;
-			}
-			
-			Tournament newInstance = Tournament.getNewInstance();
 			newInstance.setEventStartTime(time);
 			EventsGlobalTask.getInstance().registerNewEventTask(newInstance);
 		}

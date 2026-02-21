@@ -32,7 +32,7 @@ import l2jorion.game.model.olympiad.OlympiadManager;
 import l2jorion.game.model.spawn.L2Spawn;
 import l2jorion.game.model.zone.ZoneId;
 import l2jorion.game.network.serverpackets.ExShowScreenMessage;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.PlaySound;
 import l2jorion.game.network.serverpackets.SetupGauge;
@@ -824,7 +824,7 @@ public class DungeonManager implements IVoicedCommandHandler, ICustomByPassHandl
 			_npcSpawn.getLastSpawn().getStatus().setCurrentHp(999999999);
 			_npcSpawn.getLastSpawn().setTitle(EVENT_NAME);
 			_npcSpawn.getLastSpawn().spawnMe(_npcSpawn.getLastSpawn().getX(), _npcSpawn.getLastSpawn().getY(), _npcSpawn.getLastSpawn().getZ());
-			_npcSpawn.getLastSpawn().broadcastPacket(new MagicSkillUser(_npcSpawn.getLastSpawn(), _npcSpawn.getLastSpawn(), 1034, 1, 1, 1));
+			_npcSpawn.getLastSpawn().broadcastPacket(new MagicSkillUse(_npcSpawn.getLastSpawn(), _npcSpawn.getLastSpawn(), 1034, 1, 1, 1));
 		}
 		catch (Exception e)
 		{
@@ -846,10 +846,6 @@ public class DungeonManager implements IVoicedCommandHandler, ICustomByPassHandl
 		SpawnTable.getInstance().deleteSpawn(_npcSpawn, true);
 		_npcSpawn = null;
 	}
-	
-	// ==========================================
-	// SPAWN ENGINE ATUALIZADA (USE CACHE)
-	// ==========================================
 	private void spawnEventMonsters()
 	{
 		if (TARGET_MOBS.isEmpty() || _currentLocation == null)
@@ -857,7 +853,6 @@ public class DungeonManager implements IVoicedCommandHandler, ICustomByPassHandl
 			return;
 		}
 		
-		// Se o cache estiver vazio (ex: reload não funcionou), tentamos cachear agora
 		if (_cachedMirrorSpawns.isEmpty())
 		{
 			cacheMirrorSpawns();
@@ -866,11 +861,8 @@ public class DungeonManager implements IVoicedCommandHandler, ICustomByPassHandl
 		int count = 0;
 		Location center = _currentLocation.getCenter();
 		
-		// OTIMIZAÇÃO: Itera SOMENTE sobre os mobs pré-cacheados (fast mode)
 		for (L2Spawn worldSpawn : _cachedMirrorSpawns)
 		{
-			// Verificação dupla: o mob do cache está perto da LOCALIZAÇÃO ATUAL do evento?
-			// (Porque o cache pode ter mobs de outras DungeonLocations se houver mais de uma configurada)
 			double distance = Math.sqrt(Math.pow(center.getX() - worldSpawn.getLocx(), 2) + Math.pow(center.getY() - worldSpawn.getLocy(), 2));
 			if (distance <= SPAWN_RADIUS)
 			{
@@ -1246,7 +1238,7 @@ public class DungeonManager implements IVoicedCommandHandler, ICustomByPassHandl
 		
 		preparePlayerForEvent(player);
 		player.disableAllSkills();
-		player.broadcastPacket(new MagicSkillUser(player, player, 1050, 1, TELEPORT_DELAY * 1000, 0));
+		player.broadcastPacket(new MagicSkillUse(player, player, 1050, 1, TELEPORT_DELAY * 1000, 0));
 		player.sendPacket(new SetupGauge(0, TELEPORT_DELAY * 1000));
 		
 		player.sendPacket(new ExShowScreenMessage("Teleporting in " + TELEPORT_DELAY + " seconds...", 3000));
@@ -1347,7 +1339,7 @@ public class DungeonManager implements IVoicedCommandHandler, ICustomByPassHandl
 		player.disableAllSkills();
 		player.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		player.setTarget(player);
-		player.broadcastPacket(new MagicSkillUser(player, player, 2099, 1, delayInSeconds * 1000, 0));
+		player.broadcastPacket(new MagicSkillUse(player, player, 2099, 1, delayInSeconds * 1000, 0));
 		player.sendPacket(new SetupGauge(0, delayInSeconds * 1000));
 		ThreadPoolManager.getInstance().scheduleGeneral(() ->
 		{

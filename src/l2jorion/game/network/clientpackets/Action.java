@@ -70,6 +70,12 @@ public final class Action extends PacketClient
 			return;
 		}
 		
+		if (activeChar.getActiveRequester() != null || activeChar.isOutOfControl())
+		{
+			activeChar.sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
 		final L2Object obj;
 		
 		if (activeChar.getTargetId() == _objectId)

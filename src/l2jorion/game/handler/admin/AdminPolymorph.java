@@ -28,7 +28,7 @@ import l2jorion.game.model.L2Character;
 import l2jorion.game.model.L2Object;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SetupGauge;
 import l2jorion.game.network.serverpackets.SystemMessage;
 
@@ -124,7 +124,7 @@ public class AdminPolymorph implements IAdminCommandHandler
 			if (obj instanceof L2Character)
 			{
 				L2Character Char = (L2Character) obj;
-				MagicSkillUser msk = new MagicSkillUser(Char, 1008, 1, 4000, 0);
+				MagicSkillUse msk = new MagicSkillUse(Char, 1008, 1, 4000, 0);
 				Char.broadcastPacket(msk);
 				SetupGauge sg = new SetupGauge(0, 4000);
 				Char.sendPacket(sg);

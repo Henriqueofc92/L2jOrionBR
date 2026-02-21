@@ -37,7 +37,7 @@ import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.spawn.L2Spawn;
 import l2jorion.game.network.clientpackets.Say2;
 import l2jorion.game.network.serverpackets.CreatureSay;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.templates.L2NpcTemplate;
 import l2jorion.game.util.EventData;
@@ -310,7 +310,7 @@ public class L2Event
 			spawn.getLastSpawn().decayMe();
 			spawn.getLastSpawn().spawnMe(spawn.getLastSpawn().getX(), spawn.getLastSpawn().getY(), spawn.getLastSpawn().getZ());
 			
-			spawn.getLastSpawn().broadcastPacket(new MagicSkillUser(spawn.getLastSpawn(), spawn.getLastSpawn(), 1034, 1, 1, 1));
+			spawn.getLastSpawn().broadcastPacket(new MagicSkillUse(spawn.getLastSpawn(), spawn.getLastSpawn(), 1034, 1, 1, 1));
 			
 			npcs.add(String.valueOf(spawn.getLastSpawn().getObjectId()));
 		}

@@ -28,7 +28,7 @@ import l2jorion.game.model.L2World;
 import l2jorion.game.model.MobGroup;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SetupGauge;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.templates.L2NpcTemplate;
@@ -625,7 +625,7 @@ public class AdminMobGroup implements IAdminCommandHandler
 	
 	private void doAnimation(final L2PcInstance activeChar)
 	{
-		activeChar.broadcastPacket(new MagicSkillUser(activeChar, 1008, 1, 4000, 0), 2250000);
+		activeChar.broadcastPacket(new MagicSkillUse(activeChar, 1008, 1, 4000, 0), 2250000);
 		activeChar.sendPacket(new SetupGauge(0, 4000));
 	}
 	

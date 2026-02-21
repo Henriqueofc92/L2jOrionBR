@@ -43,7 +43,7 @@ import l2jorion.game.model.olympiad.Olympiad;
 import l2jorion.game.model.olympiad.OlympiadManager;
 import l2jorion.game.model.spawn.L2Spawn;
 import l2jorion.game.network.serverpackets.ActionFailed;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.Ride;
 import l2jorion.game.network.serverpackets.StatusUpdate;
@@ -699,7 +699,7 @@ public class DM implements EventTask
 			_npcSpawn.getLastSpawn().decayMe();
 			_npcSpawn.getLastSpawn().spawnMe(_npcSpawn.getLastSpawn().getX(), _npcSpawn.getLastSpawn().getY(), _npcSpawn.getLastSpawn().getZ());
 			
-			_npcSpawn.getLastSpawn().broadcastPacket(new MagicSkillUser(_npcSpawn.getLastSpawn(), _npcSpawn.getLastSpawn(), 1034, 1, 1, 1));
+			_npcSpawn.getLastSpawn().broadcastPacket(new MagicSkillUse(_npcSpawn.getLastSpawn(), _npcSpawn.getLastSpawn(), 1034, 1, 1, 1));
 		}
 		catch (Exception e)
 		{
@@ -840,7 +840,7 @@ public class DM implements EventTask
 								L2Skill skill;
 								skill = SkillTable.getInstance().getInfo(1204, 2);
 								skill.getEffects(player, player);
-								player.broadcastPacket(new MagicSkillUser(player, player, skill.getId(), 2, skill.getHitTime(), 0));
+								player.broadcastPacket(new MagicSkillUse(player, player, skill.getId(), 2, skill.getHitTime(), 0));
 								
 								if (player.isMageClass())
 								{
@@ -848,7 +848,7 @@ public class DM implements EventTask
 									L2Skill skill2;
 									skill2 = SkillTable.getInstance().getInfo(1085, 1);
 									skill2.getEffects(player, player);
-									player.broadcastPacket(new MagicSkillUser(player, player, skill2.getId(), 1, skill2.getHitTime(), 0));
+									player.broadcastPacket(new MagicSkillUse(player, player, skill2.getId(), 1, skill2.getHitTime(), 0));
 								}
 								else
 								{
@@ -856,7 +856,7 @@ public class DM implements EventTask
 									L2Skill skill1;
 									skill1 = SkillTable.getInstance().getInfo(1086, 2);
 									skill1.getEffects(player, player);
-									player.broadcastPacket(new MagicSkillUser(player, player, skill1.getId(), 2, skill1.getHitTime(), 0));
+									player.broadcastPacket(new MagicSkillUse(player, player, skill1.getId(), 2, skill1.getHitTime(), 0));
 								}
 								// custom buff end
 							}
@@ -2110,7 +2110,7 @@ public class DM implements EventTask
 					L2Skill skill;
 					skill = SkillTable.getInstance().getInfo(1204, 2);
 					skill.getEffects(player, player);
-					player.broadcastPacket(new MagicSkillUser(player, player, skill.getId(), 2, skill.getHitTime(), 0));
+					player.broadcastPacket(new MagicSkillUse(player, player, skill.getId(), 2, skill.getHitTime(), 0));
 					
 					if (player.isMageClass())
 					{
@@ -2118,7 +2118,7 @@ public class DM implements EventTask
 						L2Skill skill2;
 						skill2 = SkillTable.getInstance().getInfo(1085, 1);
 						skill2.getEffects(player, player);
-						player.broadcastPacket(new MagicSkillUser(player, player, skill2.getId(), 1, skill2.getHitTime(), 0));
+						player.broadcastPacket(new MagicSkillUse(player, player, skill2.getId(), 1, skill2.getHitTime(), 0));
 					}
 					else
 					{
@@ -2126,7 +2126,7 @@ public class DM implements EventTask
 						L2Skill skill1;
 						skill1 = SkillTable.getInstance().getInfo(1086, 2);
 						skill1.getEffects(player, player);
-						player.broadcastPacket(new MagicSkillUser(player, player, skill1.getId(), 2, skill1.getHitTime(), 0));
+						player.broadcastPacket(new MagicSkillUse(player, player, skill1.getId(), 2, skill1.getHitTime(), 0));
 					}
 					// custom buff end
 				}

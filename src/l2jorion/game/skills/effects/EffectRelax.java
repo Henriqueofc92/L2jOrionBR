@@ -1,6 +1,6 @@
 /*
- * L2jOrion Project - www.l2jorion.com 
- * 
+ * L2jOrion Project - www.l2jorion.com
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -27,6 +27,20 @@ import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.skills.Env;
 
+/**
+ * Relax effect — forces the player to sit and regenerate HP while draining MP.
+ * <ul>
+ *   <li>On start: sits the player down (or sets REST intention for NPCs).</li>
+ *   <li>On tick: checks if still sitting, HP is not full, and MP is sufficient.</li>
+ *   <li>On exit: clears the relax flag.</li>
+ * </ul>
+ * Improvements from reference (l2jmega):
+ * <ul>
+ *   <li>Proper HP full system message (SKILL_DEACTIVATED_HP_FULL).</li>
+ *   <li>Proper MP exhaustion system message (SKILL_REMOVED_DUE_LACK_MP).</li>
+ *   <li>Standing up cancels the effect immediately.</li>
+ * </ul>
+ */
 class EffectRelax extends L2Effect
 {
 	public EffectRelax(final Env env, final EffectTemplate template)
@@ -43,11 +57,11 @@ class EffectRelax extends L2Effect
 	@Override
 	public void onStart()
 	{
-		
 		if (getEffected() instanceof L2PcInstance)
 		{
-			setRelax(true);
-			((L2PcInstance) getEffected()).sitDown();
+			final L2PcInstance player = (L2PcInstance) getEffected();
+			player.setRelax(true);
+			player.sitDown();
 		}
 		else
 		{
@@ -59,67 +73,53 @@ class EffectRelax extends L2Effect
 	@Override
 	public void onExit()
 	{
-		setRelax(false);
+		if (getEffected() instanceof L2PcInstance)
+		{
+			((L2PcInstance) getEffected()).setRelax(false);
+		}
 		super.onExit();
 	}
 	
 	@Override
 	public boolean onActionTime()
 	{
-		boolean retval = true;
 		if (getEffected().isDead())
 		{
-			retval = false;
+			return false;
 		}
 		
+		// If player stood up, cancel the effect
 		if (getEffected() instanceof L2PcInstance)
 		{
 			if (!((L2PcInstance) getEffected()).isSitting())
 			{
-				retval = false;
+				return false;
 			}
 		}
 		
+		// If HP is full and this is a toggle, deactivate
 		if (getEffected().getCurrentHp() + 1 > getEffected().getMaxHp())
 		{
 			if (getSkill().isToggle())
 			{
-				final SystemMessage sm = new SystemMessage(SystemMessageId.S1_S2);
-				sm.addString("Fully rested. Effect of " + getSkill().getName() + " has been removed.");
-				getEffected().sendPacket(sm);
-				retval = false;
+				getEffected().sendPacket(new SystemMessage(SystemMessageId.SKILL_DEACTIVATED_HP_FULL));
+				return false;
 			}
 		}
 		
+		// Drain MP
 		final double manaDam = calc();
 		
 		if (manaDam > getEffected().getCurrentMp())
 		{
 			if (getSkill().isToggle())
 			{
-				final SystemMessage sm = new SystemMessage(SystemMessageId.SKILL_REMOVED_DUE_LACK_MP);
-				getEffected().sendPacket(sm);
-				retval = false;
+				getEffected().sendPacket(new SystemMessage(SystemMessageId.SKILL_REMOVED_DUE_LACK_MP));
+				return false;
 			}
 		}
 		
-		if (!retval)
-		{
-			setRelax(retval);
-		}
-		else
-		{
-			getEffected().reduceCurrentMp(manaDam);
-		}
-		
-		return retval;
-	}
-	
-	private void setRelax(final boolean val)
-	{
-		if (getEffected() instanceof L2PcInstance)
-		{
-			((L2PcInstance) getEffected()).setRelax(val);
-		}
+		getEffected().reduceCurrentMp(manaDam);
+		return true;
 	}
 }

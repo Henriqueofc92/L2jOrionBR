@@ -17,7 +17,6 @@
 package l2jorion.game.handler.custom;
 
 import l2jorion.game.model.actor.instance.L2PcInstance;
-import l2jorion.game.model.entity.Rebirth;
 
 public class CustomWorldHandler
 {
@@ -35,14 +34,6 @@ public class CustomWorldHandler
 		}
 		
 		return _instance;
-	}
-	
-	public void enterWorld(final L2PcInstance player)
-	{
-		if (!player.isSubClassActive())
-		{
-			Rebirth.getInstance().grantRebirthSkills(player);
-		}
 	}
 	
 	public void exitWorld(final L2PcInstance player)

@@ -31,7 +31,6 @@ import l2jorion.game.datatables.GmListTable;
 import l2jorion.game.datatables.SkillTable;
 import l2jorion.game.datatables.xml.AdminCommands;
 import l2jorion.game.datatables.xml.MapRegionTable;
-import l2jorion.game.handler.custom.CustomWorldHandler;
 import l2jorion.game.handler.voice.Menu;
 import l2jorion.game.handler.voice.Vote;
 import l2jorion.game.managers.CastleManager;
@@ -48,6 +47,7 @@ import l2jorion.game.model.L2Skill;
 import l2jorion.game.model.L2World;
 import l2jorion.game.model.actor.instance.L2ClassMasterInstance;
 import l2jorion.game.model.actor.instance.L2ItemInstance;
+import l2jorion.game.managers.QuestManager;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.base.ClassLevel;
 import l2jorion.game.model.base.PlayerClass;
@@ -84,7 +84,7 @@ import l2jorion.game.network.serverpackets.FriendList;
 import l2jorion.game.network.serverpackets.HennaInfo;
 import l2jorion.game.network.serverpackets.InventoryUpdate;
 import l2jorion.game.network.serverpackets.ItemList;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.PlaySound;
 import l2jorion.game.network.serverpackets.PledgeShowMemberListAll;
@@ -347,11 +347,6 @@ public class EnterWorld extends PacketClient
 			activeChar.sendMessage("You have been teleported to the nearest town due to you being in siege zone.");
 		}
 		
-		if (Config.REBIRTH_ENABLE)
-		{
-			CustomWorldHandler.getInstance().enterWorld(activeChar);
-		}
-		
 		if (TvT._savePlayers.contains(activeChar.getName()))
 		{
 			TvT.addDisconnectedPlayer(activeChar);
@@ -570,22 +565,22 @@ public class EnterWorld extends PacketClient
 				Announcements.getInstance().announceToAll("GM " + activeChar.getName() + " has logged on.");
 			}
 			
-			if (Config.GM_STARTUP_INVULNERABLE && AdminCommands.getInstance().hasAccess("admin_invul", activeChar.getAccessLevel()))
+			if (Config.GM_STARTUP_INVULNERABLE && AdminCommands.getInstance().hasAccess("admin_invul", activeChar.getAccessLevel(), activeChar.getGmAccessProfile()))
 			{
 				activeChar.setIsInvul(true);
 			}
 			
-			if (Config.GM_STARTUP_INVISIBLE && AdminCommands.getInstance().hasAccess("admin_invisible", activeChar.getAccessLevel()))
+			if (Config.GM_STARTUP_INVISIBLE && AdminCommands.getInstance().hasAccess("admin_invisible", activeChar.getAccessLevel(), activeChar.getGmAccessProfile()))
 			{
 				activeChar.getAppearance().setInvisible();
 			}
 			
-			if (Config.GM_STARTUP_SILENCE && AdminCommands.getInstance().hasAccess("admin_silence", activeChar.getAccessLevel()))
+			if (Config.GM_STARTUP_SILENCE && AdminCommands.getInstance().hasAccess("admin_silence", activeChar.getAccessLevel(), activeChar.getGmAccessProfile()))
 			{
 				activeChar.setMessageRefusal(true);
 			}
 			
-			if (Config.GM_STARTUP_AUTO_LIST && AdminCommands.getInstance().hasAccess("admin_gmliston", activeChar.getAccessLevel()))
+			if (Config.GM_STARTUP_AUTO_LIST && AdminCommands.getInstance().hasAccess("admin_gmliston", activeChar.getAccessLevel(), activeChar.getGmAccessProfile()))
 			{
 				GmListTable.getInstance().addGm(activeChar, false);
 			}
@@ -618,7 +613,7 @@ public class EnterWorld extends PacketClient
 				L2Skill skill = SkillTable.getInstance().getInfo(2025, 1);
 				if (skill != null)
 				{
-					MagicSkillUser MSU = new MagicSkillUser(activeChar, activeChar, 2025, 1, 1, 0);
+					MagicSkillUse MSU = new MagicSkillUse(activeChar, activeChar, 2025, 1, 1, 0);
 					activeChar.sendPacket(MSU);
 					activeChar.broadcastPacket(MSU);
 					activeChar.useMagic(skill, false, false);
@@ -985,7 +980,15 @@ public class EnterWorld extends PacketClient
 	
 	private void loadTutorial(L2PcInstance player)
 	{
-		QuestState qs = player.getQuestState("255_Tutorial");
+		QuestState qs = player.getQuestState("Q255_Tutorial");
+		if (qs == null)
+		{
+			Quest q = QuestManager.getInstance().getQuest("Q255_Tutorial");
+			if (q != null)
+			{
+				qs = q.newQuestState(player);
+			}
+		}
 		if (qs != null)
 		{
 			qs.getQuest().notifyEvent("UC", null, player);

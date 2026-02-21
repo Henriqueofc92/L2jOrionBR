@@ -135,8 +135,8 @@ public abstract class AbstractAI implements Ctrl
 	protected L2Character _followTarget;
 	
 	protected Future<?> _followTask = null;
-	private static final int FOLLOW_INTERVAL = Config.FOLLOW_INTERVAL;
-	private static final int ATTACK_FOLLOW_INTERVAL = Config.ATTACK_FOLLOW_INTERVAL;
+	private static final int FOLLOW_INTERVAL = 1000;
+	private static final int ATTACK_FOLLOW_INTERVAL = 500;
 	
 	L2Skill _skill;
 	
@@ -316,6 +316,7 @@ public abstract class AbstractAI implements Ctrl
 		if ((_nextAction != null) && _nextAction.getEvents().contains(evt))
 		{
 			_nextAction.doAction();
+			_nextAction = null;
 		}
 	}
 	
@@ -410,7 +411,7 @@ public abstract class AbstractAI implements Ctrl
 			_clientMoving = true;
 			_clientMovingToPawnOffset = offset;
 			_moveToPawnTimeout = GameTimeController.getInstance().getGameTicks();
-			_moveToPawnTimeout += Config.MOVE_TO_PAWN_TIMEOUT / GameTimeController.MILLIS_IN_TICK;
+			_moveToPawnTimeout += 1000 / GameTimeController.MILLIS_IN_TICK;
 			
 			if (pawn == null)
 			{

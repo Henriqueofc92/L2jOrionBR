@@ -1,66 +1,34 @@
-/*
- * L2jOrion Project - www.l2jorion.com 
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
- *
- * http://www.gnu.org/copyleft/gpl.html
- */
 package l2jorion.game.powerpack.bossInfo;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import l2jorion.Config;
 import l2jorion.game.cache.HtmCache;
+import l2jorion.game.datatables.sql.ItemTable;
 import l2jorion.game.datatables.sql.NpcTable;
 import l2jorion.game.handler.ICustomByPassHandler;
 import l2jorion.game.handler.IVoicedCommandHandler;
 import l2jorion.game.managers.GrandBossManager;
 import l2jorion.game.managers.RaidBossSpawnManager;
-import l2jorion.game.model.actor.instance.L2GrandBossInstance;
+import l2jorion.game.model.L2DropCategory;
+import l2jorion.game.model.L2DropData;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.actor.instance.L2RaidBossInstance;
 import l2jorion.game.model.zone.ZoneId;
-import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.ActionFailed;
-import l2jorion.game.network.serverpackets.CreatureSay;
-import l2jorion.game.network.serverpackets.ExShowScreenMessage;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
-import l2jorion.game.network.serverpackets.PlaySound;
-import l2jorion.game.network.serverpackets.ShowMiniMap;
-import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.powerpack.PowerPackConfig;
+import l2jorion.game.templates.L2Item;
 import l2jorion.game.templates.L2NpcTemplate;
 import l2jorion.game.templates.StatsSet;
-import l2jorion.game.thread.ThreadPoolManager;
-import l2jorion.logger.Logger;
-import l2jorion.logger.LoggerFactory;
-import l2jorion.util.CloseUtil;
-import l2jorion.util.database.L2DatabaseFactory;
 
 public class RaidInfoHandler implements IVoicedCommandHandler, ICustomByPassHandler
 {
-	private static Logger LOG = LoggerFactory.getLogger(RaidInfoHandler.class);
+	private final String ROOT = "data/html/mods/boss/";
 	
-	private String ROOT = "data/html/mods/boss/";
-	private static boolean open = false;
-	public int seconds = 1840;
+	private final int BOSSES_PER_PAGE = 14;
+	private final int DROPS_PER_PAGE = 7;
 	
 	@Override
 	public String[] getVoicedCommandList()
@@ -79,62 +47,17 @@ public class RaidInfoHandler implements IVoicedCommandHandler, ICustomByPassHand
 			return false;
 		}
 		
-		if (Config.L2LIMIT_CUSTOM)
+		if (Config.L2LIMIT_CUSTOM && player.getPremiumService() == 0 && !player.isInsideZone(ZoneId.ZONE_PEACE))
 		{
-			if (player.getPremiumService() == 0 && !player.isInsideZone(ZoneId.ZONE_PEACE))
-			{
-				String msg = null;
-				msg = "You can't use this command outside town.";
-				player.sendMessage(msg);
-				player.sendPacket(new ExShowScreenMessage(msg, 2000, 2, false));
-				player.sendPacket(new PlaySound("ItemSound3.sys_impossible"));
-				return false;
-			}
-		}
-		
-		if (PowerPackConfig.RESPAWN_BOSS_ONLY_FOR_LORD)
-		{
-			if (player.getClan() == null || player.getClan() != null && !player.getClan().hasCastle() || player.getClan() != null && !player.getClan().hasHideout())
-			{
-				player.sendMessage("This command is only for casle or clanhall owners.");
-				return true;
-			}
+			player.sendMessage("You can't use this command outside town.");
+			return false;
 		}
 		
 		if (command.equalsIgnoreCase("boss"))
 		{
 			showHtm(player);
-			open = false;
-			return false;
 		}
-		
 		return true;
-	}
-	
-	private void showHtm(L2PcInstance player)
-	{
-		NpcHtmlMessage htm = new NpcHtmlMessage(1);
-		String text = HtmCache.getInstance().getHtm(ROOT + "index.htm");
-		htm.setHtml(text);
-		player.sendPacket(htm);
-	}
-	
-	private void showRbListHtm(L2PcInstance player)
-	{
-		NpcHtmlMessage htm = new NpcHtmlMessage(1);
-		String text = HtmCache.getInstance().getHtm(ROOT + "rb_list.htm");
-		htm.setHtml(text);
-		
-		if (player.GetSelectedBoss().size() > 0)
-		{
-			htm.replace("%selected%", "<font color=3399ff>" + player.GetSelectedBoss().get(0) + "</font> <a action=\"bypass -h custom_bosses_rb_list_unselect\">Unselect</a>");
-		}
-		else
-		{
-			htm.replace("%selected%", "-");
-		}
-		
-		player.sendPacket(htm);
 	}
 	
 	@Override
@@ -144,183 +67,62 @@ public class RaidInfoHandler implements IVoicedCommandHandler, ICustomByPassHand
 		{
 			"bosses_gb_list",
 			"bosses_rb_list",
-			"bosses_rb_list_unselect",
 			"bosses_rb_bylevels",
-			"view_raid_boss",
-			"view_epic_boss",
-			"bosses_rb_loc",
-			"bosses_index"
+			"bosses_index",
+			"boss_drop"
 		};
-	}
-	
-	private enum CommandEnum
-	{
-		bosses_gb_list,
-		bosses_rb_list,
-		bosses_rb_list_unselect,
-		bosses_rb_bylevels,
-		view_raid_boss,
-		view_epic_boss,
-		bosses_rb_loc,
-		bosses_index
 	}
 	
 	@Override
 	public void handleCommand(String command, L2PcInstance player, String parameters)
 	{
 		StringTokenizer st = new StringTokenizer(command);
-		StringTokenizer st2 = new StringTokenizer(parameters, " ");
-		StringTokenizer st3 = new StringTokenizer(parameters, "_");
+		String cmd = st.nextToken();
 		
-		CommandEnum comm = CommandEnum.valueOf(st.nextToken());
-		
-		if (comm == null)
+		if (cmd.equals("bosses_gb_list"))
 		{
-			return;
+			sendGrandBossesInfo(player);
 		}
-		
-		switch (comm)
+		else if (cmd.equals("bosses_rb_list"))
 		{
-			case bosses_gb_list:
+			showRbListHtm(player);
+		}
+		else if (cmd.equals("bosses_rb_bylevels"))
+		{
+			StringTokenizer st2 = new StringTokenizer(parameters);
+			if (st2.countTokens() >= 3)
 			{
-				sendGrandBossesInfo(player);
-				break;
-			}
-			case bosses_rb_list:
-			{
-				showRbListHtm(player);
-				break;
-			}
-			case bosses_rb_list_unselect:
-			{
-				player.GetSelectedBoss().clear();
-				player.getRadar().removeAllMarkers();
-				showRbListHtm(player);
-				break;
-			}
-			case bosses_rb_bylevels:
-			{
-				String val = "";
-				String val2 = "";
-				String val3 = "";
+				int min = Integer.parseInt(st2.nextToken());
+				int max = Integer.parseInt(st2.nextToken());
+				int page = Integer.parseInt(st2.nextToken());
 				
-				if (st2.hasMoreTokens())
+				if (page < 1)
 				{
-					val = st2.nextToken();
-					val2 = st2.nextToken();
-					val3 = st2.nextToken();
-					
-					try
-					{
-						final int minLv = Integer.parseInt(val);
-						final int maxLv = Integer.parseInt(val2);
-						final int page = Integer.parseInt(val3);
-						
-						sendRaidBossesInfo(player, minLv, maxLv, page);
-						return;
-					}
-					catch (final NumberFormatException e)
-					{
-					}
+					page = 1;
 				}
-				break;
-			}
-			case view_epic_boss:
-			{
-				String x = "";
-				String y = "";
-				String z = "";
 				
-				if (st2.hasMoreTokens())
-				{
-					x = st2.nextToken();
-					y = st2.nextToken();
-					z = st2.nextToken();
-					
-					try
-					{
-						final int x1 = Integer.parseInt(x);
-						final int y1 = Integer.parseInt(y);
-						final int z1 = Integer.parseInt(z);
-						
-						doObserve(player, x1, y1, z1, 50);
-						return;
-					}
-					catch (final NumberFormatException e)
-					{
-					}
-				}
-				break;
+				sendRaidBossesInfo(player, min, max, page);
 			}
-			case view_raid_boss:
+		}
+		else if (cmd.equals("boss_drop"))
+		{
+			StringTokenizer st2 = new StringTokenizer(parameters);
+			if (st2.countTokens() >= 2)
 			{
-				String x = "";
-				String y = "";
-				String z = "";
+				int npcId = Integer.parseInt(st2.nextToken());
+				int page = Integer.parseInt(st2.nextToken());
 				
-				if (st2.hasMoreTokens())
+				if (page < 1)
 				{
-					x = st2.nextToken();
-					y = st2.nextToken();
-					z = st2.nextToken();
-					
-					try
-					{
-						final int x1 = Integer.parseInt(x);
-						final int y1 = Integer.parseInt(y);
-						final int z1 = Integer.parseInt(z);
-						
-						doObserve(player, x1, y1, z1, 15);
-						return;
-					}
-					catch (final NumberFormatException e)
-					{
-					}
+					page = 1;
 				}
-				break;
-			}
-			case bosses_rb_loc:
-			{
-				String x = "";
-				String y = "";
-				String z = "";
-				String name = "";
 				
-				if (st2.hasMoreTokens())
-				{
-					x = st2.nextToken();
-					y = st2.nextToken();
-					z = st2.nextToken();
-					name = st3.nextToken();
-					
-					int locx = Integer.parseInt(x);
-					int locy = Integer.parseInt(y);
-					int locz = Integer.parseInt(z);
-					String locname = name;
-					int substring = String.valueOf(locx).length() + String.valueOf(locy).length() + String.valueOf(locz).length() + 3;
-					
-					player.getRadar().removeAllMarkers();
-					player.getRadar().addMarker(locx, locy, locz);
-					
-					if (!open)
-					{
-						player.sendPacket(new ShowMiniMap(1665));
-						open = true;
-					}
-					
-					player.GetSelectedBoss().clear();
-					
-					player.GetSelectedBoss().add(locname.substring(substring));
-					ThreadPoolManager.getInstance().scheduleGeneral(new loadMarkers(player), 500);
-				}
-				break;
+				sendDropInfo(player, npcId, page);
 			}
-			case bosses_index:
-			{
-				showHtm(player);
-				open = false;
-				break;
-			}
+		}
+		else if (cmd.equals("bosses_index"))
+		{
+			showHtm(player);
 		}
 	}
 	
@@ -330,66 +132,22 @@ public class RaidInfoHandler implements IVoicedCommandHandler, ICustomByPassHand
 		htm.setFile(ROOT + "gb_list.htm");
 		StringBuilder t = new StringBuilder();
 		
-		int color = 1;
-		for (int boss : PowerPackConfig.RAID_INFO_IDS_LIST)
+		for (int bossId : PowerPackConfig.RAID_INFO_IDS_LIST)
 		{
-			String name = "";
-			
-			StatsSet info = GrandBossManager.getInstance().getStatsSet(boss);
-			L2GrandBossInstance grand_boss = GrandBossManager.getInstance().getBoss(boss);
-			int x = 0;
-			int y = 0;
-			int z = 0;
-			
-			L2NpcTemplate template = null;
-			if ((template = NpcTable.getInstance().getTemplate(boss)) != null)
+			L2NpcTemplate template = NpcTable.getInstance().getTemplate(bossId);
+			if (template == null)
 			{
-				name = template.getName();
-			}
-			else
-			{
-				LOG.warn("Raid Boss with ID " + boss + " is not defined into NpcTable");
 				continue;
 			}
 			
-			long delay = info.getLong("respawn_time");
+			StatsSet info = GrandBossManager.getInstance().getStatsSet(bossId);
+			long delay = (info != null) ? info.getLong("respawn_time") : 0;
+			boolean isAlive = delay <= System.currentTimeMillis();
 			
-			if (grand_boss != null && grand_boss.isChampion())
-			{
-				name = "<font color=\"ff0000\">" + name + "</font>";
-			}
-			
-			name = name + "&nbsp;<font color=\"ffff00\">" + template.getLevel() + "</font>";
-			
-			if (grand_boss != null && grand_boss.getSpawn() != null)
-			{
-				x = grand_boss.getSpawn().getLocx();
-				y = grand_boss.getSpawn().getLocy();
-				z = grand_boss.getSpawn().getLocz();
-			}
-			else
-			{
-				x = info.getInteger("loc_x");
-				y = info.getInteger("loc_y");
-				z = info.getInteger("loc_z");
-			}
-			
-			if (color == 1)
-			{
-				t.append("<table width=300 border=0 bgcolor=000000><tr>");
-				t.append("<td width=150>" + name + "</td><td width=110>" + (Config.RON_CUSTOM ? "" : (delay <= System.currentTimeMillis() ? "<font color=\"009900\">Alive</font>" : "<font color=\"FF0000\">Dead: " + GetGrandBossKilledTime(boss)) + "</font></td>") + //
-					"" + (Config.RON_CUSTOM ? "<td width=40>[<a action=\"bypass custom_view_epic_boss " + x + " " + y + " " + z + "\">View</a>] <font color=LEVEL>50</font> PCB Points</td>" : "") + "");
-				t.append("</tr></table>");
-				color = 2;
-			}
-			else
-			{
-				t.append("<table width=300 border=0><tr>");
-				t.append("<td width=150>" + name + "</td><td width=110>" + (Config.RON_CUSTOM ? "" : (delay <= System.currentTimeMillis() ? "<font color=\"009900\">Alive</font>" : "<font color=\"FF0000\">Dead: " + GetGrandBossKilledTime(boss)) + "</font></td>") + //
-					"" + (Config.RON_CUSTOM ? "<td width=40>[<a action=\"bypass custom_view_epic_boss " + x + " " + y + " " + z + "\">View</a>] <font color=LEVEL>50</font> PCB Points</td>" : "") + "");
-				t.append("</tr></table>");
-				color = 1;
-			}
+			t.append("<table width=300 border=0 bgcolor=000000><tr>");
+			t.append("<td width=200><a action=\"bypass -h custom_boss_drop " + bossId + " 1\">" + template.getName() + "</a></td>");
+			t.append("<td width=100 align=right>" + (isAlive ? "<font color=\"009900\">Alive</font>" : "<font color=\"FF0000\">Dead</font>") + "</td>");
+			t.append("</tr></table><img src=\"L2UI.SquareGray\" width=300 height=1>");
 		}
 		htm.replace("%bosses%", t.toString());
 		activeChar.sendPacket(htm);
@@ -397,316 +155,215 @@ public class RaidInfoHandler implements IVoicedCommandHandler, ICustomByPassHand
 	
 	private void sendRaidBossesInfo(L2PcInstance activeChar, int minLv, int maxLv, int page)
 	{
-		final Collection<L2RaidBossInstance> rBosses = RaidBossSpawnManager._bossesForCommand.values();
-		
-		RaidBossSpawnManager.BOSSES_LIST.clear();
-		
-		for (final L2RaidBossInstance actual_boss : rBosses)
+		if (page < 1)
 		{
-			if ((actual_boss.getLevel() >= minLv && actual_boss.getLevel() <= maxLv))
+			page = 1;
+		}
+		
+		List<L2RaidBossInstance> bosses = new ArrayList<>();
+		for (L2RaidBossInstance rb : RaidBossSpawnManager._bossesForCommand.values())
+		{
+			if (rb.getLevel() >= minLv && rb.getLevel() <= maxLv)
 			{
-				RaidBossSpawnManager.BOSSES_LIST.add(actual_boss);
+				bosses.add(rb);
 			}
 		}
 		
-		RaidBossSpawnManager.BOSSES_LIST.sort((o1, o2) -> String.valueOf(o1.getLevel()).compareTo(String.valueOf(o2.getLevel())));
+		bosses.sort((o1, o2) -> Integer.compare(o1.getLevel(), o2.getLevel()));
+		int totalBosses = bosses.size();
+		int totalPages = (int) Math.ceil((double) totalBosses / BOSSES_PER_PAGE);
 		
-		L2RaidBossInstance[] bossses = RaidBossSpawnManager.BOSSES_LIST.toArray(new L2RaidBossInstance[RaidBossSpawnManager.BOSSES_LIST.size()]);
-		
-		final int MaxCharactersPerPage = 15;
-		int MaxPages = bossses.length / MaxCharactersPerPage;
-		
-		if (bossses.length > MaxCharactersPerPage * MaxPages)
+		if (page > totalPages && totalPages > 0)
 		{
-			MaxPages++;
+			page = totalPages;
 		}
 		
-		if (page > MaxPages)
-		{
-			page = MaxPages;
-		}
-		
-		final int CharactersStart = MaxCharactersPerPage * page;
-		int CharactersEnd = bossses.length;
-		
-		if (CharactersEnd - CharactersStart > MaxCharactersPerPage)
-		{
-			CharactersEnd = CharactersStart + MaxCharactersPerPage;
-		}
+		int start = (page - 1) * BOSSES_PER_PAGE;
+		int end = Math.min(start + BOSSES_PER_PAGE, totalBosses);
 		
 		NpcHtmlMessage html = new NpcHtmlMessage(6);
 		html.setFile(ROOT + "rb_list_bylevels.htm");
 		StringBuilder th = new StringBuilder();
 		
-		int count = CharactersStart;
-		int color = 1;
-		for (int i = CharactersStart; i < CharactersEnd; i++)
+		for (int i = start; i < end; i++)
 		{
-			count++;
+			L2RaidBossInstance rb = bosses.get(i);
+			int rbossId = rb.getNpcId();
+			StatsSet rInfo = RaidBossSpawnManager.getInstance().getStatsSet(rbossId);
+			long delay = rInfo != null ? rInfo.getLong("respawnTime") : 0;
+			boolean isAlive = delay <= System.currentTimeMillis();
 			
-			String name = "";
-			int rboss = bossses[i].getNpcId();
-			L2NpcTemplate template = NpcTable.getInstance().getTemplate(rboss);
-			StatsSet rInfo = RaidBossSpawnManager.getInstance().getStatsSet(rboss);
-			L2RaidBossInstance raid_boss = RaidBossSpawnManager.getInstance().getBoss(rboss);
-			long delay = 0;
-			String deadTime = "";
-			int x = 0;
-			int y = 0;
-			int z = 0;
-			
-			if (rInfo != null)
-			{
-				name = template.getName();
-				
-				String locname = template.getName();
-				
-				if (name.length() >= 16)
-				{
-					name = name.substring(0, 16) + "...";
-				}
-				
-				if (raid_boss != null && raid_boss.isChampion())
-				{
-					name = "<font color=\"ff0000\">" + name + "</font>";
-				}
-				
-				name = name + "&nbsp;<font color=\"ffff00\">" + template.getLevel() + "</font>";
-				
-				if (template.aggroRange > 0)
-				{
-					name = name + "<font color=\"ff0000\">*</font>";
-				}
-				
-				delay = rInfo.getLong("respawnTime");
-				deadTime = GetRaidBossKilledTime(rboss);
-				
-				if (raid_boss != null && raid_boss.getSpawn() != null)
-				{
-					x = raid_boss.getSpawn().getLocx();
-					y = raid_boss.getSpawn().getLocy();
-					z = raid_boss.getSpawn().getLocz();
-				}
-				else
-				{
-					x = rInfo.getInteger("loc_x");
-					y = rInfo.getInteger("loc_y");
-					z = rInfo.getInteger("loc_z");
-				}
-				
-				if (color == 1)
-				{
-					th.append("<table width=300 border=0 bgcolor=000000><tr>");
-					th.append("<td width=20>" + count + ".</td><td width=130><a action=\"bypass custom_bosses_rb_loc " + x + " " + y + " " + z + " " + locname + "\">" + name + "</a></td>"
-						+ (Config.RON_CUSTOM ? "" : "<td width=110>" + (delay <= System.currentTimeMillis() ? "<font color=\"009900\">Alive</font>" : "<font color=\"FF0000\">Dead: " + deadTime + "</font>") + "</td>") //
-						+ (Config.RON_CUSTOM ? "<td width=120>[<a action=\"bypass custom_view_raid_boss " + x + " " + y + " " + z + "\">View</a>] <font color=LEVEL>15</font> PCB Points</td>" : "") + "");
-					th.append("</tr></table>");
-					color = 2;
-				}
-				else
-				{
-					th.append("<table width=300 border=0><tr>");
-					th.append("<td width=20>" + count + ".</td><td width=130><a action=\"bypass custom_bosses_rb_loc " + x + " " + y + " " + z + " " + locname + "\">" + name + "</a></td>"
-						+ (Config.RON_CUSTOM ? "" : "<td width=110>" + (delay <= System.currentTimeMillis() ? "<font color=\"009900\">Alive</font>" : "<font color=\"FF0000\">Dead: " + deadTime + "</font>") + "</td>") //
-						+ (Config.RON_CUSTOM ? "<td width=120>[<a action=\"bypass custom_view_raid_boss " + x + " " + y + " " + z + "\">View</a>] <font color=LEVEL>15</font> PCB Points</td>" : "") + "");
-					th.append("</tr></table>");
-					color = 1;
-				}
-			}
+			th.append("<table width=300 border=0><tr>");
+			th.append("<td width=200><a action=\"bypass -h custom_boss_drop " + rbossId + " 1\">" + rb.getName() + " (" + rb.getLevel() + ")</a></td>");
+			th.append("<td width=100 align=right>" + (isAlive ? "<font color=\"009900\">Alive</font>" : "<font color=\"FF0000\">Dead</font>") + "</td>");
+			th.append("</tr></table><img src=\"L2UI.SquareGray\" width=300 height=1>");
 		}
-		
-		html.replace("%raidbosses%", th.toString());
-		
-		th.setLength(0);
-		
-		th.append("<center><table><tr>");
-		for (int x = 0; x < MaxPages; x++)
+		StringBuilder pg = new StringBuilder("<center><table border=0><tr>");
+		for (int x = 1; x <= totalPages; x++)
 		{
-			final int pagenr = x + 1;
-			if (page == x)
+			if (x == page)
 			{
-				th.append("<td width=20>[" + pagenr + "]&nbsp;&nbsp;</td>");
+				pg.append("<td width=25><font color=\"LEVEL\">[" + x + "]</font></td>");
 			}
 			else
 			{
-				th.append("<td width=20><a action=\"bypass -h custom_bosses_rb_bylevels " + minLv + " " + maxLv + " " + x + "\">[" + pagenr + "]</a>&nbsp;&nbsp;</td>");
+				pg.append("<td width=25><a action=\"bypass -h custom_bosses_rb_bylevels " + minLv + " " + maxLv + " " + x + "\">" + x + "</a></td>");
 			}
 		}
-		th.append("</tr></table></center>");
+		pg.append("</tr></table></center>");
 		
-		html.replace("%pages%", th.toString());
-		
+		html.replace("%raidbosses%", th.toString());
+		html.replace("%pages%", pg.toString());
 		activeChar.sendPacket(html);
 	}
 	
-	public static String GetGrandBossKilledTime(int BossId)
+	private void sendDropInfo(L2PcInstance activeChar, int npcId, int page)
 	{
-		Connection con = null;
-		String killed_time = "";
-		try
+		if (page < 1)
 		{
-			con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT killed_time FROM grandboss_data WHERE boss_id=?");
-			statement.setInt(1, BossId);
-			ResultSet rset = statement.executeQuery();
-			rset.next();
-			killed_time = rset.getString("killed_time");
-			rset.close();
-			statement.close();
-		}
-		catch (Exception e)
-		{
-		}
-		finally
-		{
-			CloseUtil.close(con);
+			page = 1;
 		}
 		
-		return killed_time;
-	}
-	
-	public static String GetRaidBossKilledTime(int BossId)
-	{
-		Connection con = null;
-		String killed_time = "";
-		try
+		L2NpcTemplate temp = NpcTable.getInstance().getTemplate(npcId);
+		if (temp == null)
 		{
-			con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT killed_time FROM raidboss_spawnlist WHERE boss_id=?");
-			statement.setInt(1, BossId);
-			ResultSet rset = statement.executeQuery();
-			rset.next();
-			killed_time = rset.getString("killed_time");
-			rset.close();
-			statement.close();
-		}
-		catch (Exception e)
-		{
-		}
-		finally
-		{
-			CloseUtil.close(con);
-		}
-		
-		return killed_time;
-	}
-	
-	public static class loadMarkers implements Runnable
-	{
-		private final L2PcInstance _me;
-		
-		public loadMarkers(L2PcInstance me)
-		{
-			_me = me;
-		}
-		
-		@Override
-		public void run()
-		{
-			try
-			{
-				_me.getRadar().loadMarkers();
-				_me.sendPacket(new CreatureSay(0, 17, "Your selected Boss", _me.GetSelectedBoss().get(0)));
-			}
-			catch (final Throwable t)
-			{
-			}
-		}
-	}
-	
-	private void doObserve(L2PcInstance player, int x, int y, int z, int price)
-	{
-		if (player.getPcBangScore() < price)
-		{
-			player.sendMessage("You don't have enough PC Bang Points. Required:" + price);
-			player.sendPacket(new ExShowScreenMessage("You don't have enough PC Bang Points. Required:" + price, 1000, 2, false));
-			player.sendPacket(new PlaySound("ItemSound3.sys_impossible"));
 			return;
 		}
 		
-		player.reducePcBangScore(price);
-		player.sendPacket(new SystemMessage(SystemMessageId.USING_S1_PCPOINT).addNumber(price));
-		
-		player.enterObserverMode(x, y, z);
-		player.setBossTaskNull();
-		if (player.getBossTask() == null)
+		List<L2DropData> allDrops = new ArrayList<>();
+		for (L2DropCategory cat : temp.getDropData())
 		{
-			player.setBossObserve(true);
-			player.sendMessage("Time left: 30 minutes");
-			player.sendPacket(new ExShowScreenMessage("Time left: 30 minutes", 5000, 3, false));
-			player.startBossTask();
+			allDrops.addAll(cat.getAllDrops());
+		}
+		int totalDrops = allDrops.size();
+		int totalPages = (int) Math.ceil((double) totalDrops / DROPS_PER_PAGE);
+		
+		if (page > totalPages && totalPages > 0)
+		{
+			page = totalPages;
 		}
 		
-		player.sendPacket(ActionFailed.STATIC_PACKET);
+		int start = (page - 1) * DROPS_PER_PAGE;
+		int end = Math.min(start + DROPS_PER_PAGE, totalDrops);
+		
+		StringBuilder sb = new StringBuilder();
+		for (int i = start; i < end; i++)
+		{
+			L2DropData drop = allDrops.get(i);
+			double chance = calculateChance(activeChar, npcId, drop);
+			String icon = L2Item.getItemIcon(drop.getItemId());
+			String name = ItemTable.getInstance().getTemplate(drop.getItemId()).getName();
+			if (name.length() > 25)
+			{
+				name = name.substring(0, 22) + "...";
+			}
+			sb.append("<img src=\"L2UI.SquareGray\" width=300 height=1>");
+			sb.append("<table width=300 bgcolor=" + (i % 2 == 0 ? "000000" : "000000") + "><tr>");
+			sb.append("<td width=34><img src=\"" + icon + "\" width=32 height=32></td>");
+			sb.append("<td width=246><font color=\"ae6c51\">" + name + "</font><br1>");
+			sb.append("<font color=\"LEVEL\">" + String.format("%,d", drop.getMinDrop()) + "-" + String.format("%,d", drop.getMaxDrop()) + "</font> | Chance: <font color=\"00FF00\">" + String.format("%.2f", chance) + "%</font></td>");
+			sb.append("</tr></table>");
+			sb.append("<img src=\"L2UI.SquareGray\" width=300 height=1>");
+		}
+		
+		StringBuilder pg = new StringBuilder("<center><table border=0><tr>");
+		for (int x = 1; x <= totalPages; x++)
+		{
+			if (x == page)
+			{
+				pg.append("<td width=25><font color=\"LEVEL\">[" + x + "]</font></td>");
+			}
+			else
+			{
+				pg.append("<td width=25><a action=\"bypass -h custom_boss_drop " + npcId + " " + x + "\">" + x + "</a></td>");
+			}
+		}
+		pg.append("</tr></table><button value=\"Back\" action=\"bypass -h custom_bosses_index\" width=65 height=19 back=\"L2UI_ch3.smallbutton2_over\" fore=\"L2UI_ch3.smallbutton2\">");
+		
+		NpcHtmlMessage html = new NpcHtmlMessage(0);
+		sb.append("<img src=\"L2UI.SquareGray\" width=300 height=1>");
+		String content = "<html><body><center>" + "<table width=310 bgcolor=\"000000\" cellspacing=\"0\" cellpadding=\"0\">" + "<tr>" + "<td align=\"center\">" + "<font color=\"FE9B4F\">" + temp.getName() + "</font><br1>" + "</td>" + "</tr>" + "</table>" + "" + sb.toString() + pg.toString()
+			+ "</center></body></html>";
+		sb.append("<img src=\"L2UI.SquareGray\" width=300 height=1>");
+		html.setHtml(content);
+		activeChar.sendPacket(html);
 	}
 	
-	public void bossObserveTimer(L2PcInstance player)
+	private double calculateChance(L2PcInstance player, int npcId, L2DropData drop)
 	{
-		if (seconds > 0)
+		double chance = drop.getChance() / 10000.0;
+		L2NpcTemplate temp = NpcTable.getInstance().getTemplate(npcId);
+		if (temp == null)
 		{
-			seconds--;
+			return chance;
 		}
 		
-		switch (seconds)
+		boolean isRaid = temp.type.equalsIgnoreCase("L2RaidBoss") || RaidBossSpawnManager.getInstance().isDefined(npcId);
+		boolean isGrandBoss = temp.type.equalsIgnoreCase("L2GrandBoss") || GrandBossManager.getInstance().getBoss(npcId) != null;
+		
+		if (drop.getItemId() == 57)
 		{
-			case 1900:
-			case 1840:
-			case 1780:
-			case 1720:
-			case 1660:
-			case 1600:
-			case 1540:
-			case 1480:
-			case 1420:
-			case 1380:
-			case 1320:
-			case 1260:
-			case 1200:
-			case 1140:
-			case 1080:
-			case 1020:
-			case 960:
-			case 900:
-			case 840:
-			case 780:
-			case 720:
-			case 660:
-			case 600:
-			case 540:
-			case 480:
-			case 420:
-			case 360:
-			case 300:
-			case 240:
-			case 180:
-			case 120:
-				player.sendMessage("Time left: " + (seconds / 60) + " minutes");
-				player.sendPacket(new ExShowScreenMessage("Time left: " + (seconds / 60) + " minutes", 5000, 3, false));
-				break;
-			case 60:
-				player.sendMessage("Time left: " + (seconds / 60) + " minute");
-				player.sendPacket(new ExShowScreenMessage("Time left: " + (seconds / 60) + " minute", 5000, 3, false));
-				break;
-			case 30:
-			case 15:
-			case 10:
-			case 3:
-			case 2:
-				player.sendMessage("Time left: " + (seconds) + " seconds");
-				player.sendPacket(new ExShowScreenMessage("Time left: " + (seconds) + " seconds", 5000, 3, false));
-				break;
-			case 1:
-				player.sendMessage("Time left: " + (seconds) + " seconds");
-				player.sendPacket(new ExShowScreenMessage("Time left: " + (seconds) + " seconds", 5000, 3, false));
-				break;
-			case 0:
-				player.leaveObserverMode();
-				player.setBossObserve(false);
-				player.setBossTaskNull();
-				player.sendMessage("Teleporting back");
-				player.sendPacket(new ExShowScreenMessage("Teleporting back", 2000, 2, false));
-				break;
+			if (isGrandBoss)
+			{
+				chance *= Config.ADENA_BOSS;
+			}
+			else if (isRaid)
+			{
+				chance *= Config.ADENA_RAID;
+			}
+			else
+			{
+				chance *= Config.RATE_DROP_ADENA;
+			}
+			
+			if (player.getPremiumService() > 0)
+			{
+				chance *= Config.PREMIUM_ADENA_RATE;
+			}
 		}
+		else if (drop.getItemId() >= 6360 && drop.getItemId() <= 6362)
+		{
+			chance *= Config.RATE_DROP_SEAL_STONES;
+			if (player.getPremiumService() > 0)
+			{
+				chance *= Config.PREMIUM_SS_RATE;
+			}
+		}
+		else
+		{
+			if (isGrandBoss)
+			{
+				chance *= Config.ITEMS_BOSS;
+			}
+			else if (isRaid)
+			{
+				chance *= Config.ITEMS_RAID;
+			}
+			else
+			{
+				chance *= Config.RATE_DROP_ITEMS;
+			}
+			
+			if (player.getPremiumService() > 0)
+			{
+				chance *= Config.PREMIUM_DROP_RATE;
+			}
+		}
+		return Math.min(chance, 100.0);
+	}
+	
+	private void showHtm(L2PcInstance player)
+	{
+		NpcHtmlMessage htm = new NpcHtmlMessage(1);
+		htm.setHtml(HtmCache.getInstance().getHtm(ROOT + "index.htm"));
+		player.sendPacket(htm);
+	}
+	
+	private void showRbListHtm(L2PcInstance player)
+	{
+		NpcHtmlMessage htm = new NpcHtmlMessage(1);
+		htm.setHtml(HtmCache.getInstance().getHtm(ROOT + "rb_list.htm"));
+		player.sendPacket(htm);
 	}
 	
 	public static RaidInfoHandler getInstance()

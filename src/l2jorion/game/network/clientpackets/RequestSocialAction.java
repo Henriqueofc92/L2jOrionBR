@@ -28,12 +28,9 @@ import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.SocialAction;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.util.Util;
-import l2jorion.logger.Logger;
-import l2jorion.logger.LoggerFactory;
 
 public class RequestSocialAction extends PacketClient
 {
-	private static Logger LOG = LoggerFactory.getLogger(RequestSocialAction.class);
 	private int _actionId;
 	
 	@Override
@@ -67,16 +64,12 @@ public class RequestSocialAction extends PacketClient
 			return;
 		}
 		
-		if (activeChar.getPrivateStoreType() == 0 && activeChar.getActiveRequester() == null && !activeChar.isAlikeDead() && (!activeChar.isAllSkillsDisabled() || activeChar.isInDuel()) && activeChar.getAI().getIntention() == CtrlIntention.AI_INTENTION_IDLE)
+		if (activeChar.getPrivateStoreType() != 0 || activeChar.getActiveRequester() != null || activeChar.isAlikeDead() || activeChar.getAI().getIntention() != CtrlIntention.AI_INTENTION_IDLE)
 		{
-			if (Config.DEBUG)
-			{
-				LOG.debug("Social Action:" + _actionId);
-			}
-			
-			final SocialAction atk = new SocialAction(activeChar.getObjectId(), _actionId);
-			activeChar.broadcastPacket(atk);
+			return;
 		}
+		
+		activeChar.broadcastPacket(new SocialAction(activeChar.getObjectId(), _actionId));
 	}
 	
 	@Override

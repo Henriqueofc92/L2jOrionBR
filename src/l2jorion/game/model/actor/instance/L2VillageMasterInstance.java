@@ -22,9 +22,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import l2jorion.Config;
-import l2jorion.game.datatables.xml.CharTemplateTable;
 import l2jorion.game.datatables.sql.ClanTable;
 import l2jorion.game.datatables.sql.SkillTreeTable;
+import l2jorion.game.datatables.xml.CharTemplateTable;
 import l2jorion.game.enums.AchType;
 import l2jorion.game.managers.CastleManager;
 import l2jorion.game.managers.FortManager;

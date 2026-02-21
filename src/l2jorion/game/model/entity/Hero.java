@@ -31,9 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 import l2jorion.game.datatables.sql.CharNameTable;
-import l2jorion.game.datatables.xml.CharTemplateTable;
 import l2jorion.game.datatables.sql.ClanTable;
 import l2jorion.game.datatables.sql.NpcTable;
+import l2jorion.game.datatables.xml.CharTemplateTable;
 import l2jorion.game.enums.AchType;
 import l2jorion.game.managers.CastleManager;
 import l2jorion.game.model.Inventory;
@@ -66,7 +66,7 @@ public class Hero
 	private static final String UPDATE_HERO = "UPDATE heroes SET count = ?, played = ?, active = ? WHERE char_id = ?";
 	private static final String GET_CLAN_ALLY = "SELECT characters.clanid AS clanid, coalesce(clan_data.ally_Id, 0) AS allyId FROM characters LEFT JOIN clan_data ON clan_data.clan_id = characters.clanid WHERE characters.obj_Id = ?";
 	
-	private static final String DELETE_ITEMS = "DELETE FROM items WHERE item_id IN (6842, 6611, 6612, 6613, 6614, 6615, 6616, 6617, 6618, 6619, 6620, 6621) AND owner_id NOT IN (SELECT obj_Id FROM characters WHERE accesslevel > 0)";
+	private static final String DELETE_ITEMS = "DELETE FROM items WHERE item_id IN (6842, 6611, 6612, 6613, 6614, 6615, 6616, 6617, 6618, 6619, 6620, 6621)";
 	
 	private static final String GET_DIARIES = "SELECT * FROM  heroes_diary WHERE char_id=? ORDER BY time ASC";
 	private static final String UPDATE_DIARIES = "INSERT INTO heroes_diary (char_id, time, action, param) values(?,?,?,?)";

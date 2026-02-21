@@ -24,7 +24,7 @@ import l2jorion.game.datatables.SkillTable;
 import l2jorion.game.datatables.sql.NpcTable;
 import l2jorion.game.model.L2Character;
 import l2jorion.game.model.L2Skill;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.templates.L2NpcTemplate;
 import l2jorion.util.random.Rnd;
@@ -219,7 +219,7 @@ public final class L2ChestInstance extends L2MonsterInstance
 		if (player.getFirstEffect(skill) == null)
 		{
 			skill.getEffects(this, player, false, false, false);
-			broadcastPacket(new MagicSkillUser(this, player, skill.getId(), skillLevel, skill.getHitTime(), 0));
+			broadcastPacket(new MagicSkillUse(this, player, skill.getId(), skillLevel, skill.getHitTime(), 0));
 			return true;
 		}
 		return false;

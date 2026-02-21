@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<list>
+	<!-- Event Manager - Events, Polymorph, Jail, Teleport -->
+	<!-- Add PlayerID to assign this profile: <PlayerID set="12345"/> -->
+	<char>
+		<!-- Access Level Properties -->
+		<AccessLevel set="4"/>
+		<LevelName set="Event Manager"/>
+		<NameColor set="FFFF00"/>
+		<TitleColor set="77FFFF"/>
+		<UseNameColor set="true"/>
+		<UseTitleColor set="true"/>
+		<GiveDamage set="false"/>
+		<TakeAggro set="false"/>
+		<GainExp set="false"/>
+		<CanDisableGmStatus set="true"/>
+		<!-- Core GM -->
+		<IsGM set="true"/>
+		<CanUseGMCommand set="true"/>
+		<!-- Permissions -->
+		<GodMode set="true"/>
+		<CanAnnounce set="true"/>
+		<UseGMShop set="true"/>
+		<CanTeleport set="true"/>
+		<Rider set="true"/>
+		<FastUnstuck set="true"/>
+		<ResurectFixed set="true"/>
+		<CanChangeClass set="false"/>
+		<UseTrade set="false"/>
+		<CanAttack set="false"/>
+		<CanJoinClan set="false"/>
+		<BlockInventory set="true"/>
+		<IsEventGm set="true"/>
+		<CanJail set="true"/>
+		<CanPolymorph set="true"/>
+		<Door set="true"/>
+	</char>
+</list>

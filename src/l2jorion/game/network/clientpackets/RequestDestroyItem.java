@@ -61,12 +61,9 @@ public final class RequestDestroyItem extends PacketClient
 			return;
 		}
 		
-		if (_count <= 0)
+		if (_count < 1)
 		{
-			if (_count < 0)
-			{
-				Util.handleIllegalPlayerAction(activeChar, "[RequestDestroyItem] count < 0! ban! oid: " + _objectId + " owner: " + activeChar.getName(), Config.DEFAULT_PUNISH);
-			}
+			Util.handleIllegalPlayerAction(activeChar, "[RequestDestroyItem] count < 1! ban! oid: " + _objectId + " owner: " + activeChar.getName(), Config.DEFAULT_PUNISH);
 			return;
 		}
 		
@@ -75,8 +72,6 @@ public final class RequestDestroyItem extends PacketClient
 			activeChar.sendMessage("You destroying items too fast.");
 			return;
 		}
-		
-		int count = _count;
 		
 		if (activeChar.getPrivateStoreType() != 0)
 		{
@@ -124,7 +119,7 @@ public final class RequestDestroyItem extends PacketClient
 			}
 		}
 		
-		if (!itemToRemove.isStackable() && count > 1)
+		if (!itemToRemove.isStackable() && _count > 1)
 		{
 			Util.handleIllegalPlayerAction(activeChar, "[RequestDestroyItem] count > 1 but item is not stackable! oid: " + _objectId + " owner: " + activeChar.getName(), Config.DEFAULT_PUNISH);
 			return;
@@ -132,7 +127,8 @@ public final class RequestDestroyItem extends PacketClient
 		
 		if (_count > itemToRemove.getCount())
 		{
-			count = itemToRemove.getCount();
+			activeChar.sendPacket(new SystemMessage(SystemMessageId.CANNOT_DESTROY_NUMBER_INCORRECT));
+			return;
 		}
 		
 		if (itemToRemove.isEquipped())
@@ -186,7 +182,7 @@ public final class RequestDestroyItem extends PacketClient
 			}
 		}
 		
-		L2ItemInstance removedItem = activeChar.getInventory().destroyItem("Destroy", _objectId, count, activeChar, null);
+		L2ItemInstance removedItem = activeChar.getInventory().destroyItem("Destroy", _objectId, _count, activeChar, null);
 		
 		if (removedItem == null)
 		{

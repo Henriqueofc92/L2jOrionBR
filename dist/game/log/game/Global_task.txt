@@ -1,3 +1,0 @@
-[2026.02.10 05:49:38]    >    Java Memory Cleanup launched
-[2026.02.10 05:49:38]    >    SevenSigns save launched.
-[2026.02.10 06:19:38]    >    SevenSigns save launched.

@@ -66,6 +66,7 @@ public class GeoData
 		catch (Exception e)
 		{
 			LOG.error("{}: Failed to load geodata", e);
+			System.exit(1);
 		}
 		
 		LOG.info("{}: Loaded {} regions", getClass().getSimpleName(), loadedRegions);

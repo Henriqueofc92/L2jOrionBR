@@ -220,9 +220,6 @@ public class Shutdown extends Thread
 				}
 			}
 			
-			// System.runFinalization() foi removido pois é Deprecated for Removal no Java 18+
-			// e não tem efeito prático em JVMs modernas (G1/ZGC) além de causar overhead.
-			// O System.gc() foi mantido apenas para sugerir limpeza antes do halt, embora opcional.
 			System.gc();
 			
 			LOG.info("The server has been successfully shutdown in {} seconds.", TimeUnit.MILLISECONDS.toSeconds(tc1.getEstimatedTime()));

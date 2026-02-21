@@ -70,17 +70,7 @@ public final class Formulas
 		@Override
 		public void calc(Env env)
 		{
-			if (env.player instanceof L2PetInstance)
-			{
-				if (env.player.getActiveWeaponInstance() != null)
-				{
-					env.value *= BaseStats.STR.calcBonus(env.player);
-				}
-			}
-			else
-			{
-				env.value *= BaseStats.STR.calcBonus(env.player) * env.player.getLevelMod();
-			}
+			env.value *= BaseStats.STR.calcBonus(env.player) * env.player.getLevelMod();
 		}
 	}
 	
@@ -1531,7 +1521,6 @@ public final class Formulas
 			if (((L2NpcInstance) attacker).getTemplate().getRace() == L2NpcTemplate.Race.UNDEAD)
 			{
 				damage /= attacker.getPDefUndead(target);
-				// Outros checks de raça do NPC aqui...
 			}
 		}
 		
@@ -1565,8 +1554,6 @@ public final class Formulas
 			damage = 0;
 		}
 		
-		// CORREÇÃO: Uso da variável isPvP aqui
-		// Substitui: if ((attacker instanceof L2PcInstance || attacker instanceof L2Summon) && (target instanceof L2PcInstance || target instanceof L2Summon))
 		if (isPvP)
 		{
 			if (skill == null)
@@ -2022,11 +2009,21 @@ public final class Formulas
 	 */
 	public final int calcMAtkSpd(L2Character attacker, L2Character target, L2Skill skill, double skillTime)
 	{
+		int calcTime;
 		if (skill.isMagic())
 		{
-			return (int) (skillTime * 333 / attacker.getMAtkSpd());
+			calcTime = (int) (skillTime * 333 / attacker.getMAtkSpd());
 		}
-		return (int) (skillTime * 333 / attacker.getPAtkSpd());
+		else
+		{
+			calcTime = (int) (skillTime * 333 / attacker.getPAtkSpd());
+		}
+		// Minimum cast time floor to prevent animation glitches at high speed
+		if (calcTime < 400)
+		{
+			calcTime = 400;
+		}
+		return calcTime;
 	}
 	
 	/**
@@ -2038,11 +2035,21 @@ public final class Formulas
 	 */
 	public final int calcMAtkSpd(L2Character attacker, L2Skill skill, double skillTime)
 	{
+		int calcTime;
 		if (skill.isMagic())
 		{
-			return (int) (skillTime * 333 / attacker.getMAtkSpd());
+			calcTime = (int) (skillTime * 333 / attacker.getMAtkSpd());
 		}
-		return (int) (skillTime * 333 / attacker.getPAtkSpd());
+		else
+		{
+			calcTime = (int) (skillTime * 333 / attacker.getPAtkSpd());
+		}
+		// Minimum cast time floor to prevent animation glitches at high speed
+		if (calcTime < 400)
+		{
+			calcTime = 400;
+		}
+		return calcTime;
 	}
 	
 	public static boolean calcHitMiss(L2Character attacker, L2Character target)

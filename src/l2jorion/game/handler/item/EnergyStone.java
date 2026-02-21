@@ -10,7 +10,7 @@ import l2jorion.game.model.actor.instance.L2PlayableInstance;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.ActionFailed;
 import l2jorion.game.network.serverpackets.EtcStatusUpdate;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.skills.effects.EffectCharge;
 import l2jorion.game.skills.l2skills.L2SkillCharge;
@@ -64,7 +64,7 @@ public class EnergyStone implements IItemHandler
 			if (dummy != null)
 			{
 				dummy.getEffects(activeChar, activeChar);
-				final MagicSkillUser MSU = new MagicSkillUser(playable, activeChar, _skill.getId(), 1, 1, 0);
+				final MagicSkillUse MSU = new MagicSkillUse(playable, activeChar, _skill.getId(), 1, 1, 0);
 				activeChar.sendPacket(MSU);
 				activeChar.destroyItemWithoutTrace("Consume", item.getObjectId(), 1, null, false);
 			}
@@ -84,7 +84,7 @@ public class EnergyStone implements IItemHandler
 				activeChar.sendPacket(new SystemMessage(SystemMessageId.FORCE_MAXLEVEL_REACHED));
 		}
 		
-		final MagicSkillUser MSU = new MagicSkillUser(playable, activeChar, _skill.getId(), 1, 1, 0);
+		final MagicSkillUse MSU = new MagicSkillUse(playable, activeChar, _skill.getId(), 1, 1, 0);
 		activeChar.sendPacket(MSU);
 		activeChar.broadcastPacket(MSU);
 		activeChar.sendPacket(new EtcStatusUpdate(activeChar));

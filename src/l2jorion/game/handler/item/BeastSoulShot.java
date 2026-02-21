@@ -30,7 +30,7 @@ import l2jorion.game.model.actor.instance.L2PetInstance;
 import l2jorion.game.model.actor.instance.L2PlayableInstance;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.ExAutoSoulShot;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.templates.L2Weapon;
 
@@ -157,7 +157,7 @@ public class BeastSoulShot implements IItemHandler
 		activeOwner.sendPacket(new SystemMessage(SystemMessageId.PET_USE_THE_POWER_OF_SPIRIT));
 		if (!activeOwner.getEffects())
 		{
-			activeOwner.broadcastPacket(new MagicSkillUser(activePet, activePet, 2033, 1, 0, 0), 500);
+			activeOwner.broadcastPacket(new MagicSkillUse(activePet, activePet, 2033, 1, 0, 0), 500);
 		}
 	}
 	

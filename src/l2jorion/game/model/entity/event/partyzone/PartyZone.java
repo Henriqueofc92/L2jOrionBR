@@ -36,7 +36,7 @@ import l2jorion.game.model.zone.ZoneId;
 import l2jorion.game.network.clientpackets.Say2;
 import l2jorion.game.network.serverpackets.CreatureSay;
 import l2jorion.game.network.serverpackets.ExShowScreenMessage;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.NpcHtmlMessage;
 import l2jorion.game.network.serverpackets.NpcInfo;
 import l2jorion.game.network.serverpackets.PlaySound;
@@ -57,7 +57,6 @@ public class PartyZone implements IVoicedCommandHandler, ICustomByPassHandler, I
 	private static final String CONFIG_FILE = "./config/mods/events/partyzone.ini";
 	private static PartyZone _instance;
 	
-	// Configs
 	public static boolean EVENT_ENABLED = false;
 	public static String EVENT_NAME = "Party Zone";
 	public static int DURATION_MINUTES = 25;
@@ -666,7 +665,7 @@ public class PartyZone implements IVoicedCommandHandler, ICustomByPassHandler, I
 			for (L2PcInstance member : toTeleport)
 			{
 				member.disableAllSkills();
-				member.broadcastPacket(new MagicSkillUser(member, member, 1050, 1, TELEPORT_DELAY * 1000, 0));
+				member.broadcastPacket(new MagicSkillUse(member, member, 1050, 1, TELEPORT_DELAY * 1000, 0));
 				member.sendPacket(new SetupGauge(0, TELEPORT_DELAY * 1000));
 				member.sendMessage("Teleporting to Party Zone in " + TELEPORT_DELAY + " seconds...");
 				
@@ -942,7 +941,7 @@ public class PartyZone implements IVoicedCommandHandler, ICustomByPassHandler, I
 		}
 		
 		int leaderId = killer.getParty().getPartyLeaderOID();
-		PartyStats stats = _partyStats.computeIfAbsent(leaderId, k -> new PartyStats(killer.getParty().getLeader().getName()));
+		PartyStats stats = _partyStats.computeIfAbsent(leaderId, _ -> new PartyStats(killer.getParty().getLeader().getName()));
 		int pointsEarned = 0;
 		String msgSuffix = "";
 		if (victim instanceof L2MonsterInstance)
@@ -1062,7 +1061,7 @@ public class PartyZone implements IVoicedCommandHandler, ICustomByPassHandler, I
 				if (_npcSpawn.getLastSpawn() != null)
 				{
 					_npcSpawn.getLastSpawn().setTitle(EVENT_NAME);
-					_npcSpawn.getLastSpawn().broadcastPacket(new MagicSkillUser(_npcSpawn.getLastSpawn(), _npcSpawn.getLastSpawn(), 1034, 1, 1, 1));
+					_npcSpawn.getLastSpawn().broadcastPacket(new MagicSkillUse(_npcSpawn.getLastSpawn(), _npcSpawn.getLastSpawn(), 1034, 1, 1, 1));
 					_npcSpawn.getLastSpawn().broadcastPacket(new NpcInfo(_npcSpawn.getLastSpawn(), null));
 				}
 				else
@@ -1126,7 +1125,7 @@ public class PartyZone implements IVoicedCommandHandler, ICustomByPassHandler, I
 				
 				L2MonsterInstance boss = (L2MonsterInstance) s.doSpawn();
 				boss.setTitle("Event Boss");
-				boss.broadcastPacket(new MagicSkillUser(boss, boss, 2036, 1, 1000, 0)); // Visual Effect
+				boss.broadcastPacket(new MagicSkillUse(boss, boss, 2036, 1, 1000, 0)); // Visual Effect
 				Announcements.getInstance().gameAnnounceToAll(EVENT_NAME + ": The Event Boss has spawned! Hunt it down!");
 				_spawnedMobs.add(s);
 			}

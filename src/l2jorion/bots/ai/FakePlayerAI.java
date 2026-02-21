@@ -33,7 +33,7 @@ import l2jorion.game.model.entity.event.VIP;
 import l2jorion.game.model.zone.ZoneId;
 import l2jorion.game.network.serverpackets.ActionFailed;
 import l2jorion.game.network.serverpackets.CharMoveToLocation;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.MoveToPawn;
 import l2jorion.game.network.serverpackets.SetupGauge;
 import l2jorion.game.network.serverpackets.StopMove;
@@ -718,7 +718,7 @@ public abstract class FakePlayerAI
 		activeChar.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
 		activeChar.setTarget(activeChar);
-		activeChar.broadcastPacket(new MagicSkillUser(activeChar, 1050, 1, unstuckTimer, 0));
+		activeChar.broadcastPacket(new MagicSkillUse(activeChar, 1050, 1, unstuckTimer, 0));
 		activeChar.sendPacket(new SetupGauge(0, unstuckTimer));
 		activeChar.setTarget(null);
 		

@@ -17,7 +17,6 @@ package l2jorion.game.network.clientpackets;
 import l2jorion.Config;
 import l2jorion.game.datatables.SkillTable;
 import l2jorion.game.model.L2Character;
-import l2jorion.game.model.L2Party;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.entity.sevensigns.SevenSignsFestival;
 import l2jorion.game.model.olympiad.OlympiadManager;
@@ -26,12 +25,9 @@ import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.ActionFailed;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.taskmanager.AttackStanceTaskManager;
-import l2jorion.logger.Logger;
-import l2jorion.logger.LoggerFactory;
 
 public final class Logout extends PacketClient
 {
-	private static Logger LOG = LoggerFactory.getLogger(Logout.class);
 	
 	@Override
 	protected void readImpl()
@@ -65,11 +61,6 @@ public final class Logout extends PacketClient
 		
 		if (AttackStanceTaskManager.getInstance().getAttackStanceTask(player) && !(player.isGM() && Config.GM_RESTART_FIGHTING))
 		{
-			if (Config.DEBUG)
-			{
-				LOG.warn("DEBUG " + getType() + ": Player " + player.getName() + " tried to logout while Fighting");
-			}
-			
 			player.sendPacket(new SystemMessage(SystemMessageId.CANT_LOGOUT_WHILE_FIGHTING));
 			player.sendPacket(ActionFailed.STATIC_PACKET);
 			return;
@@ -109,12 +100,12 @@ public final class Logout extends PacketClient
 		{
 			if (SevenSignsFestival.getInstance().isFestivalInitialized())
 			{
-				player.sendMessage("You cannot Logout while you are a participant in a Festival.");
+				player.sendPacket(SystemMessageId.NO_LOGOUT_HERE);
+				player.sendPacket(ActionFailed.STATIC_PACKET);
 				return;
 			}
 			
-			L2Party playerParty = player.getParty();
-			if (playerParty != null)
+			if (player.isInParty())
 			{
 				player.getParty().broadcastToPartyMembers(SystemMessage.sendString(player.getName() + " has been removed from the upcoming Festival."));
 			}

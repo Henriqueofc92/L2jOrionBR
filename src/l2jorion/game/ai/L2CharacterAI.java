@@ -145,8 +145,12 @@ public class L2CharacterAI extends AbstractAI
 			}
 			else
 			{
-				notifyEvent(CtrlEvent.EVT_THINK); // to avoid stuck
 				clientActionFailed();
+				
+				if (_actor instanceof L2PlayableInstance && _actor.isAttackingNow() && !target.isAutoAttackable(_actor))
+				{
+					changeIntention(AI_INTENTION_IDLE, null, null);
+				}
 			}
 		}
 		else
@@ -347,13 +351,17 @@ public class L2CharacterAI extends AbstractAI
 		
 		clientStopAutoAttack();
 		
-		if (getIntention() != AI_INTENTION_INTERACT)
+		if (getIntention() != AI_INTENTION_INTERACT || _intentionArg0 != object)
 		{
 			changeIntention(AI_INTENTION_INTERACT, object, null);
 			
 			setTarget(object);
 			
 			moveToPawn(object, 60);
+		}
+		else
+		{
+			clientActionFailed();
 		}
 	}
 	

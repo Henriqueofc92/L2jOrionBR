@@ -46,13 +46,13 @@ public class ConnectionCloser implements Runnable
 		{
 			if (c != null && !c.isClosed())
 			{
-				LOG.warn("Unclosed connection! Trace: " + exp);
+				LOG.warn("ConnectionCloser: Detected unclosed connection held beyond timeout! Forcing close. Trace: {}", exp.getMessage(), exp);
+				c.close();
 			}
 		}
 		catch (final SQLException e)
 		{
-			e.printStackTrace();
+			LOG.error("ConnectionCloser: Failed to force-close leaked connection.", e);
 		}
-		
 	}
 }

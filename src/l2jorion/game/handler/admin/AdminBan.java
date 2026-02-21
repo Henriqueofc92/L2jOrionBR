@@ -505,39 +505,8 @@ public class AdminBan implements IAdminCommandHandler
 		else
 		{
 			
-			Connection con = null;
-			try
-			{
-				con = L2DatabaseFactory.getInstance().getConnection();
-				PreparedStatement statement = con.prepareStatement("UPDATE characters SET accesslevel=? WHERE char_name=?");
-				statement.setInt(1, lvl);
-				statement.setString(2, targetPlayerName);
-				statement.execute();
-				int count = statement.getUpdateCount();
-				statement.close();
-				if (count == 0)
-				{
-					activeChar.sendMessage("Character not found or access level unaltered.");
-				}
-				else
-				{
-					activeChar.sendMessage(targetPlayerName + " now has an access level of " + lvl);
-					output = true;
-					
-				}
-			}
-			catch (SQLException se)
-			{
-				activeChar.sendMessage("SQLException while changing character's access level");
-				if (Config.DEBUG)
-				{
-					se.printStackTrace();
-				}
-			}
-			finally
-			{
-				CloseUtil.close(con);
-			}
+			activeChar.sendMessage("Access levels are now managed via GMAccess XML profiles. Database column removed.");
+			activeChar.sendMessage("Use //reload gmaccess after editing config/GMAccess/*.xml files.");
 		}
 		return output;
 	}

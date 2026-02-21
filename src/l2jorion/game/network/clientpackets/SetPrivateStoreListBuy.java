@@ -121,7 +121,7 @@ public final class SetPrivateStoreListBuy extends PacketClient
 		TradeList tradeList = player.getBuyList();
 		tradeList.clear();
 		
-		int cost = 0;
+		long cost = 0;
 		
 		for (int i = 0; i < _count; i++)
 		{
@@ -130,8 +130,8 @@ public final class SetPrivateStoreListBuy extends PacketClient
 			int price = _items[i * 4 + 2];
 			int enchant = _items[i * 4 + 3];
 			
-			cost += count * price;
-			if (cost > Integer.MAX_VALUE)
+			cost += (long) count * price;
+			if (cost > Integer.MAX_VALUE || cost < 0)
 			{
 				player.sendPacket(new SystemMessage(SystemMessageId.YOU_HAVE_EXCEEDED_QUANTITY_THAT_CAN_BE_INPUTTED));
 				player.sendPacket(new PrivateStoreManageListBuy(player));

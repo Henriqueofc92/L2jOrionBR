@@ -64,27 +64,34 @@ public class LoginController
 				{
 					break;
 				}
-				for (final L2LoginClient cl : _clients)
+				synchronized (_clients)
 				{
-					try
+					var it = _clients.iterator();
+					while (it.hasNext())
 					{
-						if (cl != null && now - cl.getConnectionStartTime() > Config.SESSION_TTL)
+						final L2LoginClient cl = it.next();
+						try
 						{
-							LOG.info("Closing " + cl.getIntetAddress() + " because idle time too long.");
-							cl.close(LoginFailReason.REASON_TEMP_PASS_EXPIRED);
+							if (cl == null)
+							{
+								it.remove();
+								continue;
+							}
+							
+							if (now - cl.getConnectionStartTime() > Config.SESSION_TTL)
+							{
+								LOG.info("Closing " + cl.getIntetAddress() + " because idle time too long.");
+								cl.close(LoginFailReason.REASON_TEMP_PASS_EXPIRED);
+								it.remove();
+							}
 						}
-						else
+						catch (Exception e)
 						{
-							_clients.remove(cl);
+							if (Config.ENABLE_ALL_EXCEPTIONS)
+							{
+								e.printStackTrace();
+							}
 						}
-					}
-					catch (Exception e)
-					{
-						if (Config.ENABLE_ALL_EXCEPTIONS)
-						{
-							e.printStackTrace();
-						}
-						
 					}
 				}
 				try
@@ -228,26 +235,25 @@ public class LoginController
 	
 	public void addLoginClient(L2LoginClient client)
 	{
-		if (_clients.size() >= Config.MAX_LOGINSESSIONS)
-		{
-			for (L2LoginClient cl : _clients)
-			{
-				try
-				{
-					cl.close(LoginFailReason.REASON_DUAL_BOX);
-				}
-				catch (Exception e)
-				{
-					if (Config.ENABLE_ALL_EXCEPTIONS)
-					{
-						e.printStackTrace();
-					}
-					
-				}
-			}
-		}
 		synchronized (_clients)
 		{
+			if (_clients.size() >= Config.MAX_LOGINSESSIONS)
+			{
+				for (L2LoginClient cl : new ArrayList<>(_clients))
+				{
+					try
+					{
+						cl.close(LoginFailReason.REASON_DUAL_BOX);
+					}
+					catch (Exception e)
+					{
+						if (Config.ENABLE_ALL_EXCEPTIONS)
+						{
+							e.printStackTrace();
+						}
+					}
+				}
+			}
 			_clients.add(client);
 		}
 	}

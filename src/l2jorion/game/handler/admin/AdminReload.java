@@ -29,6 +29,8 @@ import l2jorion.game.controllers.TradeController;
 import l2jorion.game.datatables.SkillTable;
 import l2jorion.game.datatables.sql.ItemTable;
 import l2jorion.game.datatables.sql.NpcTable;
+import l2jorion.game.datatables.xml.AccessLevels;
+import l2jorion.game.datatables.xml.GmAccessTable;
 import l2jorion.game.datatables.xml.NpcWalkerRoutesTable;
 import l2jorion.game.datatables.xml.TeleportLocationTable;
 import l2jorion.game.handler.IAdminCommandHandler;
@@ -183,6 +185,12 @@ public class AdminReload implements IAdminCommandHandler
 				{
 					AchievementManager.getInstance().reload();
 					activeChar.sendMessage("Achievement data has been reloaded.");
+				}
+				else if (type.equals("gmaccess"))
+				{
+					AccessLevels.reload();
+					sendReloadPage(activeChar);
+					activeChar.sendMessage("GMAccess profiles and Access Levels reloaded. " + GmAccessTable.getInstance().getPlayerCount() + " player assignments loaded.");
 				}
 				/*
 				 * else if (type.startsWith("scripts_faenor")) { try { FaenorScriptEngine.getInstance().reloadPackages(); } catch (final Exception ioe) { activeChar.sendMessage("Failed loading faenor scripts, no script going to be loaded"); ioe.printStackTrace(); } }

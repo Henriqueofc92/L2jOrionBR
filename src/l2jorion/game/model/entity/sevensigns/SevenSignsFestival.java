@@ -48,7 +48,7 @@ import l2jorion.game.model.spawn.L2Spawn;
 import l2jorion.game.model.spawn.SpawnListener;
 import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.CreatureSay;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.PledgeShowInfoUpdate;
 import l2jorion.game.network.serverpackets.SystemMessage;
 import l2jorion.game.templates.L2NpcTemplate;
@@ -4883,12 +4883,12 @@ public class SevenSignsFestival implements SpawnListener
 			}
 			
 			// Make it appear as though the Witch has apparated there.
-			MagicSkillUser msu = new MagicSkillUser(_witchInst, _witchInst, 2003, 1, 1, 0);
+			MagicSkillUse msu = new MagicSkillUse(_witchInst, _witchInst, 2003, 1, 1, 0);
 			_witchInst.broadcastPacket(msu);
 			msu = null;
 			
 			// And another one...:D
-			msu = new MagicSkillUser(_witchInst, _witchInst, 2133, 1, 1, 0);
+			msu = new MagicSkillUse(_witchInst, _witchInst, 2133, 1, 1, 0);
 			_witchInst.broadcastPacket(msu);
 			msu = null;
 			

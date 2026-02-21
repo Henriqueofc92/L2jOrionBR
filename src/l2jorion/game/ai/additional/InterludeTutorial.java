@@ -20,7 +20,7 @@ public class InterludeTutorial extends Quest implements Runnable
 	
 	private static final String[] Interlude_Tutorial =
 	{
-		"999_C3Tutorial"
+		"Q255_Tutorial"
 	};
 	
 	public InterludeTutorial(int questId, String name, String descr)
@@ -42,13 +42,14 @@ public class InterludeTutorial extends Quest implements Runnable
 			quest = player.getQuestState(mission);
 			if (quest != null)
 			{
-				int onlyone = quest.getInt("onlyone");
+				// Use separate variable "guide_done" to avoid conflicting with Q255_Tutorial's "onlyone"
+				int guideDone = quest.getInt("guide_done");
 				
 				if (npcId == NEWBIE_GUIDE_1 || npcId == NEWBIE_GUIDE_2 || npcId == NEWBIE_GUIDE_3 || npcId == NEWBIE_GUIDE_4 || npcId == NEWBIE_GUIDE_5)
 				{
-					if (onlyone != 2)
+					if (guideDone != 1)
 					{
-						quest.set("onlyone", "2");
+						quest.set("guide_done", "1");
 						
 						if (!Config.RON_CUSTOM)
 						{

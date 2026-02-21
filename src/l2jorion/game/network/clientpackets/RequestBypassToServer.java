@@ -139,7 +139,7 @@ public final class RequestBypassToServer extends PacketClient
 					return;
 				}
 				
-				if (!AdminCommands.getInstance().hasAccess(command, activeChar.getAccessLevel()))
+				if (!AdminCommands.getInstance().hasAccess(command, activeChar.getAccessLevel(), activeChar.getGmAccessProfile()))
 				{
 					activeChar.sendMessage("You don't have the access right to use this command.");
 					return;
@@ -318,7 +318,11 @@ public final class RequestBypassToServer extends PacketClient
 			}
 			else if (bp.bypass.startsWith("open_url "))
 			{
-				activeChar.sendPacket(new OpenUrl(bp.bypass.substring(9)));
+				String url = bp.bypass.substring(9).trim();
+				if (url.startsWith("http://") || url.startsWith("https://"))
+				{
+					activeChar.sendPacket(new OpenUrl(url));
+				}
 			}
 			else if (bp.bypass.startsWith("vote "))
 			{
@@ -569,7 +573,10 @@ public final class RequestBypassToServer extends PacketClient
 					
 					if (bp.bypass.substring(endOfId + 1).startsWith("vip_finishVIP"))
 					{
-						VIP.vipWin(activeChar);
+						if (activeChar.isGM())
+						{
+							VIP.vipWin(activeChar);
+						}
 					}
 					
 					if (bp.bypass.substring(endOfId + 1).startsWith("event_participate"))

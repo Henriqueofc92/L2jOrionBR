@@ -24,7 +24,7 @@ import l2jorion.Config;
 import l2jorion.game.enums.AchType;
 import l2jorion.game.managers.AchievementManager;
 import l2jorion.game.model.actor.instance.L2PcInstance;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.skills.holders.IntIntHolder;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
@@ -149,7 +149,7 @@ public class Achievement
 		
 		if ((daily || ach.getLevel() == _data.get(type).getId()) && ach.getRequired() <= _data.get(type).getValue())
 		{
-			_player.broadcastPacket(new MagicSkillUser(_player, _player, 5103, 1, 1000, 0));
+			_player.broadcastPacket(new MagicSkillUse(_player, _player, 5103, 1, 1000, 0));
 			_player.sendMessage((daily ? "" : "Lv " + ach.getLevel()) + " " + ach.getName() + " achievement completed.");
 			_player.addItem("Reward", ach.getRewardId(), ach.getRewardCount(), _player, true);
 			_data.put(type, new IntIntHolder(_data.get(type).getId() + 1, reset ? 0 : _data.get(type).getValue()));

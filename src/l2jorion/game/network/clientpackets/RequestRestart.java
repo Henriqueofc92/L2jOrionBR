@@ -22,7 +22,6 @@ import l2jorion.Config;
 import l2jorion.game.GameServer;
 import l2jorion.game.datatables.SkillTable;
 import l2jorion.game.model.Inventory;
-import l2jorion.game.model.L2Party;
 import l2jorion.game.model.actor.instance.L2PcInstance;
 import l2jorion.game.model.entity.sevensigns.SevenSignsFestival;
 import l2jorion.game.model.olympiad.OlympiadManager;
@@ -86,11 +85,6 @@ public final class RequestRestart extends PacketClient
 		// Check if player is in combat
 		if (AttackStanceTaskManager.getInstance().getAttackStanceTask(player) && !(player.isGM() && Config.GM_RESTART_FIGHTING))
 		{
-			if (Config.DEBUG)
-			{
-				LOG.warn("Player " + player.getName() + " tried to logout while fighting.");
-			}
-			
 			player.sendPacket(new SystemMessage(SystemMessageId.CANT_RESTART_WHILE_FIGHTING));
 			sendPacket(RestartResponse.valueOf(false));
 			return;
@@ -110,14 +104,12 @@ public final class RequestRestart extends PacketClient
 		{
 			if (SevenSignsFestival.getInstance().isFestivalInitialized())
 			{
-				player.sendPacket(SystemMessage.sendString("You cannot restart while you are a participant in a festival."));
-				player.sendPacket(ActionFailed.STATIC_PACKET);
+				player.sendPacket(SystemMessageId.NO_RESTART_HERE);
 				sendPacket(RestartResponse.valueOf(false));
 				return;
 			}
 			
-			L2Party playerParty = player.getParty();
-			if (playerParty != null)
+			if (player.isInParty())
 			{
 				player.getParty().broadcastToPartyMembers(SystemMessage.sendString(player.getName() + " has been removed from the upcoming festival."));
 			}

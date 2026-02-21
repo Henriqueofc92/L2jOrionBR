@@ -29,7 +29,7 @@ import l2jorion.game.model.entity.event.DM;
 import l2jorion.game.model.entity.event.TvT;
 import l2jorion.game.model.entity.event.VIP;
 import l2jorion.game.network.SystemMessageId;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.PlaySound;
 import l2jorion.game.network.serverpackets.SetupGauge;
 import l2jorion.game.network.serverpackets.SystemMessage;
@@ -139,7 +139,7 @@ public class Escape implements IUserCommandHandler
 		activeChar.getAI().setIntention(CtrlIntention.AI_INTENTION_IDLE);
 		
 		activeChar.setTarget(activeChar);
-		activeChar.broadcastPacket(new MagicSkillUser(activeChar, 1050, 1, unstuckTimer, 0));
+		activeChar.broadcastPacket(new MagicSkillUse(activeChar, 1050, 1, unstuckTimer, 0));
 		activeChar.sendPacket(new SetupGauge(0, unstuckTimer));
 		activeChar.setTarget(null);
 		

@@ -57,6 +57,16 @@ public final class QuestState
 {
 	protected static final Logger LOG = LoggerFactory.getLogger(Quest.class);
 	
+	public static final String SOUND_ACCEPT = "Itemsound.quest_accept";
+	public static final String SOUND_MIDDLE = "Itemsound.quest_middle";
+	public static final String SOUND_FINISH = "Itemsound.quest_finish";
+	public static final String SOUND_GIVEUP = "Itemsound.quest_giveup";
+	public static final String SOUND_ITEMGET = "Itemsound.quest_itemget";
+	public static final String SOUND_FANFARE = "Itemsound.quest_fanfare_2";
+	public static final String SOUND_BEFORE_BATTLE = "Itemsound.quest_before_battle";
+	public static final String SOUND_TUTORIAL = "Itemsound.quest_tutorial";
+	public static final String SOUND_JACKPOT = "Itemsound.quest_jackpot";
+	
 	private final String _questName;
 	
 	private final L2PcInstance _player;
@@ -146,6 +156,46 @@ public final class QuestState
 		}
 		
 		return "Created";
+	}
+	
+	public byte getStateByte()
+	{
+		String id = getStateId();
+		if ("Started".equals(id))
+		{
+			return Quest.STATE_STARTED;
+		}
+		if ("Completed".equals(id))
+		{
+			return Quest.STATE_COMPLETED;
+		}
+		return Quest.STATE_CREATED;
+	}
+	
+	public void setState(byte stateVal)
+	{
+		Quest q = getQuest();
+		if (q == null)
+		{
+			return;
+		}
+		State target = null;
+		switch (stateVal)
+		{
+			case Quest.STATE_STARTED:
+				target = q.getStateByName("Started");
+				break;
+			case Quest.STATE_COMPLETED:
+				target = q.getStateByName("Completed");
+				break;
+			default:
+				target = q.getInitialState();
+				break;
+		}
+		if (target != null)
+		{
+			setState(target);
+		}
 	}
 	
 	String setInternal(final String var, String val)
@@ -928,9 +978,6 @@ public final class QuestState
 			return this;
 		}
 		
-		// Say quest is completed
-		_isCompleted = true;
-		
 		// Clean registered quest items
 		ArrayList<Integer> itemIdList = getQuest().getRegisteredItemIds();
 		if (itemIdList != null)
@@ -966,7 +1013,8 @@ public final class QuestState
 				}
 			}
 			
-			Quest.updateQuestInDb(this);
+			// Set the quest state to Completed — this updates _state, _isCompleted, DB and sends QuestList
+			setState(Quest.STATE_COMPLETED);
 		}
 		
 		return this;
@@ -984,12 +1032,12 @@ public final class QuestState
 	
 	public void showTutorialHTML(final String html)
 	{
-		String text = HtmCache.getInstance().getHtm("data/scripts/quests/255_Tutorial/" + html);
+		String text = HtmCache.getInstance().getHtm("data/scripts/quests/Q255_Tutorial/" + html);
 		
 		if (text == null)
 		{
-			LOG.warn("missing html page data/scripts/quests/255_Tutorial/" + html);
-			text = "<html><body>File data/scripts/quests/255_Tutorial/" + html + " not found or file is empty.</body></html>";
+			LOG.warn("missing html page data/scripts/quests/Q255_Tutorial/" + html);
+			text = "<html><body>File data/scripts/quests/Q255_Tutorial/" + html + " not found or file is empty.</body></html>";
 		}
 		
 		getPlayer().sendPacket(new TutorialShowHtml(text));
@@ -1025,7 +1073,7 @@ public final class QuestState
 	{
 		final int questId = getQuest().getQuestIntId();
 		
-		String questName = "255_Tutorial";
+		String questName = "Q255_Tutorial";
 		final QuestState st = _player.getQuestState(questName);
 		
 		if (questId == 1 || questId == 2 || questId == 4 || questId == 5 || questId == 166 || questId == 174)
@@ -1073,5 +1121,195 @@ public final class QuestState
 	public boolean hasQuestItems(int itemId)
 	{
 		return _player.getInventory().getItemByItemId(itemId) != null;
+	}
+	
+	public boolean hasQuestItems(int... itemIds)
+	{
+		for (int id : itemIds)
+		{
+			if (_player.getInventory().getItemByItemId(id) == null)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public void rewardItems(int itemId, int count)
+	{
+		giveItems(itemId, count);
+	}
+	
+	public void rewardExpAndSp(int exp, int sp)
+	{
+		addExpAndSp(exp, sp);
+	}
+	
+	public boolean dropItemsAlways(int itemId, int count, int neededCount)
+	{
+		return dropQuestItems(itemId, count, neededCount, 1000000, true);
+	}
+	
+	public boolean dropItems(int itemId, int count, int neededCount, int dropChance)
+	{
+		return dropQuestItems(itemId, count, neededCount, dropChance, true);
+	}
+	
+	public int getCond()
+	{
+		return getInt("cond");
+	}
+	
+	public boolean isCreated()
+	{
+		final String stateId = getStateId();
+		return "Start".equals(stateId) || "Created".equals(stateId);
+	}
+	
+	public boolean isCond(int value)
+	{
+		return getInt("cond") == value;
+	}
+	
+	public boolean isSet(String var)
+	{
+		final Object val = get(var);
+		return val != null && !val.toString().isEmpty();
+	}
+	
+	public boolean hasAtLeastOneQuestItem(int... itemIds)
+	{
+		for (int id : itemIds)
+		{
+			if (hasQuestItems(id))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int getMemoState()
+	{
+		return getInt("memoState");
+	}
+	
+	public void setMemoState(int val)
+	{
+		set("memoState", String.valueOf(val));
+	}
+	
+	public int getMemoStateEx(int slot)
+	{
+		return getInt("memoStateEx_" + slot);
+	}
+	
+	public void setMemoStateEx(int slot, int val)
+	{
+		set("memoStateEx_" + slot, String.valueOf(val));
+	}
+	
+	public boolean isMemoState(int val)
+	{
+		return getMemoState() == val;
+	}
+	
+	public boolean isMemoStateEx(int slot, int val)
+	{
+		return getMemoStateEx(slot) == val;
+	}
+	
+	public boolean giveItemRandomly(L2PcInstance player, L2NpcInstance npc, int itemId, int minAmount, int maxAmount, int neededCount, boolean dropChance100)
+	{
+		if (player == null)
+		{
+			return false;
+		}
+		
+		long currentCount = getQuestItemsCount(itemId);
+		if (neededCount > 0 && currentCount >= neededCount)
+		{
+			return false;
+		}
+		
+		int amount = (maxAmount > minAmount) ? (minAmount + l2jorion.util.random.Rnd.get(maxAmount - minAmount + 1)) : minAmount;
+		
+		if (neededCount > 0 && currentCount + amount > neededCount)
+		{
+			amount = (int) (neededCount - currentCount);
+		}
+		
+		if (amount <= 0)
+		{
+			return false;
+		}
+		
+		giveItems(itemId, amount);
+		playSound(currentCount + amount < neededCount ? SOUND_ITEMGET : SOUND_MIDDLE);
+		return (neededCount > 0 && currentCount + amount >= neededCount);
+	}
+	
+	public boolean giveItemRandomly(L2PcInstance player, L2NpcInstance npc, int itemId, int minAmount, int maxAmount, int neededCount, double dropChance)
+	{
+		if (player == null)
+		{
+			return false;
+		}
+		
+		long currentCount = getQuestItemsCount(itemId);
+		if (neededCount > 0 && currentCount >= neededCount)
+		{
+			return false;
+		}
+		
+		if (dropChance < 1.0 && l2jorion.util.random.Rnd.nextDouble() > dropChance)
+		{
+			return false;
+		}
+		
+		int amount = (maxAmount > minAmount) ? (minAmount + l2jorion.util.random.Rnd.get(maxAmount - minAmount + 1)) : minAmount;
+		
+		if (neededCount > 0 && currentCount + amount > neededCount)
+		{
+			amount = (int) (neededCount - currentCount);
+		}
+		
+		if (amount <= 0)
+		{
+			return false;
+		}
+		
+		giveItems(itemId, amount);
+		playSound(currentCount + amount < neededCount ? SOUND_ITEMGET : SOUND_MIDDLE);
+		return (neededCount > 0 && currentCount + amount >= neededCount);
+	}
+	
+	public boolean dropMultipleItems(int[][] rewardList)
+	{
+		boolean dropped = false;
+		for (int[] reward : rewardList)
+		{
+			if (reward.length >= 3)
+			{
+				if (dropQuestItems(reward[0], reward[1], reward[1], 0, reward[2], true))
+				{
+					dropped = true;
+				}
+			}
+		}
+		return dropped;
+	}
+	
+	public boolean hasAtLeastOneItem(int... itemIds)
+	{
+		return hasAtLeastOneQuestItem(itemIds);
+	}
+	
+	public void addNotifyOfDeath()
+	{
+		if (getPlayer() != null)
+		{
+			getPlayer().addNotifyQuestOfDeath(this);
+		}
 	}
 }

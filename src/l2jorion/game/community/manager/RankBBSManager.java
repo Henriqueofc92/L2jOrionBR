@@ -32,7 +32,7 @@ public class RankBBSManager extends BaseBBSManager implements ICommunityBoardHan
 		11242
 	};
 	
-	private static final String GET_DATA = "SELECT characters.char_name, characters.accesslevel, characters.title, characters.obj_Id, characters.clanid," + //
+	private static final String GET_DATA = "SELECT characters.char_name, characters.title, characters.obj_Id, characters.clanid," + //
 		"items.owner_id, items.item_id, items.enchant_level," + //
 		"armor.name," + //
 		"clan_data.clan_id, clan_data.clan_name, clan_data.ally_id, clan_data.ally_name " + //
@@ -40,7 +40,7 @@ public class RankBBSManager extends BaseBBSManager implements ICommunityBoardHan
 		"INNER JOIN items ON characters.obj_Id = items.owner_id " + //
 		"INNER JOIN armor ON items.item_id = armor.item_id " + //
 		"LEFT JOIN clan_data ON characters.clanid = clan_data.clan_id " + //
-		"WHERE items.item_id = ?  AND characters.accesslevel = 0 " + //
+		"WHERE items.item_id = ? " + //
 		"ORDER BY items.enchant_level " + //
 		"DESC";//
 	

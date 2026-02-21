@@ -151,12 +151,10 @@ public class AutoFarm implements IVoicedCommandHandler, ICustomByPassHandler
 			{
 				if (activeChar.isAutoFarm())
 				{
-					// CORREÇÃO: Usar o Manager para parar
 					AutofarmManager.getInstance().stopFarm(activeChar);
 				}
 				else
 				{
-					// CORREÇÃO: Usar o Manager para iniciar
 					AutofarmManager.getInstance().startFarm(activeChar);
 				}
 			}

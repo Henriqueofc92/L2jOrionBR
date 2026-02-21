@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import l2jorion.Config;
+import l2jorion.game.datatables.xml.GmAccessTable;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
 import l2jorion.util.CloseUtil;
@@ -18,12 +19,10 @@ public class CharNameTable
 	private final static Logger LOG = LoggerFactory.getLogger(CharNameTable.class);
 	
 	private final Map<Integer, String> _chars;
-	private final Map<Integer, Integer> _accessLevels;
 	
 	protected CharNameTable()
 	{
 		_chars = new HashMap<>();
-		_accessLevels = new HashMap<>();
 	}
 	
 	private static CharNameTable _instance;
@@ -171,18 +170,15 @@ public class CharNameTable
 			return name;
 		}
 		
-		int accessLevel = 0;
-		
 		try
 		{
 			con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT char_name,accesslevel FROM characters WHERE obj_Id=?");
+			PreparedStatement statement = con.prepareStatement("SELECT char_name FROM characters WHERE obj_Id=?");
 			statement.setInt(1, id);
 			ResultSet rset = statement.executeQuery();
 			while (rset.next())
 			{
 				name = rset.getString(1);
-				accessLevel = rset.getInt(2);
 			}
 			rset.close();
 			statement.close();
@@ -199,7 +195,6 @@ public class CharNameTable
 		if (name != null && !name.isEmpty())
 		{
 			_chars.put(id, name);
-			_accessLevels.put(id, accessLevel);
 			return name;
 		}
 		
@@ -222,19 +217,17 @@ public class CharNameTable
 		}
 		
 		int id = -1;
-		int accessLevel = 0;
 		Connection con = null;
 		try
 		{
 			con = L2DatabaseFactory.getInstance().getConnection();
-			PreparedStatement statement = con.prepareStatement("SELECT obj_Id,accesslevel FROM characters WHERE char_name=?");
+			PreparedStatement statement = con.prepareStatement("SELECT obj_Id FROM characters WHERE char_name=?");
 			statement.setString(1, name);
 			ResultSet rset = statement.executeQuery();
 			
 			while (rset.next())
 			{
 				id = rset.getInt(1);
-				accessLevel = rset.getInt(2);
 			}
 			rset.close();
 			statement.close();
@@ -251,7 +244,6 @@ public class CharNameTable
 		if (id > 0)
 		{
 			_chars.put(id, name);
-			_accessLevels.put(id, accessLevel);
 			return id;
 		}
 		
@@ -260,11 +252,6 @@ public class CharNameTable
 	
 	public final int getAccessLevelById(int objectId)
 	{
-		if (getNameById(objectId) != null)
-		{
-			return _accessLevels.get(objectId);
-		}
-		
-		return 0;
+		return GmAccessTable.getInstance().hasProfile(objectId) ? 1 : 0;
 	}
 }

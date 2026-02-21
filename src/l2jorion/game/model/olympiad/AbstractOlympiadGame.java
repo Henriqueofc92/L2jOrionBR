@@ -172,15 +172,23 @@ public abstract class AbstractOlympiadGame
 			// Remove Buffs
 			player.stopAllEffects();
 			
-			// Remove Summon's Buffs
-			if (player.getPet() != null)
+			if (player.isMounted())
+			{
+				player.dismount();
+			}
+			else if (player.getPet() != null)
 			{
 				L2Summon summon = player.getPet();
-				summon.stopAllEffects();
 				
 				if (summon instanceof L2PetInstance)
 				{
 					summon.unSummon(player);
+				}
+				else
+				{
+					summon.stopAllEffects();
+					summon.abortAttack();
+					summon.abortCast();
 				}
 			}
 			

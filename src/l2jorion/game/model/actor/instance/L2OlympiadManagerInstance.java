@@ -103,7 +103,7 @@ public class L2OlympiadManagerInstance extends L2FolkInstance
 		html.setFile("data/html/olympiad/" + filename);
 		
 		// Hidden option for players who are in inactive mode.
-		if (filename == "hero_main.htm")
+		if (filename.equals("hero_main.htm"))
 		{
 			String hiddenText = "";
 			if (Hero.getInstance().isInactiveHero(player.getObjectId()))

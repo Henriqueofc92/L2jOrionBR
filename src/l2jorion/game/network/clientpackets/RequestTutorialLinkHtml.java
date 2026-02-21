@@ -73,7 +73,7 @@ public class RequestTutorialLinkHtml extends PacketClient
 		else
 		{
 			
-			final QuestState qs = player.getQuestState("255_Tutorial");
+			final QuestState qs = player.getQuestState("Q255_Tutorial");
 			if (qs != null)
 			{
 				qs.getQuest().notifyEvent(_bypass, null, player);

@@ -24,7 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Stack;
+import java.util.ArrayDeque;
 
 import l2jorion.Config;
 import l2jorion.logger.Logger;
@@ -39,7 +39,7 @@ public class StackIDFactory extends IdFactory
 	private int _curOID;
 	private int _tempOID;
 	
-	private final Stack<Integer> _freeOIDStack = new Stack<>();
+	private final ArrayDeque<Integer> _freeOIDStack = new ArrayDeque<>();
 	
 	protected StackIDFactory()
 	{
@@ -143,7 +143,7 @@ public class StackIDFactory extends IdFactory
 	public synchronized int getNextId()
 	{
 		int id;
-		if (!_freeOIDStack.empty())
+		if (!_freeOIDStack.isEmpty())
 		{
 			id = _freeOIDStack.pop();
 		}

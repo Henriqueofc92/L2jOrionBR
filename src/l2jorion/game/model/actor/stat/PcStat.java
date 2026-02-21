@@ -210,7 +210,7 @@ public class PcStat extends PlayableStat
 				}
 			}
 			
-			QuestState qs = getActiveChar().getQuestState("255_Tutorial");
+			QuestState qs = getActiveChar().getQuestState("Q255_Tutorial");
 			if (qs != null && qs.getQuest() != null)
 			{
 				qs.getQuest().notifyEvent("CE40", null, getActiveChar());

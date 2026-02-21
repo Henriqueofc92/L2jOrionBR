@@ -1,25 +1,18 @@
 package l2jorion.game.datatables.xml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import l2jorion.Config;
 import l2jorion.game.datatables.AccessLevel;
+import l2jorion.game.datatables.GmAccessProfile;
 import l2jorion.logger.Logger;
 import l2jorion.logger.LoggerFactory;
 
+/**
+ * Access level manager. Now loads access levels from GmAccessTable (config/GMAccess/*.xml)
+ * instead of the old accessLevels.xml file.
+ */
 public class AccessLevels
 {
 	private final static Logger LOG = LoggerFactory.getLogger(AccessLevels.class.getName());
@@ -36,68 +29,20 @@ public class AccessLevels
 	
 	private AccessLevels()
 	{
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(false);
-		factory.setIgnoringComments(true);
-		File f = new File(Config.DATAPACK_ROOT + "/data/xml/player/accessLevels.xml");
-		
-		if (!f.exists())
+		// Load access levels from GmAccessTable profiles
+		for (GmAccessProfile profile : GmAccessTable.getInstance().getProfiles())
 		{
-			LOG.error("access_levels.xml could not be loaded: file not found");
-			return;
-		}
-		
-		try (FileInputStream fis = new FileInputStream(f);
-			InputStreamReader isr = new InputStreamReader(fis, "UTF-8"))
-		{
+			int level = profile.getAccessLevel();
 			
-			InputSource in = new InputSource(isr);
-			in.setEncoding("UTF-8");
-			Document doc = factory.newDocumentBuilder().parse(in);
-			
-			for (Node n = doc.getFirstChild(); n != null; n = n.getNextSibling())
+			if (level == _userAccessLevelNum || level == _masterAccessLevelNum || level <= 0)
 			{
-				if (n.getNodeName().equalsIgnoreCase("list"))
-				{
-					for (Node d = n.getFirstChild(); d != null; d = d.getNextSibling())
-					{
-						if (d.getNodeName().equalsIgnoreCase("acessLevel"))
-						{
-							int accessLevel = Integer.valueOf(d.getAttributes().getNamedItem("level").getNodeValue());
-							String name = String.valueOf(d.getAttributes().getNamedItem("name").getNodeValue());
-							
-							if (accessLevel == _userAccessLevelNum || accessLevel == _masterAccessLevelNum || accessLevel < 0)
-							{
-								continue;
-							}
-							
-							int nameColor = getColor(d, "nameColor", 0xFFFFFF);
-							int titleColor = getColor(d, "titleColor", 0x77FFFF);
-							
-							boolean isGm = Boolean.valueOf(d.getAttributes().getNamedItem("isGm").getNodeValue());
-							boolean allowPeaceAttack = Boolean.valueOf(d.getAttributes().getNamedItem("allowPeaceAttack").getNodeValue());
-							boolean allowFixedRes = Boolean.valueOf(d.getAttributes().getNamedItem("allowFixedRes").getNodeValue());
-							boolean allowTransaction = Boolean.valueOf(d.getAttributes().getNamedItem("allowTransaction").getNodeValue());
-							boolean allowAltG = Boolean.valueOf(d.getAttributes().getNamedItem("allowAltg").getNodeValue());
-							boolean giveDamage = Boolean.valueOf(d.getAttributes().getNamedItem("giveDamage").getNodeValue());
-							boolean takeAggro = Boolean.valueOf(d.getAttributes().getNamedItem("takeAggro").getNodeValue());
-							boolean gainExp = Boolean.valueOf(d.getAttributes().getNamedItem("gainExp").getNodeValue());
-							boolean useNameColor = Boolean.valueOf(d.getAttributes().getNamedItem("useNameColor").getNodeValue());
-							boolean useTitleColor = Boolean.valueOf(d.getAttributes().getNamedItem("useTitleColor").getNodeValue());
-							boolean canDisableGmStatus = Boolean.valueOf(d.getAttributes().getNamedItem("canDisableGmStatus").getNodeValue());
-							
-							_accessLevels.put(accessLevel, new AccessLevel(accessLevel, name, nameColor, titleColor, isGm, allowPeaceAttack, allowFixedRes, allowTransaction, allowAltG, giveDamage, takeAggro, gainExp, useNameColor, useTitleColor, canDisableGmStatus));
-						}
-					}
-				}
+				continue;
 			}
-		}
-		catch (SAXException | IOException | ParserConfigurationException e)
-		{
-			LOG.error("Error while loading admin command data: ", e);
+			
+			_accessLevels.put(level, profile.toAccessLevel());
 		}
 		
-		LOG.info("AccessLevels: Loaded " + _accessLevels.size() + " access from xml.");
+		LOG.info("AccessLevels: Loaded " + _accessLevels.size() + " access levels from GMAccess profiles.");
 	}
 	
 	public static AccessLevels getInstance()
@@ -125,19 +70,8 @@ public class AccessLevels
 	
 	public static void reload()
 	{
+		GmAccessTable.reload();
 		_instance = null;
 		getInstance();
-	}
-	
-	private int getColor(Node node, String attributeName, int defaultValue)
-	{
-		try
-		{
-			return Integer.decode("0x" + String.valueOf(node.getAttributes().getNamedItem(attributeName).getNodeValue()));
-		}
-		catch (NumberFormatException | NullPointerException e)
-		{
-			return defaultValue;
-		}
 	}
 }

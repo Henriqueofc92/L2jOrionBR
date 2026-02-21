@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='utf-8'?>
+<list>
+	<!-- Head GM - Ban, Kick, Jail, Teleport, View, Rename -->
+	<!-- Add PlayerID to assign this profile: <PlayerID set="12345"/> -->
+	<char>
+		<!-- Access Level Properties -->
+		<AccessLevel set="2"/>
+		<LevelName set="Head GM"/>
+		<NameColor set="00FFFF"/>
+		<TitleColor set="77FFFF"/>
+		<UseNameColor set="true"/>
+		<UseTitleColor set="true"/>
+		<GiveDamage set="true"/>
+		<TakeAggro set="true"/>
+		<GainExp set="true"/>
+		<CanDisableGmStatus set="true"/>
+		<!-- Core GM -->
+		<IsGM set="true"/>
+		<CanUseGMCommand set="true"/>
+		<!-- Permissions -->
+		<CanAnnounce set="true"/>
+		<CanBan set="true"/>
+		<CanBanChat set="true"/>
+		<UseGMShop set="true"/>
+		<CanKick set="true"/>
+		<GodMode set="true"/>
+		<CanViewChar set="true"/>
+		<CanViewNPC set="true"/>
+		<CanTeleport set="true"/>
+		<CanRestart set="true"/>
+		<FastUnstuck set="true"/>
+		<ResurectFixed set="true"/>
+		<Door set="true"/>
+		<PeaceAttack set="false"/>
+		<UseTrade set="false"/>
+		<CanAttack set="false"/>
+		<CanJoinClan set="false"/>
+		<BlockInventory set="true"/>
+		<CanRename set="true"/>
+		<CanJail set="true"/>
+	</char>
+</list>

@@ -37,7 +37,7 @@ import l2jorion.game.network.SystemMessageId;
 import l2jorion.game.network.serverpackets.CharInfo;
 import l2jorion.game.network.serverpackets.Earthquake;
 import l2jorion.game.network.serverpackets.ExRedSky;
-import l2jorion.game.network.serverpackets.MagicSkillUser;
+import l2jorion.game.network.serverpackets.MagicSkillUse;
 import l2jorion.game.network.serverpackets.PlaySound;
 import l2jorion.game.network.serverpackets.SignsSky;
 import l2jorion.game.network.serverpackets.SocialAction;
@@ -808,7 +808,7 @@ public class AdminEffects implements IAdminCommandHandler
 				{
 					final L2Character target = (L2Character) obj;
 					
-					target.broadcastPacket(new MagicSkillUser(target, activeChar, skill, level, hittime, 0));
+					target.broadcastPacket(new MagicSkillUse(target, activeChar, skill, level, hittime, 0));
 					activeChar.sendMessage(obj.getName() + " performs MSU " + skill + "/" + level + " by your request.");
 					
 				}
